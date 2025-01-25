@@ -1,3 +1,6 @@
-// since there's no dynamic data here, we can prerender
-// it so that it gets served as a static asset in production
-export const prerender = true;
+
+export async function load({ fetch }) {
+  const response = await fetch('/api/weather-cities');
+  const data = await response.json();
+  return { data };
+}
