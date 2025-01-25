@@ -1,0 +1,14 @@
+entrypoint = "src/routes/+page.svelte"
+modules = ["svelte-kit-node-20", "nodejs-20"]
+
+[nix]
+channel = "stable-24_05"
+
+[deployment]
+build = ["npm", "run", "build"]
+run = ["node", "build"]
+deploymentTarget = "gce"
+
+[[ports]]
+localPort = 5173
+externalPort = 80
