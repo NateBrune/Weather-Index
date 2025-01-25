@@ -5,13 +5,16 @@ const { Pool } = pg;
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: process.env.NODE_ENV === "production" ? { rejectUnauthorized: false } : false
+  ssl:
+    process.env.NODE_ENV === "production"
+      ? { rejectUnauthorized: false }
+      : false,
 });
 
 export async function GET() {
   try {
     const client = await pool.connect();
-    const result = await client.query('SELECT * FROM your_table');
+    const result = await client.query("SELECT * FROM cities");
     client.release();
 
     return json(result.rows);
