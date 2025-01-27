@@ -75,7 +75,7 @@
           </h2>
           <div class="flex gap-2 flex-wrap justify-center">
             <button
-              class="btn btn-sm normal-case {selectedTimescale === 'hourly'
+              class="btn btn-sm no-animation normal-case {selectedTimescale === 'hourly'
                 ? 'btn-primary'
                 : 'btn-ghost'} flex items-center gap-1 min-w-[100px]"
               on:click={() => handleTimescaleChange("hourly")}
@@ -86,7 +86,7 @@
               Hourly
             </button>
             <button
-              class="btn btn-sm normal-case {selectedTimescale === 'daily'
+              class="btn btn-sm no-animation normal-case {selectedTimescale === 'daily'
                 ? 'btn-primary'
                 : 'btn-ghost'} flex items-center gap-1 min-w-[100px]"
               on:click={() => handleTimescaleChange("daily")}
