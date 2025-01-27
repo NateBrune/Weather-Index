@@ -36,7 +36,7 @@ export async function GET({ params }) {
       )
       SELECT temperature, observation_timestamp
       FROM hourly_medians
-      ORDER BY observation_timestamp DESC
+      ORDER BY observation_timestamp ASC
       LIMIT 100;
     `;
     const result = await client.query(query, [params.city]);
