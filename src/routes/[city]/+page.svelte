@@ -33,10 +33,10 @@
   }
   
   $: chartData = {
-    labels: [...data.data].reverse().map(d => new Date(d.observation_timestamp).toLocaleString()),
+    labels: data.data.map(d => new Date(d.observation_timestamp).toLocaleString()),
     datasets: [{
       label: 'Temperature (°C)',
-      data: [...data.data].reverse().map(d => d.temperature),
+      data: data.data.map(d => d.temperature),
       borderColor: 'rgb(255, 99, 132)',
       tension: 0.4,
       cubicInterpolationMode: 'monotone',
