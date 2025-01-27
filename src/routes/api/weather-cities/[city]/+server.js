@@ -42,14 +42,14 @@ export async function GET({ params, url }) {
         WHERE g.city = $1
           AND o.temperature IS NOT NULL
           AND o.temperature BETWEEN -100 AND 100
-          AND o.observation_timestamp >= NOW() - INTERVAL '1 ' || 
+          AND o.observation_timestamp >= NOW() - (
             CASE 
-              WHEN $2 = 'hourly' THEN 'day'
-              WHEN $2 = 'daily' THEN 'month'
-              WHEN $2 = 'weekly' THEN '3 months'
-              WHEN $2 = 'monthly' THEN 'year'
-              ELSE 'month'
-            END
+              WHEN $2 = 'hourly' THEN INTERVAL '1 day'
+              WHEN $2 = 'daily' THEN INTERVAL '1 month'
+              WHEN $2 = 'weekly' THEN INTERVAL '3 months'
+              WHEN $2 = 'monthly' THEN INTERVAL '1 year'
+              ELSE INTERVAL '1 month'
+            END)
         GROUP BY timestamp_interval
       )
       SELECT temperature, timestamp_interval as observation_timestamp
