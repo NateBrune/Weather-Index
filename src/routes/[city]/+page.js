@@ -1,6 +1,7 @@
 
-export async function load({ fetch, params }) {
-  const response = await fetch(`/api/weather-cities/${params.city}`);
+export async function load({ fetch, params, url }) {
+  const timescale = url.searchParams.get('timescale') || 'daily';
+  const response = await fetch(`/api/weather-cities/${params.city}?timescale=${timescale}`);
   const weatherData = await response.json();
   return { 
     data: weatherData, 
