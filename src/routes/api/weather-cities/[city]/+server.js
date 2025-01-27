@@ -53,7 +53,7 @@ export async function GET({ params, url }) {
       )
       SELECT temperature, timestamp_interval as observation_timestamp
       FROM time_aggregated
-      ORDER BY timestamp_interval ASC
+      ORDER BY timestamp_interval DESC
       LIMIT 100;
     `;
     
