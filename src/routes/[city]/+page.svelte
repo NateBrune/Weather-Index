@@ -139,7 +139,7 @@
   <link
     href="https://cdn.jsdelivr.net/npm/daisyui@4.4.19/dist/full.css"
     rel="stylesheet"
-    type="text/css"
+    type: "text/css"
   />
   <script src="https://cdn.tailwindcss.com"></script>
 </svelte:head>
