@@ -33,14 +33,7 @@ export async function GET({ params, url }) {
     }
 
     const query = `
-      WITH valid_stations AS (
-        SELECT s.station_id
-        FROM stations s
-        JOIN observations o ON s.station_id = o.station_id
-        GROUP BY s.station_id
-        HAVING SUM(CASE WHEN o.temperature IS NULL THEN 1 ELSE 0 END) < 10
-      ),
-      time_aggregated AS (
+      WITH time_aggregated AS (
         SELECT 
           ${timeInterval} as timestamp_interval,
           PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY o.temperature) as temperature
@@ -50,8 +43,7 @@ export async function GET({ params, url }) {
         WHERE g.city = $1
           AND o.temperature IS NOT NULL
           AND o.temperature BETWEEN -100 AND 100
-          AND o.observation_timestamp IS NOT NULL
-          AND s.station_id IN (SELECT station_id FROM valid_stations)
+          AND o.observation_timestamp >= NOW() - INTERVAL '30 days'
         GROUP BY timestamp_interval
       )
       SELECT temperature, timestamp_interval as observation_timestamp
