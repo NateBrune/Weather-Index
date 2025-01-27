@@ -30,7 +30,9 @@
       label: 'Temperature (°C)',
       data: data.data.map(d => d.temperature),
       borderColor: 'rgb(255, 99, 132)',
-      tension: 0.1
+      tension: 0.4,
+      cubicInterpolationMode: 'monotone',
+      borderWidth: 2
     }]
   };
   
