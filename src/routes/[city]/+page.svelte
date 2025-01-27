@@ -14,10 +14,9 @@
     TimeScale,
     Filler,
   } from "chart.js";
-  import "chartjs-adapter-moment"; // Import the Moment adapter for Chart.js
+  import "chartjs-adapter-moment";
   import { page } from "$app/stores";
 
-  // Register the necessary components, including the LineController
   Chart.register(
     CategoryScale,
     LinearScale,
@@ -27,16 +26,14 @@
     Title,
     Tooltip,
     Legend,
-    TimeScale, // Register the TimeScale
+    TimeScale,
     Filler,
   );
 
-  // Data passed from the load function
   export let data;
   let city = $page.params.city;
   let chartContainer;
 
-  // Prepare data for chart
   let timestamps = [];
   let temperatures = [];
 
@@ -44,17 +41,13 @@
     timestamps = data.data.map((item) =>
       moment(item.observation_timestamp, "YYYY-MM-DD HH:mm:ss"),
     );
-
     temperatures = data.data.map((item) => item.temperature);
-  } else {
-    console.error("Data is not an array:", data);
   }
 
   const changeTimescale = (timescale) => {
     window.location.href = `/${city}?timescale=${timescale}`;
   };
 
-  // Initialize chart on mount
   onMount(() => {
     if (chartContainer) {
       new Chart(chartContainer, {
@@ -67,7 +60,7 @@
               data: temperatures,
               borderColor: "rgb(255, 99, 132)",
               backgroundColor: "rgba(255, 99, 132, 0.2)",
-              fill: {value: -100}, // Fill from the bottom (origin)
+              fill: {value: -100},
               tension: 0.1,
             },
           ],
@@ -76,24 +69,24 @@
           responsive: true,
           scales: {
             x: {
-              type: "time", // Use the time scale
+              type: "time",
               time: {
-                unit: "hour", // Display hourly data, or "day", "month" depending on the timescale
-                tooltipFormat: "ll HH:mm", // How the tooltip will display the time
+                unit: "hour",
+                tooltipFormat: "ll HH:mm",
               },
               title: {
                 display: true,
-                text: "Time of Observation", // Label for the x-axis
+                text: "Time of Observation",
               },
             },
             y: {
               type: "linear",
               title: {
                 display: true,
-                text: "Temperature (°C)", // Label for the y-axis
+                text: "Temperature (°C)",
               },
               ticks: {
-                beginAtZero: false, // Optional: to control if the y-axis should start at zero
+                beginAtZero: false,
               },
             },
           },
@@ -104,64 +97,23 @@
           },
         },
       });
-    } else {
-      console.error("Chart container not found.");
     }
   });
-  function toggleTheme() {
-    const html = document.querySelector("html");
-    const currentTheme = html.getAttribute("data-theme");
-    const newTheme = currentTheme === "light" ? "dark" : "light";
-    html.setAttribute("data-theme", newTheme);
-  }
 </script>
 
-<svelte:head>
-  <title>City Weather Statistics</title>
-  <meta name="description" content="Weather statistics by city" />
-  <link
-    href="https://cdn.jsdelivr.net/npm/daisyui@4.4.19/dist/full.css"
-    rel="stylesheet"
-    type="text/css"
-  />
-  <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Include the chartjs date adapter -->
-  <!-- <script
-    src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@latest"
-  ></script> -->
-</svelte:head>
+<main class="max-w-4xl mx-auto p-6 bg-base-200 rounded-lg shadow-lg">
+  <h1 class="text-3xl font-semibold text-center mb-6">
+    Weather Data for {city}
+  </h1>
 
-<main class="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-lg">
-  <!-- Header with Title and Theme Toggle -->
-  <header class="flex justify-between items-center mb-6">
-    <h1 class="text-3xl font-semibold text-center text-gray-800">
-      Weather Data for {city}
-    </h1>
-    <button class="btn btn-outline" on:click={toggleTheme}>
-      Toggle Theme
-    </button>
-  </header>
-
-  <!-- Timescale Buttons -->
-  <div class="mb-6 flex justify-center gap-4">
-    <button class="btn btn-primary" on:click={() => changeTimescale("hourly")}>
-      Hourly
-    </button>
-    <button class="btn btn-primary" on:click={() => changeTimescale("daily")}>
-      Daily
-    </button>
-    <button class="btn btn-primary" on:click={() => changeTimescale("weekly")}>
-      Weekly
-    </button>
-    <button class="btn btn-primary" on:click={() => changeTimescale("monthly")}>
-      Monthly
-    </button>
-    <button class="btn btn-primary" on:click={() => changeTimescale("yearly")}>
-      Yearly
-    </button>
+  <div class="mb-6 flex justify-center gap-2">
+    <button class="btn btn-primary btn-sm" on:click={() => changeTimescale("hourly")}>Hourly</button>
+    <button class="btn btn-primary btn-sm" on:click={() => changeTimescale("daily")}>Daily</button>
+    <button class="btn btn-primary btn-sm" on:click={() => changeTimescale("weekly")}>Weekly</button>
+    <button class="btn btn-primary btn-sm" on:click={() => changeTimescale("monthly")}>Monthly</button>
+    <button class="btn btn-primary btn-sm" on:click={() => changeTimescale("yearly")}>Yearly</button>
   </div>
 
-  <!-- Canvas for the chart -->
   <div class="mb-6">
     <canvas bind:this={chartContainer}></canvas>
   </div>
