@@ -1,6 +1,12 @@
 
 <script>
   export let data;
+  
+  function toggleTheme() {
+    const html = document.querySelector('html');
+    const currentTheme = html.getAttribute('data-theme') || 'light';
+    html.setAttribute('data-theme', currentTheme === 'light' ? 'dark' : 'light');
+  }
 </script>
 
 <svelte:head>
@@ -12,7 +18,14 @@
 
 <div class="min-h-screen bg-base-200 p-4">
   <div class="max-w-4xl mx-auto">
-    <h1 class="text-4xl font-bold text-center mb-8 text-primary">City Weather Statistics</h1>
+    <div class="flex justify-between items-center mb-8">
+      <h1 class="text-4xl font-bold text-primary">City Weather Statistics</h1>
+      <button class="btn btn-circle" on:click={toggleTheme}>
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+        </svg>
+      </button>
+    </div>
     
     <div class="card bg-base-100 shadow-xl">
       <div class="card-body overflow-x-auto">
