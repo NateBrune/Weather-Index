@@ -1,13 +1,12 @@
-
 <script>
   export let data;
   import { onMount } from 'svelte';
-  
+
   onMount(() => {
     const html = document.querySelector('html');
     html.setAttribute('data-theme', 'light');
   });
-  
+
   function toggleTheme() {
     const html = document.querySelector('html');
     const currentTheme = html.getAttribute('data-theme');
@@ -33,7 +32,7 @@
         </svg>
       </button>
     </div>
-    
+
     <div class="card bg-base-100 shadow-xl">
       <div class="card-body overflow-x-auto">
         <table class="table table-zebra">
@@ -42,6 +41,7 @@
               <th class="text-primary">City</th>
               <th class="text-primary">Station Count</th>
               <th class="text-primary">Average Temperature</th>
+              <th class="text-primary">24h Change</th>
             </tr>
           </thead>
           <tbody>
@@ -60,6 +60,9 @@
                       max="40"
                     ></progress>
                   </div>
+                </td>
+                <td class="text-{city.temperature_change_24h > 0 ? 'error' : 'success'}">
+                  {city.temperature_change_24h > 0 ? '+' : ''}{city.temperature_change_24h}°C
                 </td>
               </tr>
             {/each}
