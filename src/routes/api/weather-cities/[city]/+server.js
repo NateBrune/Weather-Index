@@ -13,11 +13,23 @@ export async function GET({ params }) {
   try {
     const client = await pool.connect();
     const query = `
-      SELECT o.temperature, o.observation_timestamp
+      WITH valid_stations AS (
+          SELECT s.station_id
+          FROM stations s
+          JOIN observations o ON s.station_id = o.station_id
+          GROUP BY s.station_id
+          HAVING SUM(CASE WHEN o.temperature IS NULL THEN 1 ELSE 0 END) < 10
+      )
+      SELECT 
+          o.temperature, 
+          o.observation_timestamp
       FROM stations s
       JOIN geocodes g ON s.latitude = g.latitude AND s.longitude = g.longitude
       JOIN observations o ON s.station_id = o.station_id
       WHERE g.city = $1
+        AND o.temperature IS NOT NULL
+        AND o.observation_timestamp IS NOT NULL
+        AND s.station_id IN (SELECT station_id FROM valid_stations)
       ORDER BY o.observation_timestamp DESC
       LIMIT 100;
     `;
