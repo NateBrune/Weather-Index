@@ -23,6 +23,12 @@
   );
   
   export let data;
+  let selectedTimescale = 'daily';
+
+  function handleTimescaleChange(timescale) {
+    selectedTimescale = timescale;
+    // TODO: Implement API call with new timescale
+  }
   
   $: chartData = {
     labels: data.data.map(d => new Date(d.observation_timestamp).toLocaleString()),
@@ -54,7 +60,35 @@
   <div class="max-w-4xl mx-auto">
     <div class="card bg-base-100 shadow-xl">
       <div class="card-body">
-        <h2 class="card-title text-primary">{data.city} Temperature History</h2>
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="card-title text-primary">{data.city} Temperature History</h2>
+          <div class="join">
+            <button 
+              class="join-item btn btn-sm" 
+              class:btn-primary={selectedTimescale === 'daily'}
+              on:click={() => handleTimescaleChange('daily')}>
+              Daily
+            </button>
+            <button 
+              class="join-item btn btn-sm" 
+              class:btn-primary={selectedTimescale === 'weekly'}
+              on:click={() => handleTimescaleChange('weekly')}>
+              Weekly
+            </button>
+            <button 
+              class="join-item btn btn-sm" 
+              class:btn-primary={selectedTimescale === 'monthly'}
+              on:click={() => handleTimescaleChange('monthly')}>
+              Monthly
+            </button>
+            <button 
+              class="join-item btn btn-sm" 
+              class:btn-primary={selectedTimescale === 'yearly'}
+              on:click={() => handleTimescaleChange('yearly')}>
+              Yearly
+            </button>
+          </div>
+        </div>
         <div class="w-full h-[60vh]">
           <Line data={chartData} options={chartOptions} />
         </div>
