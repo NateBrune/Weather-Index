@@ -19,19 +19,24 @@ export async function GET({ params }) {
           JOIN observations o ON s.station_id = o.station_id
           GROUP BY s.station_id
           HAVING SUM(CASE WHEN o.temperature IS NULL THEN 1 ELSE 0 END) < 10
+      ),
+      hourly_medians AS (
+          SELECT 
+              o.observation_timestamp,
+              PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY o.temperature) as temperature
+          FROM stations s
+          JOIN geocodes g ON s.latitude = g.latitude AND s.longitude = g.longitude
+          JOIN observations o ON s.station_id = o.station_id
+          WHERE g.city = $1
+            AND o.temperature IS NOT NULL
+            AND o.temperature BETWEEN -100 AND 100
+            AND o.observation_timestamp IS NOT NULL
+            AND s.station_id IN (SELECT station_id FROM valid_stations)
+          GROUP BY o.observation_timestamp
       )
-      SELECT 
-          o.temperature, 
-          o.observation_timestamp
-      FROM stations s
-      JOIN geocodes g ON s.latitude = g.latitude AND s.longitude = g.longitude
-      JOIN observations o ON s.station_id = o.station_id
-      WHERE g.city = $1
-        AND o.temperature IS NOT NULL
-        AND o.temperature BETWEEN -100 AND 100  -- Filter out unrealistic temperatures
-        AND o.observation_timestamp IS NOT NULL
-        AND s.station_id IN (SELECT station_id FROM valid_stations)
-      ORDER BY o.observation_timestamp DESC
+      SELECT temperature, observation_timestamp
+      FROM hourly_medians
+      ORDER BY observation_timestamp DESC
       LIMIT 100;
     `;
     const result = await client.query(query, [params.city]);
