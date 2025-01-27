@@ -30,7 +30,7 @@ export async function GET({ params, url }) {
         break;
       case "weekly":
         timeInterval = "day";
-        timeRange = "3 months"; // Fetch data for the last 3 months for weekly granularity
+        timeRange = "30 days"; // Fetch data for the last 3 months for weekly granularity
         break;
       case "monthly":
         timeInterval = "week";

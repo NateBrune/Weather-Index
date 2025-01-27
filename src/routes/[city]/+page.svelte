@@ -72,43 +72,59 @@
               type: "time",
               time: {
                 unit: (() => {
-                  const timescale = new URLSearchParams(window.location.search).get('timescale') || 'daily';
-                  switch(timescale) {
-                    case 'hourly': return 'hour';
-                    case 'daily': return 'day';
-                    case 'weekly': return 'week';
-                    case 'monthly': return 'month';
-                    default: return 'day';
+                  const timescale =
+                    new URLSearchParams(window.location.search).get(
+                      "timescale",
+                    ) || "daily";
+                  switch (timescale) {
+                    case "hourly":
+                      return "hour";
+                    case "daily":
+                      return "day";
+                    case "weekly":
+                      return "week";
+                    case "monthly":
+                      return "month";
+                    default:
+                      return "day";
                   }
                 })(),
-                tooltipFormat: 'll HH:mm',
+                tooltipFormat: "ll HH:mm",
                 displayFormats: {
-                  hour: 'HH:mm',
-                  day: 'MMM D',
-                  week: 'MMM D',
-                  month: 'MMM YYYY'
+                  hour: "HH:mm",
+                  day: "MMM D",
+                  week: "MMM D",
+                  month: "MMM YYYY",
                 },
-                stepSize: 1
+                stepSize: 1,
               },
               title: {
                 display: true,
                 text: "Time of Observation",
               },
               ticks: {
-                source: 'auto',
+                source: "auto",
                 maxRotation: 0,
                 autoSkip: true,
                 maxTicksLimit: (() => {
-                  const timescale = new URLSearchParams(window.location.search).get('timescale') || 'daily';
-                  switch(timescale) {
-                    case 'hourly': return 24; // One label every hour for 24h
-                    case 'daily': return 28; // One label every 6 hours for 7 days
-                    case 'weekly': return 12; // One label every week for 3 months
-                    case 'monthly': return 12; // One label per month for a year
-                    default: return 12;
+                  const timescale =
+                    new URLSearchParams(window.location.search).get(
+                      "timescale",
+                    ) || "daily";
+                  switch (timescale) {
+                    case "hourly":
+                      return 24; // One label every hour for 24h
+                    case "daily":
+                      return 28; // One label every 6 hours for 7 days
+                    case "weekly":
+                      return 28; // One label 3 days for 3 months
+                    case "monthly":
+                      return 24; // One label per month for a year
+                    default:
+                      return 12;
                   }
-                })()
-              }
+                })(),
+              },
             },
             y: {
               type: "linear",
@@ -158,12 +174,12 @@
     >
     <button
       class="btn btn-primary btn-sm"
-      on:click={() => changeTimescale("weekly")}>Three Months</button
+      on:click={() => changeTimescale("weekly")}>One Month</button
     >
-    <button
+    <!-- <button
       class="btn btn-primary btn-sm"
       on:click={() => changeTimescale("monthly")}>One Year</button
-    >
+    > -->
     <!-- <button
       class="btn btn-primary btn-sm"
       on:click={() => changeTimescale("yearly")}>Ten Years</button
