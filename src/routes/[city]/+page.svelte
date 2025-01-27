@@ -73,45 +73,60 @@
           <h2 class="card-title text-primary">
             {data.city} Temperature History
           </h2>
-          <div class="join shadow-lg">
+          <div class="join join-vertical sm:join-horizontal shadow-lg rounded-lg">
             <button
-              class="join-item btn btn-sm {selectedTimescale === 'hourly'
+              class="join-item btn {selectedTimescale === 'hourly'
                 ? 'btn-primary'
-                : 'btn-ghost'} hover:btn-primary transition-colors"
+                : 'btn-secondary btn-outline'} transition-all duration-200 ease-in-out"
               on:click={() => handleTimescaleChange("hourly")}
             >
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
+              </svg>
               Hourly
             </button>
             <button
-              class="join-item btn btn-sm {selectedTimescale === 'daily'
+              class="join-item btn {selectedTimescale === 'daily'
                 ? 'btn-primary'
-                : 'btn-ghost'} hover:btn-primary transition-colors"
+                : 'btn-secondary btn-outline'} transition-all duration-200 ease-in-out"
               on:click={() => handleTimescaleChange("daily")}
             >
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"/>
+              </svg>
               Daily
             </button>
             <button
-              class="join-item btn btn-sm {selectedTimescale === 'weekly'
+              class="join-item btn {selectedTimescale === 'weekly'
                 ? 'btn-primary'
-                : 'btn-ghost'} hover:btn-primary transition-colors"
+                : 'btn-secondary btn-outline'} transition-all duration-200 ease-in-out"
               on:click={() => handleTimescaleChange("weekly")}
             >
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"/>
+              </svg>
               Weekly
             </button>
             <button
-              class="join-item btn btn-sm {selectedTimescale === 'monthly'
+              class="join-item btn {selectedTimescale === 'monthly'
                 ? 'btn-primary'
-                : 'btn-ghost'} hover:btn-primary transition-colors"
+                : 'btn-secondary btn-outline'} transition-all duration-200 ease-in-out"
               on:click={() => handleTimescaleChange("monthly")}
             >
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"/>
+              </svg>
               Monthly
             </button>
             <button
-              class="join-item btn btn-sm {selectedTimescale === 'yearly'
+              class="join-item btn {selectedTimescale === 'yearly'
                 ? 'btn-primary'
-                : 'btn-ghost'} hover:btn-primary transition-colors"
+                : 'btn-secondary btn-outline'} transition-all duration-200 ease-in-out"
               on:click={() => handleTimescaleChange("yearly")}
             >
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"/>
+              </svg>
               Yearly
             </button>
           </div>
