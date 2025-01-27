@@ -25,6 +25,9 @@ export async function GET({ params, url }) {
       case 'weekly':
         timeInterval = "date_trunc('week', observation_timestamp)";
         break;
+      case 'hourly':
+        timeInterval = "date_trunc('hour', observation_timestamp)";
+        break;
       default: // daily
         timeInterval = "date_trunc('day', observation_timestamp)";
     }

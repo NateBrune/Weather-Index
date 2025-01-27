@@ -66,6 +66,11 @@
           <h2 class="card-title text-primary">{data.city} Temperature History</h2>
           <div class="join shadow-lg">
             <button 
+              class="join-item btn btn-sm {selectedTimescale === 'hourly' ? 'btn-primary' : 'btn-ghost'} hover:btn-primary transition-colors"
+              on:click={() => handleTimescaleChange('hourly')}>
+              Hourly
+            </button>
+            <button 
               class="join-item btn btn-sm {selectedTimescale === 'daily' ? 'btn-primary' : 'btn-ghost'} hover:btn-primary transition-colors"
               on:click={() => handleTimescaleChange('daily')}>
               Daily
