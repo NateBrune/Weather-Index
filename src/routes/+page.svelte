@@ -41,7 +41,7 @@
             <tr>
               <th class="text-primary">City</th>
               <th class="text-primary">Station Count</th>
-              <th class="text-primary">Average Temperature</th>
+              <th class="text-primary">Median Temperature</th>
             </tr>
           </thead>
           <tbody>
@@ -53,10 +53,10 @@
                 </td>
                 <td>
                   <div class="flex items-center gap-2">
-                    <span class="text-error">{city.avg_temperature}°C</span>
+                    <span class="text-error">{city.median_temperature}°C</span>
                     <progress 
                       class="progress progress-error w-20" 
-                      value={Math.max(0, Math.min(40, parseFloat(city.avg_temperature) + 20 || 0))} 
+                      value={Math.max(0, Math.min(40, parseFloat(city.median_temperature) + 20 || 0))} 
                       max="40"
                     ></progress>
                   </div>
