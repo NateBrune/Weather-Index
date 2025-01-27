@@ -47,7 +47,9 @@
           <tbody>
             {#each data.data as city}
               <tr class="hover">
-                <td class="font-medium">{city.city}</td>
+                <td class="font-medium">
+                  <a href="/{city.city}" class="link link-primary">{city.city}</a>
+                </td>
                 <td class="text-center">
                   <div class="badge badge-info">{city.station_count}</div>
                 </td>
