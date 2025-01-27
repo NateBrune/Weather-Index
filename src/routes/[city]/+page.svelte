@@ -71,13 +71,24 @@
             x: {
               type: "time",
               time: {
-                unit: "hour",
+                unit: "auto",
                 tooltipFormat: "ll HH:mm",
+                displayFormats: {
+                  hour: 'HH:mm',
+                  day: 'MMM D',
+                  week: 'MMM D',
+                  month: 'MMM YYYY'
+                }
               },
               title: {
                 display: true,
                 text: "Time of Observation",
               },
+              ticks: {
+                maxTicksLimit: 8,
+                maxRotation: 0,
+                autoSkip: true
+              }
             },
             y: {
               type: "linear",

@@ -22,27 +22,27 @@ export async function GET({ params, url }) {
     switch (timescale) {
       case "hourly":
         timeInterval = "hour";
-        timeRange = "7 days"; // Fetch data for the last 7 days for hourly granularity
+        timeRange = "24 hours";
         break;
       case "daily":
         timeInterval = "day";
-        timeRange = "1 month"; // Fetch data for the last 1 month for daily granularity
+        timeRange = "7 days";
         break;
       case "weekly":
-        timeInterval = "week";
-        timeRange = "3 months"; // Fetch data for the last 3 months for weekly granularity
+        timeInterval = "day";
+        timeRange = "30 days";
         break;
       case "monthly":
-        timeInterval = "month";
-        timeRange = "1 year"; // Fetch data for the last 1 year for monthly granularity
+        timeInterval = "day";
+        timeRange = "90 days";
         break;
       case "yearly":
-        timeInterval = "year";
-        timeRange = "10 years"; // Fetch data for the last 10 years for yearly granularity
+        timeInterval = "month";
+        timeRange = "365 days";
         break;
       default:
-        timeInterval = "day";
-        timeRange = "1 month";
+        timeInterval = "hour";
+        timeRange = "24 hours";
     }
 
     const query = `
