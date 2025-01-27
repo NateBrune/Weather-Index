@@ -42,7 +42,7 @@
       },
       title: {
         display: true,
-        text: `Temperature History for ${city}`
+        text: `Temperature History for ${data.city}`
       }
     }
   };
@@ -52,7 +52,7 @@
   <div class="max-w-4xl mx-auto">
     <div class="card bg-base-100 shadow-xl">
       <div class="card-body">
-        <h2 class="card-title text-primary">{city} Temperature History</h2>
+        <h2 class="card-title text-primary">{data.city} Temperature History</h2>
         <div class="w-full h-[60vh]">
           <Line data={chartData} options={chartOptions} />
         </div>
