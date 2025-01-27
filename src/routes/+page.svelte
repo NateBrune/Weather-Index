@@ -6,6 +6,8 @@
 <svelte:head>
   <title>City Weather Statistics</title>
   <meta name="description" content="Weather statistics by city" />
+  <link href="https://cdn.jsdelivr.net/npm/daisyui@4.4.19/dist/full.css" rel="stylesheet" type="text/css" />
+  <script src="https://cdn.tailwindcss.com"></script>
 </svelte:head>
 
 <div class="min-h-screen bg-base-200 p-4">
@@ -47,8 +49,3 @@
     </div>
   </div>
 </div>
-
-<svelte:head>
-  <link href="https://cdn.jsdelivr.net/npm/daisyui@4.4.19/dist/full.css" rel="stylesheet" type="text/css" />
-  <script src="https://cdn.tailwindcss.com"></script>
-</svelte:head>
