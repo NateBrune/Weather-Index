@@ -59,7 +59,7 @@ export async function GET({ params, url }) {
         SELECT *
         FROM time_aggregated
         ORDER BY timestamp_interval DESC
-        LIMIT 100
+        LIMIT 10000
       ) subquery
       ORDER BY observation_timestamp ASC;
     `;
