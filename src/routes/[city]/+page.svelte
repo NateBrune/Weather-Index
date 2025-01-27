@@ -23,13 +23,12 @@
   );
   
   export let data;
-  export let city;
   
   $: chartData = {
-    labels: data.map(d => new Date(d.observation_timestamp).toLocaleString()),
+    labels: data.data.map(d => new Date(d.observation_timestamp).toLocaleString()),
     datasets: [{
       label: 'Temperature (°C)',
-      data: data.map(d => d.temperature),
+      data: data.data.map(d => d.temperature),
       borderColor: 'rgb(255, 99, 132)',
       tension: 0.1
     }]
