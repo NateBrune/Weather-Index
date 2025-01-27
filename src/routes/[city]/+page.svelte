@@ -119,24 +119,24 @@
   <div class="mb-6 flex justify-center gap-2">
     <button
       class="btn btn-primary btn-sm"
-      on:click={() => changeTimescale("hourly")}>Hourly</button
+      on:click={() => changeTimescale("hourly")}>One Day</button
     >
     <button
       class="btn btn-primary btn-sm"
-      on:click={() => changeTimescale("daily")}>Daily</button
+      on:click={() => changeTimescale("daily")}>One Week</button
     >
     <button
       class="btn btn-primary btn-sm"
-      on:click={() => changeTimescale("weekly")}>Weekly</button
+      on:click={() => changeTimescale("weekly")}>Three Months</button
     >
     <button
       class="btn btn-primary btn-sm"
-      on:click={() => changeTimescale("monthly")}>Monthly</button
+      on:click={() => changeTimescale("monthly")}>One Year</button
     >
-    <button
+    <!-- <button
       class="btn btn-primary btn-sm"
-      on:click={() => changeTimescale("yearly")}>Yearly</button
-    >
+      on:click={() => changeTimescale("yearly")}>Ten Years</button
+    > -->
   </div>
 
   <div class="mb-6">
