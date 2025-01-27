@@ -5,7 +5,7 @@
   
   onMount(() => {
     const html = document.querySelector('html');
-    html.setAttribute('data-theme', 'light');
+    html.setAttribute('data-theme', 'dark');
   });
   
   function toggleTheme() {
