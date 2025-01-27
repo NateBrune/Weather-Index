@@ -25,9 +25,11 @@
   export let data;
   let selectedTimescale = 'daily';
 
-  function handleTimescaleChange(timescale) {
+  async function handleTimescaleChange(timescale) {
     selectedTimescale = timescale;
-    // TODO: Implement API call with new timescale
+    const response = await fetch(`/api/weather-cities/${data.city}?timescale=${timescale}`);
+    const newData = await response.json();
+    data.data = newData;
   }
   
   $: chartData = {
@@ -62,28 +64,24 @@
       <div class="card-body">
         <div class="flex justify-between items-center mb-4">
           <h2 class="card-title text-primary">{data.city} Temperature History</h2>
-          <div class="join">
+          <div class="join shadow-lg">
             <button 
-              class="join-item btn btn-sm" 
-              class:btn-primary={selectedTimescale === 'daily'}
+              class="join-item btn btn-sm {selectedTimescale === 'daily' ? 'btn-primary' : 'btn-ghost'} hover:btn-primary transition-colors"
               on:click={() => handleTimescaleChange('daily')}>
               Daily
             </button>
             <button 
-              class="join-item btn btn-sm" 
-              class:btn-primary={selectedTimescale === 'weekly'}
+              class="join-item btn btn-sm {selectedTimescale === 'weekly' ? 'btn-primary' : 'btn-ghost'} hover:btn-primary transition-colors"
               on:click={() => handleTimescaleChange('weekly')}>
               Weekly
             </button>
             <button 
-              class="join-item btn btn-sm" 
-              class:btn-primary={selectedTimescale === 'monthly'}
+              class="join-item btn btn-sm {selectedTimescale === 'monthly' ? 'btn-primary' : 'btn-ghost'} hover:btn-primary transition-colors"
               on:click={() => handleTimescaleChange('monthly')}>
               Monthly
             </button>
             <button 
-              class="join-item btn btn-sm" 
-              class:btn-primary={selectedTimescale === 'yearly'}
+              class="join-item btn btn-sm {selectedTimescale === 'yearly' ? 'btn-primary' : 'btn-ghost'} hover:btn-primary transition-colors"
               on:click={() => handleTimescaleChange('yearly')}>
               Yearly
             </button>
