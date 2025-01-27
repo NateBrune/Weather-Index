@@ -1,6 +1,5 @@
 <script>
   import { onMount } from "svelte";
-  import moment from "moment";
   import {
     Chart,
     CategoryScale,
@@ -11,11 +10,9 @@
     Title,
     Tooltip,
     Legend,
-    TimeScale,
-    Filler,
   } from "chart.js";
-  import "chartjs-adapter-moment"; // Import the Moment adapter for Chart.js
-  import { page } from "$app/stores";
+  import { goto } from "$app/navigation";
+  import { page } from "$app/stores"; // Import $page store to access URL parameters
 
   // Register the necessary components, including the LineController
   Chart.register(
@@ -27,34 +24,46 @@
     Title,
     Tooltip,
     Legend,
-    TimeScale, // Register the TimeScale
-    Filler,
   );
 
   // Data passed from the load function
   export let data;
+  // Get the city from the URL
   let city = $page.params.city;
+  // Now you can use the 'city' value in your logic
+  console.log("City from URL:", city);
   let chartContainer;
 
-  // Prepare data for chart
+  // Log the data to see its structure
+  console.log("Weather data:", data);
+
+  // Ensure data is an array before using map
   let timestamps = [];
   let temperatures = [];
 
   if (Array.isArray(data.data)) {
     timestamps = data.data.map((item) =>
-      moment(item.observation_timestamp, "YYYY-MM-DD HH:mm:ss"),
+      new Date(item.observation_timestamp).toLocaleString(),
     );
-
     temperatures = data.data.map((item) => item.temperature);
   } else {
     console.error("Data is not an array:", data);
   }
 
   const changeTimescale = (timescale) => {
+    // Navigate to the same page with the new timescale in the URL
+    // Ensure that the city is passed correctly in the URL
     window.location.href = `/${city}?timescale=${timescale}`;
   };
 
-  // Initialize chart on mount
+  // Function to toggle between light and dark themes
+  function toggleTheme() {
+    const html = document.querySelector("html");
+    const currentTheme = html.getAttribute("data-theme");
+    const newTheme = currentTheme === "light" ? "dark" : "light";
+    html.setAttribute("data-theme", newTheme);
+  }
+
   onMount(() => {
     if (chartContainer) {
       new Chart(chartContainer, {
@@ -67,7 +76,7 @@
               data: temperatures,
               borderColor: "rgb(255, 99, 132)",
               backgroundColor: "rgba(255, 99, 132, 0.2)",
-              fill: {value: -100}, // Fill from the bottom (origin)
+              fill: true,
               tension: 0.1,
             },
           ],
@@ -76,24 +85,20 @@
           responsive: true,
           scales: {
             x: {
-              type: "time", // Use the time scale
-              time: {
-                unit: "hour", // Display hourly data, or "day", "month" depending on the timescale
-                tooltipFormat: "ll HH:mm", // How the tooltip will display the time
-              },
+              type: "category",
               title: {
                 display: true,
-                text: "Time of Observation", // Label for the x-axis
+                text: "Time",
               },
             },
             y: {
               type: "linear",
               title: {
                 display: true,
-                text: "Temperature (°C)", // Label for the y-axis
+                text: "Temperature (°C)",
               },
               ticks: {
-                beginAtZero: false, // Optional: to control if the y-axis should start at zero
+                beginAtZero: false,
               },
             },
           },
@@ -108,12 +113,6 @@
       console.error("Chart container not found.");
     }
   });
-  function toggleTheme() {
-    const html = document.querySelector("html");
-    const currentTheme = html.getAttribute("data-theme");
-    const newTheme = currentTheme === "light" ? "dark" : "light";
-    html.setAttribute("data-theme", newTheme);
-  }
 </script>
 
 <svelte:head>
@@ -125,10 +124,6 @@
     type="text/css"
   />
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Include the chartjs date adapter -->
-  <!-- <script
-    src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@latest"
-  ></script> -->
 </svelte:head>
 
 <main class="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-lg">
