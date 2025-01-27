@@ -71,13 +71,34 @@
             x: {
               type: "time",
               time: {
-                unit: "hour",
+                unit: "auto",
                 tooltipFormat: "ll HH:mm",
+                displayFormats: {
+                  hour: 'HH:mm',
+                  day: 'MMM D',
+                  week: 'MMM D',
+                  month: 'MMM YYYY'
+                }
               },
               title: {
                 display: true,
                 text: "Time of Observation",
               },
+              ticks: {
+                source: 'auto',
+                maxRotation: 0,
+                autoSkip: true,
+                maxTicksLimit: (() => {
+                  const timescale = new URLSearchParams(window.location.search).get('timescale') || 'daily';
+                  switch(timescale) {
+                    case 'hourly': return 24; // One label every hour for 24h
+                    case 'daily': return 28; // One label every 6 hours for 7 days
+                    case 'weekly': return 12; // One label every week for 3 months
+                    case 'monthly': return 12; // One label per month for a year
+                    default: return 12;
+                  }
+                })()
+              }
             },
             y: {
               type: "linear",
