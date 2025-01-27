@@ -1,11 +1,18 @@
 
 <script>
   export let data;
+  import { onMount } from 'svelte';
+  
+  onMount(() => {
+    const html = document.querySelector('html');
+    html.setAttribute('data-theme', 'light');
+  });
   
   function toggleTheme() {
     const html = document.querySelector('html');
-    const currentTheme = html.getAttribute('data-theme') || 'light';
-    html.setAttribute('data-theme', currentTheme === 'light' ? 'dark' : 'light');
+    const currentTheme = html.getAttribute('data-theme');
+    const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+    html.setAttribute('data-theme', newTheme);
   }
 </script>
 
