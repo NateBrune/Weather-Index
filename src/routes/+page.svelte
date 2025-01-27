@@ -24,14 +24,16 @@
         <table class="table table-zebra">
           <thead>
             <tr>
+              <th class="text-primary">Rank</th>
               <th class="text-primary">City</th>
               <th class="text-primary">Station Count</th>
               <th class="text-primary">Median Temperature</th>
             </tr>
           </thead>
           <tbody>
-            {#each data.data as city}
+            {#each data.data as city, i}
               <tr class="hover">
+                <td class="font-semibold">#{i + 1}</td>
                 <td class="font-medium">
                   <a href="/{city.city}" class="link link-primary"
                     >{city.city}</a
