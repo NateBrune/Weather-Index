@@ -28,6 +28,7 @@ export async function GET({ params }) {
       JOIN observations o ON s.station_id = o.station_id
       WHERE g.city = $1
         AND o.temperature IS NOT NULL
+        AND o.temperature BETWEEN -100 AND 100  -- Filter out unrealistic temperatures
         AND o.observation_timestamp IS NOT NULL
         AND s.station_id IN (SELECT station_id FROM valid_stations)
       ORDER BY o.observation_timestamp DESC
