@@ -34,7 +34,7 @@ export async function GET({ params, url }) {
     const query = `
       WITH time_aggregated AS (
         SELECT 
-          ${timeInterval} as timestamp_interval,
+          date_trunc($2::text, o.observation_timestamp) as timestamp_interval,
           PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY o.temperature) as temperature
         FROM stations s
         JOIN geocodes g ON s.latitude = g.latitude AND s.longitude = g.longitude
