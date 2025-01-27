@@ -56,7 +56,7 @@
                     <span class="text-error">{city.avg_temperature}°C</span>
                     <progress 
                       class="progress progress-error w-20" 
-                      value={parseFloat(city.avg_temperature) + 20} 
+                      value={Math.max(0, Math.min(40, parseFloat(city.avg_temperature) + 20 || 0))} 
                       max="40"
                     ></progress>
                   </div>
