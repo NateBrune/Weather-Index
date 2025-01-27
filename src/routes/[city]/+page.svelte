@@ -71,14 +71,24 @@
             x: {
               type: "time",
               time: {
-                unit: "auto",
-                tooltipFormat: "ll HH:mm",
+                unit: (() => {
+                  const timescale = new URLSearchParams(window.location.search).get('timescale') || 'daily';
+                  switch(timescale) {
+                    case 'hourly': return 'hour';
+                    case 'daily': return 'day';
+                    case 'weekly': return 'week';
+                    case 'monthly': return 'month';
+                    default: return 'day';
+                  }
+                })(),
+                tooltipFormat: 'll HH:mm',
                 displayFormats: {
                   hour: 'HH:mm',
                   day: 'MMM D',
                   week: 'MMM D',
                   month: 'MMM YYYY'
-                }
+                },
+                stepSize: 1
               },
               title: {
                 display: true,
