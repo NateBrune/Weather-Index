@@ -1,14 +1,10 @@
 <script>
-  export let data = []; // Initialize data as an empty array
+  export let data;
   import { onMount } from 'svelte';
 
-  onMount(async () => {
+  onMount(() => {
     const html = document.querySelector('html');
     html.setAttribute('data-theme', 'light');
-
-    //Simulate fetching data
-    const response = await fetch('/api/city-weather'); // Replace with your actual API endpoint
-    data = await response.json();
   });
 
   function toggleTheme() {
@@ -49,7 +45,7 @@
             </tr>
           </thead>
           <tbody>
-            {#each data as city}
+            {#each data.data || [] as city}
               <tr class="hover">
                 <td class="font-medium">{city.city}</td>
                 <td class="text-center">
