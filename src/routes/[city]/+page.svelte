@@ -7,23 +7,20 @@
     LineElement,
     PointElement,
     LineController,
-    TimeScale,
     Title,
     Tooltip,
     Legend,
   } from "chart.js";
   import { goto } from "$app/navigation";
   import { page } from "$app/stores"; // Import $page store to access URL parameters
-  import { enUS } from 'date-fns/locale';
 
-  // Register the necessary components, including the LineController and TimeScale
+  // Register the necessary components, including the LineController
   Chart.register(
     CategoryScale,
     LinearScale,
     LineElement,
     PointElement,
     LineController,
-    TimeScale,
     Title,
     Tooltip,
     Legend,
@@ -33,8 +30,6 @@
   export let data;
   // Get the city from the URL
   let city = $page.params.city;
-  // Get the timescale from the URL, defaulting to 'hourly'
-  let timescale = $page.params.timescale || 'hourly';
   // Now you can use the 'city' value in your logic
   console.log("City from URL:", city);
   let chartContainer;
@@ -47,7 +42,9 @@
   let temperatures = [];
 
   if (Array.isArray(data.data)) {
-    timestamps = data.data.map((item) => new Date(item.observation_timestamp));
+    timestamps = data.data.map((item) =>
+      new Date(item.observation_timestamp).toLocaleString(),
+    );
     temperatures = data.data.map((item) => item.temperature);
   } else {
     console.error("Data is not an array:", data);
@@ -72,13 +69,11 @@
       new Chart(chartContainer, {
         type: "line",
         data: {
+          labels: timestamps,
           datasets: [
             {
               label: "Temperature (°C)",
-              data: timestamps.map((timestamp, index) => ({
-                x: timestamp,
-                y: temperatures[index]
-              })),
+              data: temperatures,
               borderColor: "rgb(255, 99, 132)",
               backgroundColor: "rgba(255, 99, 132, 0.2)",
               fill: true,
@@ -88,22 +83,9 @@
         },
         options: {
           responsive: true,
-          maintainAspectRatio: false,
           scales: {
             x: {
-              type: 'time',
-              time: {
-                unit: timescale === 'hourly' ? 'hour' : 'day',
-                displayFormats: {
-                  hour: 'MMM d, HH:mm',
-                  day: 'MMM d'
-                }
-              },
-              adapters: {
-                date: {
-                  locale: enUS
-                }
-              },
+              type: "category",
               title: {
                 display: true,
                 text: "Time",
@@ -139,7 +121,7 @@
   <link
     href="https://cdn.jsdelivr.net/npm/daisyui@4.4.19/dist/full.css"
     rel="stylesheet"
-    type: "text/css"
+    type="text/css"
   />
   <script src="https://cdn.tailwindcss.com"></script>
 </svelte:head>
