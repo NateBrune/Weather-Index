@@ -60,7 +60,7 @@
               data: temperatures,
               borderColor: "rgb(255, 99, 132)",
               backgroundColor: "rgba(255, 99, 132, 0.2)",
-              fill: {value: -100},
+              fill: { value: -100 },
               tension: 0.1,
             },
           ],
@@ -101,17 +101,42 @@
   });
 </script>
 
+<svelte:head>
+  <title>City Weather Statistics</title>
+  <meta name="description" content="Weather statistics by city" />
+  <link
+    href="https://cdn.jsdelivr.net/npm/daisyui@4.4.19/dist/full.css"
+    rel="stylesheet"
+    type="text/css"
+  />
+  <script src="https://cdn.tailwindcss.com"></script>
+</svelte:head>
 <main class="max-w-4xl mx-auto p-6 bg-base-200 rounded-lg shadow-lg">
   <h1 class="text-3xl font-semibold text-center mb-6">
     Weather Data for {city}
   </h1>
 
   <div class="mb-6 flex justify-center gap-2">
-    <button class="btn btn-primary btn-sm" on:click={() => changeTimescale("hourly")}>Hourly</button>
-    <button class="btn btn-primary btn-sm" on:click={() => changeTimescale("daily")}>Daily</button>
-    <button class="btn btn-primary btn-sm" on:click={() => changeTimescale("weekly")}>Weekly</button>
-    <button class="btn btn-primary btn-sm" on:click={() => changeTimescale("monthly")}>Monthly</button>
-    <button class="btn btn-primary btn-sm" on:click={() => changeTimescale("yearly")}>Yearly</button>
+    <button
+      class="btn btn-primary btn-sm"
+      on:click={() => changeTimescale("hourly")}>Hourly</button
+    >
+    <button
+      class="btn btn-primary btn-sm"
+      on:click={() => changeTimescale("daily")}>Daily</button
+    >
+    <button
+      class="btn btn-primary btn-sm"
+      on:click={() => changeTimescale("weekly")}>Weekly</button
+    >
+    <button
+      class="btn btn-primary btn-sm"
+      on:click={() => changeTimescale("monthly")}>Monthly</button
+    >
+    <button
+      class="btn btn-primary btn-sm"
+      on:click={() => changeTimescale("yearly")}>Yearly</button
+    >
   </div>
 
   <div class="mb-6">
