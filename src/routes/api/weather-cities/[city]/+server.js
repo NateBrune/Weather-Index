@@ -44,7 +44,7 @@ export async function GET({ params, url }) {
           AND o.temperature BETWEEN -100 AND 100
           AND o.observation_timestamp >= NOW() - (
             CASE 
-              WHEN $2 = 'hourly' THEN INTERVAL '1 day'
+              WHEN $2 = 'hourly' THEN INTERVAL '24 hours'
               WHEN $2 = 'daily' THEN INTERVAL '1 month'
               WHEN $2 = 'weekly' THEN INTERVAL '3 months'
               WHEN $2 = 'monthly' THEN INTERVAL '1 year'
