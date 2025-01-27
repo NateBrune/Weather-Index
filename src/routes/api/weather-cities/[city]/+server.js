@@ -55,9 +55,13 @@ export async function GET({ params, url }) {
         GROUP BY timestamp_interval
       )
       SELECT temperature, timestamp_interval as observation_timestamp
-      FROM time_aggregated
-      ORDER BY timestamp_interval DESC
-      LIMIT 100;
+      FROM (
+        SELECT *
+        FROM time_aggregated
+        ORDER BY timestamp_interval DESC
+        LIMIT 100
+      ) subquery
+      ORDER BY observation_timestamp ASC;
     `;
     
     const result = await client.query(query, [params.city]);
