@@ -19,7 +19,9 @@
 	"dependencies": {
 		"autoprefixer": "^10.4.20",
 		"chart.js": "^4.4.7",
+		"chartjs-adapter-date-fns": "^3.0.0",
 		"daisyui": "^4.12.23",
+		"date-fns": "^4.1.0",
 		"pg": "^8.13.1",
 		"postcss": "^8.5.1",
 		"svelte-chartjs": "^3.1.5",

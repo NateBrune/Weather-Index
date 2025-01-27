@@ -5,75 +5,82 @@ const { Pool } = pg;
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: process.env.NODE_ENV === "production" ? { rejectUnauthorized: false } : false
+  ssl:
+    process.env.NODE_ENV === "production"
+      ? { rejectUnauthorized: false }
+      : false,
 });
 
 export async function GET({ params, url }) {
   try {
     const client = await pool.connect();
-    const timescale = url.searchParams.get('timescale') || 'daily';
+    const timescale = url.searchParams.get("timescale") || "daily";
 
+    // Define the time interval and range based on the selected timescale
     let timeInterval;
-    switch(timescale) {
-      case 'yearly':
-        timeInterval = "date_trunc('year', observation_timestamp)";
+    let timeRange;
+    switch (timescale) {
+      case "hourly":
+        timeInterval = "hour";
+        timeRange = "7 days"; // Fetch data for the last 7 days for hourly granularity
         break;
-      case 'monthly':
-        timeInterval = "date_trunc('month', observation_timestamp)";
+      case "daily":
+        timeInterval = "day";
+        timeRange = "1 month"; // Fetch data for the last 1 month for daily granularity
         break;
-      case 'weekly':
-        timeInterval = "date_trunc('week', observation_timestamp)";
+      case "weekly":
+        timeInterval = "week";
+        timeRange = "3 months"; // Fetch data for the last 3 months for weekly granularity
         break;
-      case 'hourly':
-        timeInterval = "date_trunc('hour', observation_timestamp)";
+      case "monthly":
+        timeInterval = "month";
+        timeRange = "1 year"; // Fetch data for the last 1 year for monthly granularity
         break;
-      default: // daily
-        timeInterval = "date_trunc('day', observation_timestamp)";
+      case "yearly":
+        timeInterval = "year";
+        timeRange = "10 years"; // Fetch data for the last 10 years for yearly granularity
+        break;
+      default:
+        timeInterval = "day";
+        timeRange = "1 month";
     }
 
     const query = `
       WITH time_aggregated AS (
         SELECT 
-          date_trunc(
-            CASE $2 
-              WHEN 'hourly' THEN 'hour'
-              WHEN 'daily' THEN 'day'
-              WHEN 'weekly' THEN 'week'
-              WHEN 'monthly' THEN 'month'
-              WHEN 'yearly' THEN 'year'
-              ELSE 'day'
-            END,
-            o.observation_timestamp
-          ) as timestamp_interval,
-          PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY o.temperature) as temperature
+          date_trunc('${timeInterval}', o.observation_timestamp) as timestamp_interval,
+          PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY o.temperature) as temperature,
+          PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY o.humidity) as humidity,
+          PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY o.wind_speed) as wind_speed,
+          PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY o.pressure) as pressure
         FROM stations s
         JOIN geocodes g ON s.latitude = g.latitude AND s.longitude = g.longitude
         JOIN observations o ON s.station_id = o.station_id
         WHERE g.city = $1
-          AND o.temperature IS NOT NULL
-          AND o.temperature BETWEEN -100 AND 100
-          AND o.observation_timestamp >= NOW() - (
-            CASE 
-              WHEN $2 = 'hourly' THEN INTERVAL '24 hours'
-              WHEN $2 = 'daily' THEN INTERVAL '1 month'
-              WHEN $2 = 'weekly' THEN INTERVAL '3 months'
-              WHEN $2 = 'monthly' THEN INTERVAL '1 year'
-              ELSE INTERVAL '1 month'
-            END)
+          AND o.observation_timestamp >= NOW() - INTERVAL '${timeRange}'
         GROUP BY timestamp_interval
-      )
-      SELECT temperature, timestamp_interval as observation_timestamp
-      FROM (
-        SELECT *
-        FROM time_aggregated
         ORDER BY timestamp_interval DESC
-        LIMIT 10000
-      ) subquery
+      )
+      SELECT 
+        temperature,
+        humidity,
+        wind_speed,
+        pressure,
+        timestamp_interval as observation_timestamp
+      FROM time_aggregated
       ORDER BY observation_timestamp ASC;
     `;
 
-    const result = await client.query(query, [params.city, timescale]);
+    const result = await client.query(query, [params.city]);
     client.release();
+
+    if (result.rows.length === 0) {
+      return json(
+        { error: `No data available for ${timescale} timescale.` },
+        { status: 404 },
+      );
+    }
+
     return json(result.rows);
   } catch (err) {
     console.error("Database query failed:", err);
