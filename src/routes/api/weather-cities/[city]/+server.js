@@ -1,4 +1,3 @@
-
 import { json } from "@sveltejs/kit";
 import pg from "pg";
 
@@ -13,7 +12,7 @@ export async function GET({ params, url }) {
   try {
     const client = await pool.connect();
     const timescale = url.searchParams.get('timescale') || 'daily';
-    
+
     let timeInterval;
     switch(timescale) {
       case 'yearly':
@@ -43,7 +42,14 @@ export async function GET({ params, url }) {
         WHERE g.city = $1
           AND o.temperature IS NOT NULL
           AND o.temperature BETWEEN -100 AND 100
-          AND o.observation_timestamp >= NOW() - INTERVAL '30 days'
+          AND o.observation_timestamp >= NOW() - INTERVAL '1 ' || 
+            CASE 
+              WHEN $2 = 'hourly' THEN 'day'
+              WHEN $2 = 'daily' THEN 'month'
+              WHEN $2 = 'weekly' THEN '3 months'
+              WHEN $2 = 'monthly' THEN 'year'
+              ELSE 'month'
+            END
         GROUP BY timestamp_interval
       )
       SELECT temperature, timestamp_interval as observation_timestamp
@@ -55,8 +61,8 @@ export async function GET({ params, url }) {
       ) subquery
       ORDER BY observation_timestamp ASC;
     `;
-    
-    const result = await client.query(query, [params.city]);
+
+    const result = await client.query(query, [params.city, timescale]);
     client.release();
     return json(result.rows);
   } catch (err) {
