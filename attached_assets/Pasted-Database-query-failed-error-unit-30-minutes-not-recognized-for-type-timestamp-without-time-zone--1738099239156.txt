@@ -1,0 +1,79 @@
+Database query failed: error: unit "30 minutes" not recognized for type timestamp without time zone
+    at /home/runner/workspace/node_modules/pg/lib/client.js:535:17
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async GET (/home/runner/workspace/src/routes/api/weather-cities/stats/stations/+server.js:58:20)
+    at async Module.render_endpoint (/home/runner/workspace/node_modules/@sveltejs/kit/src/runtime/server/endpoint.js:49:18)
+    at async resolve (/home/runner/workspace/node_modules/@sveltejs/kit/src/runtime/server/respond.js:412:17)
+    at async Module.respond (/home/runner/workspace/node_modules/@sveltejs/kit/src/runtime/server/respond.js:282:20)
+    at async file:///home/runner/workspace/node_modules/@sveltejs/kit/src/exports/vite/dev/index.js:510:22 {
+  length: 133,
+  severity: 'ERROR',
+  code: '22023',
+  detail: undefined,
+  hint: undefined,
+  position: undefined,
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: undefined,
+  table: undefined,
+  column: undefined,
+  dataType: undefined,
+  constraint: undefined,
+  file: 'timestamp.c',
+  line: '4738',
+  routine: 'timestamp_trunc'
+}
+Database query failed: error: unit "30 minutes" not recognized for type timestamp without time zone
+    at /home/runner/workspace/node_modules/pg/lib/client.js:535:17
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async GET (/home/runner/workspace/src/routes/api/weather-cities/stats/stations/+server.js:58:20)
+    at async Module.render_endpoint (/home/runner/workspace/node_modules/@sveltejs/kit/src/runtime/server/endpoint.js:49:18)
+    at async resolve (/home/runner/workspace/node_modules/@sveltejs/kit/src/runtime/server/respond.js:412:17)
+    at async Module.respond (/home/runner/workspace/node_modules/@sveltejs/kit/src/runtime/server/respond.js:282:20)
+    at async file:///home/runner/workspace/node_modules/@sveltejs/kit/src/exports/vite/dev/index.js:510:22 {
+  length: 133,
+  severity: 'ERROR',
+  code: '22023',
+  detail: undefined,
+  hint: undefined,
+  position: undefined,
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: undefined,
+  table: undefined,
+  column: undefined,
+  dataType: undefined,
+  constraint: undefined,
+  file: 'timestamp.c',
+  line: '4738',
+  routine: 'timestamp_trunc'
+}
+Database query failed: error: unit "1 hour" not recognized for type timestamp without time zone
+    at /home/runner/workspace/node_modules/pg/lib/client.js:535:17
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async GET (/home/runner/workspace/src/routes/api/weather-cities/stats/stations/+server.js:58:20)
+    at async Module.render_endpoint (/home/runner/workspace/node_modules/@sveltejs/kit/src/runtime/server/endpoint.js:49:18)
+    at async resolve (/home/runner/workspace/node_modules/@sveltejs/kit/src/runtime/server/respond.js:412:17)
+    at async Module.respond (/home/runner/workspace/node_modules/@sveltejs/kit/src/runtime/server/respond.js:282:20)
+    at async file:///home/runner/workspace/node_modules/@sveltejs/kit/src/exports/vite/dev/index.js:510:22 {
+  length: 129,
+  severity: 'ERROR',
+  code: '22023',
+  detail: undefined,
+  hint: undefined,
+  position: undefined,
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: undefined,
+  table: undefined,
+  column: undefined,
+  dataType: undefined,
+  constraint: undefined,
+  file: 'timestamp.c',
+  line: '4738',
+  routine: 'timestamp_trunc'
+}
+Database query failed: error: unit "4 hours" not recognized for type timestamp without time zone
