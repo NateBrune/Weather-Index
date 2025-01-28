@@ -31,58 +31,20 @@ export async function GET() {
           AND o.temperature BETWEEN -50 AND 50
         GROUP BY hour
         ORDER BY hour ASC
-      ),
-      current_temp AS (
-        SELECT 
-          curr.temp as current_temp,
-          curr.temp - hour_ago.temp as temp_change_1h,
-          curr.temp - day_ago.temp as temp_change_24h,
-          curr.temp - week_ago.temp as temp_change_7d
-        FROM (
-          SELECT PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY temperature) as temp
-          FROM observations o
-          WHERE o.observation_timestamp >= NOW() - INTERVAL '1 hour'
-            AND o.data_quality_score >= 0.8
-            AND o.temperature BETWEEN -50 AND 50
-        ) curr
-        CROSS JOIN (
-          SELECT PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY temperature) as temp
-          FROM observations o
-          WHERE o.observation_timestamp BETWEEN NOW() - INTERVAL '2 hour' AND NOW() - INTERVAL '1 hour'
-            AND o.data_quality_score >= 0.8
-            AND o.temperature BETWEEN -50 AND 50
-        ) hour_ago
-        CROSS JOIN (
-          SELECT PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY temperature) as temp
-          FROM observations o
-          WHERE o.observation_timestamp BETWEEN NOW() - INTERVAL '25 hour' AND NOW() - INTERVAL '24 hour'
-            AND o.data_quality_score >= 0.8
-            AND o.temperature BETWEEN -50 AND 50
-        ) day_ago
-        CROSS JOIN (
-          SELECT PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY temperature) as temp
-          FROM observations o
-          WHERE o.observation_timestamp BETWEEN NOW() - INTERVAL '8 day' AND NOW() - INTERVAL '7 day'
-            AND o.data_quality_score >= 0.8
-            AND o.temperature BETWEEN -50 AND 50
-        ) week_ago
-        ORDER BY date_trunc('hour', observation_timestamp) DESC
-        LIMIT 1
       )
       SELECT 
         qs.total_stations as station_count,
         qs.high_quality_stations,
         qs.avg_quality_percentage,
-        ct.current_temp as median_temperature,
-        ct.temp_change_24h,
-        (SELECT json_agg(json_build_object(
-          'temperature', temperature,
-          'timestamp', hour
-        ) ORDER BY hour)
-        FROM hourly_temps) as sparkline_data
+        ROUND(CAST((SELECT temperature FROM hourly_temps ORDER BY hour DESC LIMIT 1) AS DECIMAL(5,2)), 2) as median_temperature,
+        (
+          SELECT json_agg(json_build_object(
+            'temperature', temperature,
+            'timestamp', hour
+          ) ORDER BY hour)
+          FROM hourly_temps
+        ) as sparkline_data
       FROM quality_stats qs
-      CROSS JOIN current_temp ct
-      GROUP BY qs.total_stations, qs.high_quality_stations, qs.avg_quality_percentage, ct.current_temp, ct.temp_change_24h
       LIMIT 1;
     `;
 
