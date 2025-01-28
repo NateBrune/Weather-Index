@@ -1,6 +1,6 @@
 <script>
   export let data;
-  import { temperatureUnit } from '$lib/stores';
+  import { temperatureUnit } from "$lib/stores";
   import { goto } from "$app/navigation";
 
   const tabs = [
@@ -17,19 +17,27 @@
     goto(`?groupBy=${tabId}`);
   }
 
-  $: filteredData = data.data.filter(item => 
-    item.location_name.toLowerCase().includes(searchQuery.toLowerCase())
-  ).sort((a, b) => {
-    const modifier = sortOrder === "desc" ? -1 : 1;
-    if (sortBy === "temperature") {
-      const tempA = $temperatureUnit === 'C' ? a.median_temperature : (a.median_temperature * 9/5 + 32);
-      const tempB = $temperatureUnit === 'C' ? b.median_temperature : (b.median_temperature * 9/5 + 32);
-      return (tempA - tempB) * modifier;
-    } else if (sortBy === "wind_speed") {
-      return (a.median_wind_speed - b.median_wind_speed) * modifier;
-    }
-    return (a[sortBy] - b[sortBy]) * modifier;
-  });
+  $: filteredData = data.data
+    .filter((item) =>
+      item.location_name.toLowerCase().includes(searchQuery.toLowerCase()),
+    )
+    .sort((a, b) => {
+      const modifier = sortOrder === "desc" ? -1 : 1;
+      if (sortBy === "temperature") {
+        const tempA =
+          $temperatureUnit === "C"
+            ? a.median_temperature
+            : (a.median_temperature * 9) / 5 + 32;
+        const tempB =
+          $temperatureUnit === "C"
+            ? b.median_temperature
+            : (b.median_temperature * 9) / 5 + 32;
+        return (tempA - tempB) * modifier;
+      } else if (sortBy === "wind_speed") {
+        return (a.median_wind_speed - b.median_wind_speed) * modifier;
+      }
+      return (a[sortBy] - b[sortBy]) * modifier;
+    });
 
   function toggleSort(field) {
     if (sortBy === field) {
@@ -80,22 +88,31 @@
                     ? "State"
                     : "Country"}
               </th>
-              <th class="text-primary cursor-pointer" on:click={() => toggleSort('station_count')}>
+              <th
+                class="text-primary cursor-pointer"
+                on:click={() => toggleSort("station_count")}
+              >
                 Station Count
-                {#if sortBy === 'station_count'}
-                  <span>{sortOrder === 'desc' ? '↓' : '↑'}</span>
+                {#if sortBy === "station_count"}
+                  <span>{sortOrder === "desc" ? "↓" : "↑"}</span>
                 {/if}
               </th>
-              <th class="text-primary cursor-pointer" on:click={() => toggleSort('temperature')}>
-                Median Temperature
-                {#if sortBy === 'temperature'}
-                  <span>{sortOrder === 'desc' ? '↓' : '↑'}</span>
-                {/if}
-              </th>
-              <th class="text-primary cursor-pointer" on:click={() => toggleSort('wind_speed')}>
+              <th
+                class="text-primary cursor-pointer"
+                on:click={() => toggleSort("wind_speed")}
+              >
                 Wind Speed
-                {#if sortBy === 'wind_speed'}
-                  <span>{sortOrder === 'desc' ? '↓' : '↑'}</span>
+                {#if sortBy === "wind_speed"}
+                  <span>{sortOrder === "desc" ? "↓" : "↑"}</span>
+                {/if}
+              </th>
+              <th
+                class="text-primary cursor-pointer"
+                on:click={() => toggleSort("temperature")}
+              >
+                Median Temperature
+                {#if sortBy === "temperature"}
+                  <span>{sortOrder === "desc" ? "↓" : "↑"}</span>
                 {/if}
               </th>
               <th class="text-primary">Weather</th>
@@ -119,10 +136,17 @@
                 </td>
                 <td>
                   <div class="flex items-center gap-2">
+                    <span>{(item.median_wind_speed || 0).toFixed(1)} m/s</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="flex items-center gap-2">
                     <span class="text-error">
-                      {$temperatureUnit === 'C' ? 
-                        item.median_temperature : 
-                        (item.median_temperature * 9/5 + 32).toFixed(1)}°{$temperatureUnit}
+                      {$temperatureUnit === "C"
+                        ? item.median_temperature
+                        : ((item.median_temperature * 9) / 5 + 32).toFixed(
+                            1,
+                          )}°{$temperatureUnit}
                     </span>
                     <progress
                       class="progress progress-error w-20"
@@ -134,16 +158,6 @@
                         ),
                       )}
                       max="40"
-                    ></progress>
-                  </div>
-                </td>
-                <td>
-                  <div class="flex items-center gap-2">
-                    <span>{(item.median_wind_speed || 0).toFixed(1)} m/s</span>
-                    <progress
-                      class="progress progress-info w-20"
-                      value={Math.min(item.median_wind_speed, 20)}
-                      max="20"
                     ></progress>
                   </div>
                 </td>
