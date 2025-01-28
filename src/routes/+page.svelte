@@ -155,16 +155,20 @@
                           )}°{$temperatureUnit}
                     </span>
                     {#if item.sparkline_data}
-                      <svg class="w-20 h-8">
+                      <svg class="w-20 h-8" viewBox="0 0 80 32" preserveAspectRatio="none">
                         {#if item.sparkline_data.length > 1}
+                          {@const temperatures = item.sparkline_data.map(d => d.temperature)}
+                          {@const min = Math.min(...temperatures)}
+                          {@const max = Math.max(...temperatures)}
+                          {@const range = max - min}
                           {@const points = item.sparkline_data.map((d, i) => 
-                            `${(i * 80) / (item.sparkline_data.length - 1)},${32 - (d.temperature * 32) / 40}`
+                            `${(i * 80) / (item.sparkline_data.length - 1)},${32 - ((d.temperature - min) * 32) / (range || 1)}`
                           ).join(' ')}
                           <polyline
                             points={points}
                             fill="none"
                             stroke="currentColor"
-                            stroke-width="1"
+                            stroke-width="1.5"
                             class="text-error"
                           />
                         {/if}
