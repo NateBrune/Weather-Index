@@ -60,7 +60,13 @@ export async function GET({ url }) {
         MAX(h.temperature) - LAG(MAX(h.temperature), 24) OVER (PARTITION BY h.location_name ORDER BY MAX(h.hour)) AS temp_change_24h,
         MAX(h.temperature) - LAG(MAX(h.temperature), 168) OVER (PARTITION BY h.location_name ORDER BY MAX(h.hour)) AS temp_change_7d
       FROM (${hourlyStatsQuery}) h
-      JOIN stations s ON s.city = h.location_name
+      LEFT JOIN stations s ON (
+        CASE 
+          WHEN $1 = 'city' THEN s.city = h.location_name
+          WHEN $1 = 'state' THEN s.state = h.location_name
+          ELSE s.country = h.location_name
+        END
+      )
       GROUP BY h.location_name
     `;
 
