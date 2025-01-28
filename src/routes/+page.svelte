@@ -57,8 +57,9 @@
   }
 
   function formatTemperature(temp, unit) {
-    if (temp == null) return "N/A";
-    return unit === "C" ? temp.toFixed(1) : ((temp * 9) / 5).toFixed(1);
+    if (temp == null || isNaN(temp)) return "N/A";
+    const numTemp = Number(temp);
+    return unit === "C" ? numTemp.toFixed(1) : ((numTemp * 9) / 5).toFixed(1);
   }
 </script>
 
