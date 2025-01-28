@@ -133,15 +133,17 @@
                 {@const points = historicalData
                   .map((d, i) => `${(i * 120) / (historicalData.length - 1)},${48 - ((d.count - min) * 48) / range}`)
                   .join(" ")}
-                <svg class="w-24 h-12" viewBox="0 0 120 48" preserveAspectRatio="none">
-                  <polyline
-                    points={points}
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    class="text-primary"
-                  />
-                </svg>
+                <a href="/stations" class="hover:opacity-80 transition-opacity">
+                  <svg class="w-24 h-12" viewBox="0 0 120 48" preserveAspectRatio="none">
+                    <polyline
+                      points={points}
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      class="text-primary"
+                    />
+                  </svg>
+                </a>
               {/if}
             </div>
           </div>
