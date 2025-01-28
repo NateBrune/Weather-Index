@@ -88,13 +88,15 @@
         return currentDiff < closestDiff ? index : closest;
       }, 0);
       const change = lastTemp - sparklineData[hourAgoIndex].temperature;
-      const sign = change > 0 ? '+' : '';
-      return `${sign}${change.toFixed(1)}°`;
+      const convertedChange = $temperatureUnit === "C" ? change : (change * 9) / 5;
+      const sign = convertedChange > 0 ? '+' : '';
+      return `${sign}${convertedChange.toFixed(1)}°${$temperatureUnit}`;
     } else {
       // For 24 hour change, use the oldest available data point
       const change = lastTemp - sparklineData[0].temperature;
-      const sign = change > 0 ? '+' : '';
-      return `${sign}${change.toFixed(1)}°`;
+      const convertedChange = $temperatureUnit === "C" ? change : (change * 9) / 5;
+      const sign = convertedChange > 0 ? '+' : '';
+      return `${sign}${convertedChange.toFixed(1)}°${$temperatureUnit}`;
     }
   }
 </script>
