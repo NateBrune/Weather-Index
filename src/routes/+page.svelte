@@ -73,11 +73,13 @@
     return unit === "C" ? numTemp.toFixed(1) : ((numTemp * 9) / 5).toFixed(1);
   }
 
-  function formatTempChange(change) {
-    if (change === null || change === undefined || isNaN(change)) return 'N/A';
-    const value = Number(change);
-    const sign = value > 0 ? '+' : '';
-    return `${sign}${value.toFixed(1)}°`;
+  function calculateTempChange(sparklineData, hours = 24) {
+    if (!sparklineData || sparklineData.length < 2) return 'N/A';
+    const lastTemp = sparklineData[sparklineData.length - 1].temperature;
+    const compareTemp = sparklineData[Math.max(0, sparklineData.length - hours)].temperature;
+    const change = lastTemp - compareTemp;
+    const sign = change > 0 ? '+' : '';
+    return `${sign}${change.toFixed(1)}°`;
   }
 </script>
 
@@ -320,13 +322,15 @@
                   </div>
                 </td>
                 <td>
-                  <span class="font-medium {item.temp_change_1h > 0 ? 'text-error' : item.temp_change_1h < 0 ? 'text-info' : 'text-base-content'}">
-                    {formatTempChange(item.temp_change_1h)}
+                  {@const oneHourChange = calculateTempChange(item.sparkline_data, 1)}
+                  <span class="font-medium {oneHourChange !== 'N/A' && parseFloat(oneHourChange) > 0 ? 'text-error' : oneHourChange !== 'N/A' && parseFloat(oneHourChange) < 0 ? 'text-info' : 'text-base-content'}">
+                    {oneHourChange}
                   </span>
                 </td>
                 <td>
-                  <span class="font-medium {item.temp_change_24h > 0 ? 'text-error' : item.temp_change_24h < 0 ? 'text-info' : 'text-base-content'}">
-                    {formatTempChange(item.temp_change_24h)}
+                  {@const dayChange = calculateTempChange(item.sparkline_data, 24)}
+                  <span class="font-medium {dayChange !== 'N/A' && parseFloat(dayChange) > 0 ? 'text-error' : dayChange !== 'N/A' && parseFloat(dayChange) < 0 ? 'text-info' : 'text-base-content'}">
+                    {dayChange}
                   </span>
                 </td>
                 <td>

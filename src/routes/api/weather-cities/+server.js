@@ -129,10 +129,7 @@ export async function GET({ url }) {
         ROUND(l.median_temperature::numeric, 2) as median_temperature,
         COALESCE(ROUND(l.median_wind_speed::numeric, 2), 0)::float as median_wind_speed,
         w.weather_icon,
-        s.hourly_data as sparkline_data,
-        ROUND(l.temp_change_1h::numeric, 2) as temp_change_1h,
-        ROUND(l.temp_change_24h::numeric, 2) as temp_change_24h,
-        ROUND(l.temp_change_7d::numeric, 2) as temp_change_7d
+        s.hourly_data as sparkline_data
       FROM (${locationStatsQuery}) l
       LEFT JOIN (${weatherIconsQuery}) w ON l.location_name = w.location_name
       LEFT JOIN (${sparklineDataQuery}) s ON l.location_name = s.location_name
