@@ -139,7 +139,7 @@
                 </td>
                 <td>
                   <div class="flex items-center gap-2">
-                    <span>{item.median_wind_speed.toFixed(1)} m/s</span>
+                    <span>{(item.median_wind_speed || 0).toFixed(1)} m/s</span>
                     <progress
                       class="progress progress-info w-20"
                       value={Math.min(item.median_wind_speed, 20)}
