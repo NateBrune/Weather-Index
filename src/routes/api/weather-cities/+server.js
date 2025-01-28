@@ -1,4 +1,3 @@
-
 import { json } from "@sveltejs/kit";
 import pg from "pg";
 
@@ -24,10 +23,10 @@ export async function GET({ url }) {
             WHEN $1 = 'city' THEN g.city
             WHEN $1 = 'state' THEN COALESCE(g.state, 'Unknown')
             ELSE COALESCE(g.country, 'Unknown')
-          END as location_name,
-          date_trunc('hour', o.observation_timestamp) as hour,
-          PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY o.temperature) as temperature,
-          PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY o.wind_speed) as wind_speed
+          END AS location_name,
+          date_trunc('hour', o.observation_timestamp) AS hour,
+          PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY o.temperature) AS temperature,
+          PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY o.wind_speed) AS wind_speed
         FROM stations s
         JOIN geocodes g ON s.latitude = g.latitude AND s.longitude = g.longitude
         JOIN observations o ON s.station_id = o.station_id
@@ -39,7 +38,6 @@ export async function GET({ url }) {
               ELSE g.country
             END
           ) IS NOT NULL
-          AND g.city != 'Unknown'
           AND o.data_quality_score >= 0.8
           AND o.temperature BETWEEN -50 AND 50
         GROUP BY 
@@ -54,18 +52,16 @@ export async function GET({ url }) {
         SELECT 
           h.location_name,
           COUNT(DISTINCT s.station_id) AS station_count,
-          FIRST_VALUE(h.temperature) OVER (PARTITION BY h.location_name ORDER BY h.hour DESC) as median_temperature,
-          FIRST_VALUE(h.wind_speed) OVER (PARTITION BY h.location_name ORDER BY h.hour DESC) as median_wind_speed,
+          FIRST_VALUE(h.temperature) OVER (PARTITION BY h.location_name ORDER BY h.hour DESC) AS median_temperature,
+          FIRST_VALUE(h.wind_speed) OVER (PARTITION BY h.location_name ORDER BY h.hour DESC) AS median_wind_speed,
           FIRST_VALUE(h.temperature) OVER (PARTITION BY h.location_name ORDER BY h.hour DESC) - 
-            LAG(h.temperature, 1) OVER (PARTITION BY h.location_name ORDER BY h.hour) as temp_change_1h,
+            LAG(h.temperature, 1) OVER (PARTITION BY h.location_name ORDER BY h.hour) AS temp_change_1h,
           FIRST_VALUE(h.temperature) OVER (PARTITION BY h.location_name ORDER BY h.hour DESC) - 
-            LAG(h.temperature, 24) OVER (PARTITION BY h.location_name ORDER BY h.hour) as temp_change_24h,
+            LAG(h.temperature, 24) OVER (PARTITION BY h.location_name ORDER BY h.hour) AS temp_change_24h,
           FIRST_VALUE(h.temperature) OVER (PARTITION BY h.location_name ORDER BY h.hour DESC) - 
-            LAG(h.temperature, 168) OVER (PARTITION BY h.location_name ORDER BY h.hour) as temp_change_7d
+            LAG(h.temperature, 168) OVER (PARTITION BY h.location_name ORDER BY h.hour) AS temp_change_7d
         FROM hourly_stats h
-        JOIN stations s
-        JOIN geocodes g ON s.latitude = g.latitude AND s.longitude = g.longitude
-        GROUP BY h.location_name, h.temperature, h.wind_speed, h.hour
+        JOIN stations s ON s.city = h.location_name
       ),
       weather_icons AS (
         SELECT 
