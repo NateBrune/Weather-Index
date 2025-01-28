@@ -50,7 +50,7 @@ export async function GET({ url }) {
       ),
       location_stats AS (
         SELECT 
-          location_name,
+          h.location_name,
           COUNT(DISTINCT s.station_id) AS station_count,
           FIRST_VALUE(h.temperature) OVER (PARTITION BY h.location_name ORDER BY h.hour DESC) as median_temperature,
           FIRST_VALUE(h.wind_speed) OVER (PARTITION BY h.location_name ORDER BY h.hour DESC) as median_wind_speed,
@@ -62,7 +62,8 @@ export async function GET({ url }) {
             LAG(h.temperature, 168) OVER (PARTITION BY h.location_name ORDER BY h.hour) as temp_change_7d,
           mode() WITHIN GROUP (ORDER BY o.weather_icon) as weather_icon
         FROM hourly_stats h
-        JOIN stations s ON s.latitude = g.latitude AND s.longitude = g.longitude
+        JOIN stations s
+          JOIN geocodes g ON s.latitude = g.latitude AND s.longitude = g.longitude
         JOIN observations o ON s.station_id = o.station_id AND date_trunc('hour', o.observation_timestamp) = h.hour
         GROUP BY h.location_name
         HAVING COUNT(DISTINCT s.station_id) > 0
