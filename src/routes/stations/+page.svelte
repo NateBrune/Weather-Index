@@ -1,9 +1,40 @@
+
 <script>
-  import { onMount } from "svelte";
+  import { onMount, onDestroy } from "svelte";
+  import moment from "moment";
+  import {
+    Chart,
+    CategoryScale,
+    LinearScale,
+    LineElement,
+    PointElement,
+    LineController,
+    Title,
+    Tooltip,
+    Legend,
+    TimeScale,
+    Filler,
+  } from "chart.js";
+  import "chartjs-adapter-moment";
+
+  Chart.register(
+    CategoryScale,
+    LinearScale,
+    LineElement,
+    PointElement,
+    LineController,
+    Title,
+    Tooltip,
+    Legend,
+    TimeScale,
+    Filler,
+  );
 
   let timeRange = "24h";
   let stationData = [];
   let loading = true;
+  let chartContainer;
+  let chart;
 
   async function fetchData() {
     loading = true;
@@ -13,13 +44,86 @@
     const data = await response.json();
     stationData = data;
     loading = false;
+    updateChart();
+  }
+
+  function updateChart() {
+    if (chart) {
+      chart.destroy();
+    }
+    if (chartContainer && stationData.length > 0) {
+      const chartData = {
+        labels: stationData.map(d => moment(d.timestamp)),
+        datasets: [{
+          label: 'Active Stations',
+          data: stationData.map(d => d.active_stations),
+          borderColor: "rgb(255, 99, 132)",
+          backgroundColor: "rgba(255, 99, 132, 0.2)",
+          fill: { value: -100 },
+          tension: 0.1,
+        }]
+      };
+
+      chart = new Chart(chartContainer, {
+        type: "line",
+        data: chartData,
+        options: {
+          responsive: true,
+          scales: {
+            x: {
+              type: "time",
+              adapters: {
+                date: {
+                  zone: "local",
+                },
+              },
+              time: {
+                unit: 'hour',
+                tooltipFormat: navigator.language.startsWith("en-US") ? "ll hh:mm A" : "ll HH:mm",
+                displayFormats: {
+                  hour: navigator.language.startsWith("en-US") ? "hh:mm A" : "HH:mm",
+                },
+                stepSize: 1,
+              },
+              title: {
+                display: true,
+                text: "Time",
+              },
+              ticks: {
+                source: "auto",
+                maxRotation: 0,
+                autoSkip: true,
+                maxTicksLimit: 24,
+              },
+            },
+            y: {
+              type: "linear",
+              title: {
+                display: true,
+                text: "Active Stations",
+              },
+              ticks: {
+                beginAtZero: false,
+              },
+            },
+          },
+          plugins: {
+            legend: {
+              display: true,
+            },
+          },
+        },
+      });
+    }
   }
 
   onMount(fetchData);
 
-  function formatTime(timestamp) {
-    return new Date(timestamp).toLocaleTimeString();
-  }
+  onDestroy(() => {
+    if (chart) {
+      chart.destroy();
+    }
+  });
 </script>
 
 <div class="min-h-screen bg-base-200 pt-20 px-4 pb-8">
@@ -41,7 +145,7 @@
             on:click={() => {
               timeRange = "24h";
               fetchData();
-            }}>24h</button
+            }}>One Day</button
           >
           <button
             class="btn btn-sm {timeRange === '7d'
@@ -50,7 +154,7 @@
             on:click={() => {
               timeRange = "7d";
               fetchData();
-            }}>7d</button
+            }}>One Week</button
           >
           <button
             class="btn btn-sm {timeRange === '30d'
@@ -59,7 +163,7 @@
             on:click={() => {
               timeRange = "30d";
               fetchData();
-            }}>30d</button
+            }}>One Month</button
           >
         </div>
 
@@ -69,47 +173,23 @@
           </div>
         {:else}
           <div class="h-[400px] relative">
-            {#if stationData.length > 0}
-              {@const maxCount = Math.max(
-                ...stationData.map((d) => d.active_stations),
-              )}
-              {@const minCount = Math.min(
-                ...stationData.map((d) => d.active_stations),
-              )}
-              {@const range = maxCount - minCount || 1}
-              {@const points = stationData
-                .map(
-                  (d, i) =>
-                    `${(i * 100) / (stationData.length - 1)},${100 - ((d.active_stations - minCount) * 100) / range}`,
-                )
-                .join(" ")}
-
-              <svg
-                class="w-full h-full"
-                viewBox="0 0 100 100"
-                preserveAspectRatio="none"
-              >
-                <polyline
-                  {points}
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="0.5"
-                  class="text-primary"
-                />
-              </svg>
-
-              <div
-                class="absolute bottom-0 right-0 p-4 bg-base-100/80 backdrop-blur-sm rounded-lg"
-              >
-                <div class="text-4xl font-bold">
-                  {stationData[stationData.length - 1].active_stations}
-                </div>
-                <div class="text-sm opacity-70">Active Stations</div>
+            <canvas bind:this={chartContainer}></canvas>
+            <div class="absolute bottom-0 right-0 p-4 bg-base-100/80 backdrop-blur-sm rounded-lg">
+              <div class="text-4xl font-bold">
+                {stationData[stationData.length - 1]?.active_stations || 0}
               </div>
-            {/if}
+              <div class="text-sm opacity-70">Active Stations</div>
+            </div>
           </div>
         {/if}
       </div>
     </div>
   </div>
 </div>
+
+<style>
+  canvas {
+    width: 100% !important;
+    height: 100% !important;
+  }
+</style>
