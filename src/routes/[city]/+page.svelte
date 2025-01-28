@@ -1,5 +1,5 @@
 <script>
-  import { onMount } from "svelte";
+  import { onMount, onDestroy } from "svelte";
   import moment from "moment";
   import { temperatureUnit } from '$lib/stores';
 
@@ -61,23 +61,16 @@
     window.location.href = `/${city}?timescale=${timescale}`;
   };
 
-  onMount(() => {
+  let chart;
+
+  $: {
+    if (chart) {
+      chart.destroy();
+    }
     if (chartContainer) {
-      new Chart(chartContainer, {
+      chart = new Chart(chartContainer, {
         type: "line",
-        data: {
-          labels: timestamps,
-          datasets: [
-            {
-              label: `Temperature (°${$temperatureUnit})`,
-              data: temperatures,
-              borderColor: "rgb(255, 99, 132)",
-              backgroundColor: "rgba(255, 99, 132, 0.2)",
-              fill: { value: -100 },
-              tension: 0.1,
-            },
-          ],
-        },
+        data: chartData,
         options: {
           responsive: true,
           scales: {
@@ -148,7 +141,7 @@
               type: "linear",
               title: {
                 display: true,
-                text: "Temperature (°C)",
+                text: `Temperature (°${$temperatureUnit})`, // Updated y-axis label
               },
               ticks: {
                 beginAtZero: false,
@@ -162,6 +155,12 @@
           },
         },
       });
+    }
+  }
+
+  onDestroy(() => {
+    if (chart) {
+      chart.destroy();
     }
   });
 </script>
