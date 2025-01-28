@@ -36,7 +36,7 @@ export async function GET({ params, url }) {
         WHERE g.state = $2
           AND o.temperature BETWEEN -50 AND 50
           AND o.data_quality_score >= 0.8
-          AND o.observation_timestamp >= NOW() - INTERVAL $3
+          AND o.observation_timestamp >= NOW() - INTERVAL '${timeRange}'
         GROUP BY timestamp_interval
         ORDER BY timestamp_interval DESC
       )
@@ -45,7 +45,7 @@ export async function GET({ params, url }) {
       ORDER BY observation_timestamp ASC;
     `;
 
-    const result = await client.query(query, [timeInterval, params.state, timeRange]);
+    const result = await client.query(query, [timeInterval, params.state]);
     client.release();
     return json(result.rows);
   } catch (err) {
