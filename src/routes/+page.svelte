@@ -143,7 +143,6 @@
                 </svg>
               {/if}
             </div>
-            {/if}
           </div>
         </div>
       </div>
