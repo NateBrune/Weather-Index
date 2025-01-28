@@ -30,6 +30,8 @@ export async function GET({ url }) {
         JOIN geocodes g ON s.latitude = g.latitude AND s.longitude = g.longitude
         JOIN observations o ON s.station_id = o.station_id
         WHERE o.observation_timestamp >= NOW() - INTERVAL '24 hours'
+          AND o.data_quality_score >= 0.8
+          AND o.temperature BETWEEN -50 AND 50
       ),
       recent_temps AS (
         SELECT 
