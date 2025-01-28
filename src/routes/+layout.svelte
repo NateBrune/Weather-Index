@@ -6,7 +6,8 @@
 
 	onMount(() => {
 		const html = document.querySelector("html");
-		html.setAttribute("data-theme", "dark");
+		const savedTheme = typeof localStorage !== 'undefined' ? localStorage.getItem("theme") : null;
+		html.setAttribute("data-theme", savedTheme || "dark");
 	});
 
 	function toggleTheme() {
@@ -14,6 +15,9 @@
 		const currentTheme = html.getAttribute("data-theme");
 		const newTheme = currentTheme === "light" ? "dark" : "light";
 		html.setAttribute("data-theme", newTheme);
+		if (typeof localStorage !== 'undefined') {
+			localStorage.setItem("theme", newTheme);
+		}
 	}
 </script>
 
