@@ -220,7 +220,7 @@
                 {/if}
               </th>
               <th
-                class="text-primary cursor-pointer"
+                class="text-primary cursor-pointer w-40"
                 on:click={() => toggleSort("temperature")}
               >
                 Median Temperature
