@@ -53,13 +53,15 @@
     }
     if (chartContainer && stationData.length > 0) {
       const chartData = {
-        labels: stationData.map(d => moment(d.timestamp)),
         datasets: [{
           label: 'Active Stations',
-          data: stationData.map(d => d.active_stations),
+          data: stationData.map(d => ({
+            x: moment(d.timestamp).valueOf(),
+            y: d.active_stations
+          })),
           borderColor: "rgb(255, 99, 132)",
           backgroundColor: "rgba(255, 99, 132, 0.2)",
-          fill: { value: -100 },
+          fill: true,
           tension: 0.1,
         }]
       };
@@ -72,18 +74,11 @@
           scales: {
             x: {
               type: "time",
-              adapters: {
-                date: {
-                  zone: "local",
-                },
-              },
               time: {
                 unit: 'hour',
-                tooltipFormat: navigator.language.startsWith("en-US") ? "ll hh:mm A" : "ll HH:mm",
                 displayFormats: {
-                  hour: navigator.language.startsWith("en-US") ? "hh:mm A" : "HH:mm",
-                },
-                stepSize: 1,
+                  hour: 'HH:mm'
+                }
               },
               title: {
                 display: true,
