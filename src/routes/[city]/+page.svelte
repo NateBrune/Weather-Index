@@ -94,9 +94,9 @@
                       return "day";
                   }
                 })(),
-                tooltipFormat: "ll HH:mm",
+                tooltipFormat: navigator.language.startsWith('en-US') ? "ll hh:mm A" : "ll HH:mm",
                 displayFormats: {
-                  hour: "HH:mm",
+                  hour: navigator.language.startsWith('en-US') ? "hh:mm A" : "HH:mm",
                   day: "MMM D",
                   week: "MMM D",
                   month: "MMM YYYY",
