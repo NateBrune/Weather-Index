@@ -321,10 +321,8 @@
                   <div class="flex items-center gap-2">
                     <span class="neutral-content">
                       {$temperatureUnit === "C"
-                        ? item.median_temperature
-                        : ((item.median_temperature * 9) / 5 + 32).toFixed(
-                            1,
-                          )}°{$temperatureUnit}
+                        ? (item.median_temperature || 0).toFixed(1)
+                        : (((item.median_temperature || 0) * 9) / 5 + 32).toFixed(1)}°{$temperatureUnit}
                     </span>
                   </div>
                 </td>
