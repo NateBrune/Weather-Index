@@ -65,7 +65,7 @@
         datasets: [
           {
             label: "Active Stations",
-            data: stationData.map((d) => ({
+            data: stationData.slice(0, -1).map((d) => ({
               x: moment.utc(d.timestamp).local().valueOf(), // Parse as UTC and convert to local time
               y: parseInt(d.active_stations, 10),
             })),
@@ -224,7 +224,7 @@
               class="absolute bottom-0 right-0 p-4 bg-base-100/80 backdrop-blur-sm rounded-lg"
             >
               <div class="text-4xl font-bold">
-                {stationData[stationData.length - 1]?.active_stations || 0}
+                {stationData[stationData.length - 2]?.active_stations || 0}
               </div>
               <div class="text-sm opacity-70">Active Stations</div>
             </div>
