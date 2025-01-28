@@ -31,7 +31,7 @@
 
   export let data;
   let timeRange = "24h";
-  let stationData = data.stationData;
+  let stationData = []; // Initialize as empty array
   let loading = false;
   let chartContainer;
   let chart;
@@ -42,28 +42,35 @@
       `/api/weather-cities/stats/stations?timeRange=${timeRange}`,
     );
     const newData = await response.json();
-    stationData = newData;
+    stationData = newData; // Update stationData directly
     loading = false;
     updateChart();
   }
 
   function updateChart() {
-    if (chart) {
-      chart.destroy();
-    }
-    if (chartContainer && stationData.length > 0) {
+    if (chart && stationData.length > 0) {
+      // Update the chart's dataset
+      chart.data.datasets[0].data = stationData.map((d) => ({
+        x: moment.utc(d.timestamp).local().valueOf(), // Parse as UTC and convert to local time
+        y: parseInt(d.active_stations, 10),
+      }));
+      chart.update(); // Update the chart
+    } else if (chartContainer && stationData.length > 0) {
+      // Create a new chart if it doesn't exist
       const chartData = {
-        datasets: [{
-          label: 'Active Stations',
-          data: stationData.map(d => ({
-            x: moment(d.timestamp).valueOf(),
-            y: parseInt(d.active_stations, 10)
-          })),
-          borderColor: "rgb(255, 99, 132)",
-          backgroundColor: "rgba(255, 99, 132, 0.2)",
-          fill: true,
-          tension: 0.1,
-        }]
+        datasets: [
+          {
+            label: "Active Stations",
+            data: stationData.map((d) => ({
+              x: moment.utc(d.timestamp).local().valueOf(), // Parse as UTC and convert to local time
+              y: parseInt(d.active_stations, 10),
+            })),
+            borderColor: "rgb(255, 99, 132)",
+            backgroundColor: "rgba(255, 99, 132, 0.2)",
+            fill: true,
+            tension: 0.1,
+          },
+        ],
       };
 
       chart = new Chart(chartContainer, {
@@ -76,8 +83,8 @@
               type: "time",
               adapters: {
                 date: {
-                  zone: 'local'
-                }
+                  zone: "local",
+                },
               },
               time: {
                 unit: (() => {
@@ -92,9 +99,13 @@
                       return "hour";
                   }
                 })(),
-                tooltipFormat: navigator.language.startsWith('en-US') ? "ll hh:mm A" : "ll HH:mm",
+                tooltipFormat: navigator.language.startsWith("en-US")
+                  ? "ll hh:mm A"
+                  : "ll HH:mm",
                 displayFormats: {
-                  hour: navigator.language.startsWith('en-US') ? "hh:mm A" : "HH:mm",
+                  hour: navigator.language.startsWith("en-US")
+                    ? "hh:mm A"
+                    : "HH:mm",
                   day: "MMM D",
                   week: "MMM D",
                 },
@@ -143,7 +154,10 @@
     }
   }
 
-  onMount(fetchData);
+  onMount(() => {
+    stationData = data.stationData; // Initialize with data from props
+    updateChart(); // Render the chart
+  });
 
   onDestroy(() => {
     if (chart) {
@@ -200,7 +214,9 @@
         {:else}
           <div class="h-[400px] relative">
             <canvas bind:this={chartContainer}></canvas>
-            <div class="absolute bottom-0 right-0 p-4 bg-base-100/80 backdrop-blur-sm rounded-lg">
+            <div
+              class="absolute bottom-0 right-0 p-4 bg-base-100/80 backdrop-blur-sm rounded-lg"
+            >
               <div class="text-4xl font-bold">
                 {stationData[stationData.length - 1]?.active_stations || 0}
               </div>
