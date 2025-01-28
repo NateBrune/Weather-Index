@@ -74,17 +74,31 @@
           scales: {
             x: {
               type: "time",
-              time: {
-                unit: 'hour',
-                displayFormats: {
-                  hour: 'HH:mm'
-                },
-                parser: 'iso'
-              },
               adapters: {
                 date: {
-                  zone: 'UTC'
+                  zone: 'local'
                 }
+              },
+              time: {
+                unit: (() => {
+                  switch (timeRange) {
+                    case "24h":
+                      return "hour";
+                    case "7d":
+                      return "day";
+                    case "30d":
+                      return "week";
+                    default:
+                      return "hour";
+                  }
+                })(),
+                tooltipFormat: navigator.language.startsWith('en-US') ? "ll hh:mm A" : "ll HH:mm",
+                displayFormats: {
+                  hour: navigator.language.startsWith('en-US') ? "hh:mm A" : "HH:mm",
+                  day: "MMM D",
+                  week: "MMM D",
+                },
+                stepSize: 1,
               },
               title: {
                 display: true,
@@ -94,7 +108,18 @@
                 source: "auto",
                 maxRotation: 0,
                 autoSkip: true,
-                maxTicksLimit: 24,
+                maxTicksLimit: (() => {
+                  switch (timeRange) {
+                    case "24h":
+                      return 24;
+                    case "7d":
+                      return 7;
+                    case "30d":
+                      return 30;
+                    default:
+                      return 24;
+                  }
+                })(),
               },
             },
             y: {
