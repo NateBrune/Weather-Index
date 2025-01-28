@@ -3,6 +3,18 @@
   import moment from "moment";
   import { temperatureUnit } from "$lib/stores";
 
+  let stations = [];
+  
+  $: {
+    if (Array.isArray(data.data.stations)) {
+      stations = data.data.stations;
+    }
+  }
+
+  function formatTimestamp(timestamp) {
+    return moment(timestamp).format('MMM D, YYYY HH:mm');
+  }
+
   $: chartData = {
     labels: timestamps,
     datasets: [
@@ -56,11 +68,11 @@
   let timestamps = [];
   let temperatures = [];
 
-  if (Array.isArray(data.data)) {
-    timestamps = data.data.map((item) =>
+  if (Array.isArray(data.data.timeseries)) {
+    timestamps = data.data.timeseries.map((item) =>
       moment.parseZone(item.observation_timestamp).local(),
     );
-    temperatures = data.data.map((item) => item.temperature);
+    temperatures = data.data.timeseries.map((item) => item.temperature);
   }
 
   const changeTimescale = (timescale) => {
@@ -216,6 +228,39 @@
 
     <div class="mb-6">
       <canvas bind:this={chartContainer}></canvas>
+    </div>
+
+    <div class="overflow-x-auto">
+      <table class="table table-zebra">
+        <thead>
+          <tr>
+            <th>Station ID</th>
+            <th>Temperature</th>
+            <th>Humidity</th>
+            <th>Wind Speed</th>
+            <th>Pressure</th>
+            <th>Quality Score</th>
+            <th>Last Update</th>
+          </tr>
+        </thead>
+        <tbody>
+          {#each stations as station}
+            <tr>
+              <td>{station.station_id}</td>
+              <td>{formatTemperature(station.temperature, $temperatureUnit)}°{$temperatureUnit}</td>
+              <td>{station.humidity?.toFixed(1)}%</td>
+              <td>{station.wind_speed?.toFixed(1)} m/s</td>
+              <td>{station.pressure?.toFixed(1)} hPa</td>
+              <td>
+                <div class="radial-progress text-primary" style="--value:{(station.data_quality_score * 100).toFixed(0)};">
+                  {(station.data_quality_score * 100).toFixed(0)}%
+                </div>
+              </td>
+              <td>{formatTimestamp(station.observation_timestamp)}</td>
+            </tr>
+          {/each}
+        </tbody>
+      </table>
     </div>
   </div>
 </main>

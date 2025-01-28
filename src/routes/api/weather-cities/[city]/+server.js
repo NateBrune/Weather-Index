@@ -45,6 +45,28 @@ export async function GET({ params, url }) {
         timeRange = "7 days";
     }
 
+    // Get station data first
+    const stationQuery = `
+      SELECT DISTINCT ON (s.station_id)
+        s.station_id,
+        s.latitude,
+        s.longitude,
+        o.temperature,
+        o.humidity,
+        o.wind_speed,
+        o.pressure,
+        o.observation_timestamp,
+        o.data_quality_score
+      FROM stations s
+      JOIN geocodes g ON s.latitude = g.latitude AND s.longitude = g.longitude
+      JOIN observations o ON s.station_id = o.station_id
+      WHERE g.city = $1
+        AND o.observation_timestamp >= NOW() - INTERVAL '1 hour'
+      ORDER BY s.station_id, o.observation_timestamp DESC;
+    `;
+
+    const stationResult = await client.query(stationQuery, [params.city]);
+    
     const query = `
       WITH time_aggregated AS (
         SELECT 
@@ -85,7 +107,10 @@ export async function GET({ params, url }) {
       );
     }
 
-    return json(result.rows);
+    return json({
+      timeseries: result.rows,
+      stations: stationResult.rows
+    });
   } catch (err) {
     console.error("Database query failed:", err);
     return json({ error: "Failed to fetch data" }, { status: 500 });
