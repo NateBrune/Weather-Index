@@ -1,18 +1,25 @@
-
 <script>
   import moment from "moment";
-  import { temperatureUnit } from '$lib/stores';
+  import { temperatureUnit } from "$lib/stores";
 
   $: chartData = {
-    labels: data.data.map(d => moment.parseZone(d.observation_timestamp).local()),
-    datasets: [{
-      label: `Temperature (°${$temperatureUnit})`,
-      data: data.data.map(d => $temperatureUnit === 'C' ? d.temperature : (d.temperature * 9/5) + 32),
-      borderColor: "rgb(255, 99, 132)",
-      backgroundColor: "rgba(255, 99, 132, 0.2)",
-      fill: { value: -100 },
-      tension: 0.1,
-    }]
+    labels: data.data.map((d) =>
+      moment.parseZone(d.observation_timestamp).local(),
+    ),
+    datasets: [
+      {
+        label: `Temperature (°${$temperatureUnit})`,
+        data: data.data.map((d) =>
+          $temperatureUnit === "C"
+            ? d.temperature
+            : (d.temperature * 9) / 5 + 32,
+        ),
+        borderColor: "rgb(255, 99, 132)",
+        backgroundColor: "rgba(255, 99, 132, 0.2)",
+        fill: { value: -100 },
+        tension: 0.1,
+      },
+    ],
   };
 
   import {
@@ -69,8 +76,8 @@
               type: "time",
               adapters: {
                 date: {
-                  zone: 'local'
-                }
+                  zone: "local",
+                },
               },
               time: {
                 unit: (() => {
@@ -91,9 +98,13 @@
                       return "day";
                   }
                 })(),
-                tooltipFormat: navigator.language.startsWith('en-US') ? "ll hh:mm A" : "ll HH:mm",
+                tooltipFormat: navigator.language.startsWith("en-US")
+                  ? "ll hh:mm A"
+                  : "ll HH:mm",
                 displayFormats: {
-                  hour: navigator.language.startsWith('en-US') ? "hh:mm A" : "HH:mm",
+                  hour: navigator.language.startsWith("en-US")
+                    ? "hh:mm A"
+                    : "HH:mm",
                   day: "MMM D",
                   week: "MMM D",
                   month: "MMM YYYY",
@@ -161,29 +172,30 @@
   <script src="https://cdn.tailwindcss.com"></script>
 </svelte:head>
 
-<main class="max-w-4xl mx-auto p-6 pt-20 bg-base-200">
-  <div class="bg-base-100 rounded-lg shadow-lg p-6">
-  <h1 class="text-3xl font-semibold text-center mb-6">
-    Weather Data for {country}
-  </h1>
+<main class="max-w-4xl mx-auto p-6 pt-20">
+  <div class="bg-base-200 shadow-lg rounded-lg p-6">
+    <h1 class="text-3xl font-semibold text-center mb-6">
+      Weather Data for {country}
+    </h1>
 
-  <div class="mb-6 flex justify-center gap-2">
-    <button
-      class="btn btn-primary btn-sm"
-      on:click={() => changeTimescale("hourly")}>One Day</button
-    >
-    <button
-      class="btn btn-primary btn-sm"
-      on:click={() => changeTimescale("daily")}>One Week</button
-    >
-    <button
-      class="btn btn-primary btn-sm"
-      on:click={() => changeTimescale("weekly")}>One Month</button
-    >
-  </div>
+    <div class="mb-6 flex justify-center gap-2">
+      <button
+        class="btn btn-primary btn-sm"
+        on:click={() => changeTimescale("hourly")}>One Day</button
+      >
+      <button
+        class="btn btn-primary btn-sm"
+        on:click={() => changeTimescale("daily")}>One Week</button
+      >
+      <button
+        class="btn btn-primary btn-sm"
+        on:click={() => changeTimescale("weekly")}>One Month</button
+      >
+    </div>
 
-  <div class="mb-6">
-    <canvas bind:this={chartContainer}></canvas>
+    <div class="mb-6">
+      <canvas bind:this={chartContainer}></canvas>
+    </div>
   </div>
 </main>
 

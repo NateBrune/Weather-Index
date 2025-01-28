@@ -161,8 +161,8 @@
   <script src="https://cdn.tailwindcss.com"></script>
 </svelte:head>
 
-<main class="max-w-4xl mx-auto p-6 pt-20 bg-base-200">
-  <div class="bg-base-100 rounded-lg shadow-lg p-6">
+<main class="max-w-4xl mx-auto p-6 pt-20">
+  <div class="bg-base-200 shadow-lg rounded-lg p-6">
   <h1 class="text-3xl font-semibold text-center mb-6">
     Weather Data for {state}
   </h1>
