@@ -154,17 +154,34 @@
                             1,
                           )}°{$temperatureUnit}
                     </span>
-                    <progress
-                      class="progress progress-error w-20"
-                      value={Math.max(
-                        0,
-                        Math.min(
-                          40,
-                          parseFloat(item.median_temperature) + 20 || 0,
-                        ),
-                      )}
-                      max="40"
-                    ></progress>
+                    {#if item.sparkline_data}
+                      <svg class="w-20 h-8">
+                        {#if item.sparkline_data.length > 1}
+                          {@const points = item.sparkline_data.map((d, i) => 
+                            `${(i * 80) / (item.sparkline_data.length - 1)},${32 - (d.temperature * 32) / 40}`
+                          ).join(' ')}
+                          <polyline
+                            points={points}
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="1"
+                            class="text-error"
+                          />
+                        {/if}
+                      </svg>
+                    {:else}
+                      <progress
+                        class="progress progress-error w-20"
+                        value={Math.max(
+                          0,
+                          Math.min(
+                            40,
+                            parseFloat(item.median_temperature) + 20 || 0,
+                          ),
+                        )}
+                        max="40"
+                      ></progress>
+                    {/if}
                   </div>
                 </td>
                 <td>

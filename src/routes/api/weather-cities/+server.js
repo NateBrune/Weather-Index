@@ -17,7 +17,37 @@ export async function GET({ url }) {
     const groupBy = url.searchParams.get("groupBy") || "city";
 
     const query = `
-      WITH grouped_stations AS (
+      WITH recent_temps AS (
+        SELECT 
+          CASE 
+            WHEN $1 = 'city' THEN g.city
+            WHEN $1 = 'state' THEN COALESCE(g.state, 'Unknown')
+            ELSE COALESCE(g.country, 'Unknown')
+          END as location_name,
+          o.temperature,
+          o.observation_timestamp
+        FROM stations s
+        JOIN geocodes g ON s.latitude = g.latitude AND s.longitude = g.longitude
+        JOIN observations o ON s.station_id = o.station_id
+        WHERE o.observation_timestamp >= NOW() - INTERVAL '24 hours'
+          AND o.temperature BETWEEN -50 AND 50
+          AND o.data_quality_score >= 0.8
+      ),
+      sparklines AS (
+        SELECT 
+          location_name,
+          json_agg(json_build_object(
+            'temperature', temperature,
+            'timestamp', observation_timestamp
+          ) ORDER BY observation_timestamp) FILTER (WHERE temperature IS NOT NULL) as sparkline_data
+        FROM (
+          SELECT DISTINCT ON (location_name, date_trunc('hour', observation_timestamp))
+            location_name, temperature, observation_timestamp
+          FROM recent_temps
+        ) hourly
+        GROUP BY location_name
+      ),
+      grouped_stations AS (
         SELECT 
           CASE 
             WHEN $1 = 'city' THEN g.city
@@ -43,12 +73,14 @@ export async function GET({ url }) {
         HAVING COUNT(DISTINCT s.station_id) > 0
       )
       SELECT 
-        location_name,
-        station_count,
-        ROUND(median_temperature::numeric, 2) as median_temperature,
-        COALESCE(ROUND(median_wind_speed::numeric, 2), 0)::float as median_wind_speed,
-        weather_icon
-      FROM grouped_stations
+        g.location_name,
+        g.station_count,
+        ROUND(g.median_temperature::numeric, 2) as median_temperature,
+        COALESCE(ROUND(g.median_wind_speed::numeric, 2), 0)::float as median_wind_speed,
+        g.weather_icon,
+        s.sparkline_data
+      FROM grouped_stations g
+      LEFT JOIN sparklines s ON g.location_name = s.location_name
       ORDER BY station_count DESC;
     `;
 
