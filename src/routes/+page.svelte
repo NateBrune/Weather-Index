@@ -57,6 +57,7 @@
   }
 
   function formatTemperature(temp, unit) {
+    if (temp == null) return "N/A";
     return unit === "C" ? temp.toFixed(1) : ((temp * 9) / 5).toFixed(1);
   }
 </script>
