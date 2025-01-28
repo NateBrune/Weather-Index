@@ -134,7 +134,7 @@ export async function GET({ url }) {
       LEFT JOIN (${weatherIconsQuery}) w ON l.location_name = w.location_name
       LEFT JOIN (${sparklineDataQuery}) s ON l.location_name = s.location_name
       WHERE l.location_name != 'Unknown'
-      GROUP BY l.location_name
+      GROUP BY l.location_name, s.hourly_data
       ORDER BY SUM(l.station_count) DESC
     `;
 
