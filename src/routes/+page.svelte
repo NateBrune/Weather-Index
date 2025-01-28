@@ -130,9 +130,8 @@
               <p class="text-4xl font-bold">
                 {data.networkStats?.median_temperature != null
                   ? ($temperatureUnit === "C"
-                      ? data.networkStats.median_temperature
-                      : (data.networkStats.median_temperature * 9) / 5 + 32
-                    ).toFixed(1)
+                      ? Number(data.networkStats.median_temperature).toFixed(1)
+                      : (Number(data.networkStats.median_temperature) * 9) / 5 + 32).toFixed(1)
                   : "N/A"}°{$temperatureUnit}
               </p>
               {#if data.networkStats?.sparkline_data}
