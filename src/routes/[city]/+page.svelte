@@ -15,8 +15,13 @@
     }]
   };
 
+  let chart;
+  
   $: if (chartContainer) {
-    new Chart(chartContainer, {
+    if (chart) {
+      chart.destroy();
+    }
+    chart = new Chart(chartContainer, {
       type: "line",
       data: chartData,
       options: {
@@ -121,6 +126,9 @@
   };
 
   onMount(() => {
+    if (chart) {
+      chart.destroy();
+    }
     if (chartContainer) {
       new Chart(chartContainer, {
         type: "line",
