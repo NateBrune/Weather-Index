@@ -40,9 +40,9 @@
               <th class="text-primary">
                 {data.activeTab === 'city' ? 'City' : data.activeTab === 'state' ? 'State' : 'Country'}
               </th>
-              <th class="text-primary">Weather</th>
               <th class="text-primary">Station Count</th>
               <th class="text-primary">Median Temperature</th>
+              <th class="text-primary">Weather</th>
             </tr>
           </thead>
           <tbody>
@@ -58,6 +58,19 @@
                     {item.location_name}
                   {/if}
                 </td>
+                <td class="text-center">
+                  <div class="badge badge-info">{item.station_count}</div>
+                </td>
+                <td>
+                  <div class="flex items-center gap-2">
+                    <span class="text-error">{item.median_temperature}°C</span>
+                    <progress
+                      class="progress progress-error w-20"
+                      value={Math.max(0, Math.min(40, parseFloat(item.median_temperature) + 20 || 0))}
+                      max="40"
+                    ></progress>
+                  </div>
+                </td>
                 <td>
                   {#if item.weather_icon}
                     <img 
@@ -67,10 +80,6 @@
                     />
                   {/if}
                 </td>
-                <td class="text-center">
-                  <div class="badge badge-info">{item.station_count}</div>
-                </td>
-                <td>
                   <div class="flex items-center gap-2">
                     <span class="text-error">{item.median_temperature}°C</span>
                     <progress
