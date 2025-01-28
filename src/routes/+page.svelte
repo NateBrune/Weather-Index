@@ -80,15 +80,6 @@
                     />
                   {/if}
                 </td>
-                  <div class="flex items-center gap-2">
-                    <span class="text-error">{item.median_temperature}°C</span>
-                    <progress
-                      class="progress progress-error w-20"
-                      value={Math.max(0, Math.min(40, parseFloat(item.median_temperature) + 20 || 0))}
-                      max="40"
-                    ></progress>
-                  </div>
-                </td>
               </tr>
             {/each}
           </tbody>
