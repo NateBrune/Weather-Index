@@ -13,10 +13,51 @@
   <script src="https://cdn.tailwindcss.com"></script>
 </svelte:head>
 
+<script>
+  export let data;
+  let activeTab = 'all';
+  
+  $: uniqueStates = [...new Set(data.data.map(city => city.state))].filter(Boolean);
+  $: uniqueCountries = [...new Set(data.data.map(city => city.country))].filter(Boolean);
+  $: selectedState = '';
+  $: selectedCountry = '';
+  
+  $: filteredData = data.data.filter(city => {
+    if (activeTab === 'state') return city.state === selectedState;
+    if (activeTab === 'country') return city.country === selectedCountry;
+    return true;
+  });
+</script>
+
 <div class="min-h-screen bg-base-200 p-4">
   <div class="max-w-4xl mx-auto">
     <div class="mb-8">
       <h1 class="text-4xl font-bold text-primary">City Weather Statistics</h1>
+      
+      <div class="tabs tabs-boxed mt-4">
+        <button class="tab {activeTab === 'all' ? 'tab-active' : ''}" 
+          on:click={() => activeTab = 'all'}>All Cities</button>
+        <button class="tab {activeTab === 'state' ? 'tab-active' : ''}" 
+          on:click={() => activeTab = 'state'}>By State</button>
+        <button class="tab {activeTab === 'country' ? 'tab-active' : ''}" 
+          on:click={() => activeTab = 'country'}>By Country</button>
+      </div>
+      
+      {#if activeTab === 'state'}
+        <select class="select select-bordered w-full max-w-xs mt-4" bind:value={selectedState}>
+          {#each uniqueStates as state}
+            <option value={state}>{state}</option>
+          {/each}
+        </select>
+      {/if}
+      
+      {#if activeTab === 'country'}
+        <select class="select select-bordered w-full max-w-xs mt-4" bind:value={selectedCountry}>
+          {#each uniqueCountries as country}
+            <option value={country}>{country}</option>
+          {/each}
+        </select>
+      {/if}
     </div>
 
     <div class="card bg-base-100 shadow-xl">
@@ -31,7 +72,7 @@
             </tr>
           </thead>
           <tbody>
-            {#each data.data as city, i}
+            {#each filteredData as city, i}
               <tr class="hover">
                 <td class="font-semibold">#{i + 1}</td>
                 <td class="font-medium">

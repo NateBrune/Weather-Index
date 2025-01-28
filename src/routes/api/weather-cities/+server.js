@@ -39,6 +39,8 @@ export async function GET() {
       )
       SELECT 
         g.city,
+        g.state,
+        g.country,
         COUNT(DISTINCT s.station_id) AS station_count,
         ROUND(ctm.median_temperature::numeric, 2) AS median_temperature
       FROM 
@@ -50,7 +52,7 @@ export async function GET() {
       WHERE 
         g.city != 'Unknown'
       GROUP BY 
-        g.city, ctm.median_temperature
+        g.city, g.state, g.country, ctm.median_temperature
       ORDER BY 
         station_count DESC;
     `;
