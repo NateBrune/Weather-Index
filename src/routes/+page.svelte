@@ -1,5 +1,6 @@
 <script>
   export let data;
+  import { temperatureUnit } from '$lib/stores';
   import { goto } from "$app/navigation";
 
   const tabs = [
@@ -66,7 +67,11 @@
                 </td>
                 <td>
                   <div class="flex items-center gap-2">
-                    <span class="text-error">{item.median_temperature}°C</span>
+                    <span class="text-error">
+                      {$temperatureUnit === 'C' ? 
+                        item.median_temperature : 
+                        (item.median_temperature * 9/5 + 32).toFixed(1)}°{$temperatureUnit}
+                    </span>
                     <progress
                       class="progress progress-error w-20"
                       value={Math.max(

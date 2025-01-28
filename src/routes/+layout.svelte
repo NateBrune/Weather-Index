@@ -1,5 +1,6 @@
 <script>
 	import "../app.css";
+	import { temperatureUnit } from '$lib/stores';
 	import { goto } from "$app/navigation";
 	import { onMount } from "svelte";
 
@@ -35,6 +36,9 @@
 			target="_blank"
 			class="btn btn-primary btn-sm">Buy a Station</a
 		>
+		<button class="btn btn-sm mr-2" on:click={() => {
+			$temperatureUnit = $temperatureUnit === 'C' ? 'F' : 'C';
+		}}>°{$temperatureUnit}</button>
 		<button class="btn btn-circle" on:click={toggleTheme}>
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
