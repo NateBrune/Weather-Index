@@ -3,6 +3,15 @@
 	import { temperatureUnit } from "$lib/stores";
 	import { goto } from "$app/navigation";
 	import { onMount } from "svelte";
+	import { writable } from 'svelte/store';
+
+	export const networkStats = writable({ station_count: 0, median_temperature: 0, sparkline_data: [] });
+
+	async function fetchNetworkStats() {
+		const response = await fetch('/api/weather-cities/stats');
+		const stats = await response.json();
+		networkStats.set(stats);
+	}
 
 	onMount(() => {
 		const html = document.querySelector("html");
@@ -11,6 +20,7 @@
 				? localStorage.getItem("theme")
 				: null;
 		html.setAttribute("data-theme", savedTheme || "dark");
+		fetchNetworkStats(); // Call to fetch network stats on mount
 	});
 
 	function toggleTheme() {
