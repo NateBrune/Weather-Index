@@ -228,6 +228,7 @@
                   <span>{sortOrder === "desc" ? "↓" : "↑"}</span>
                 {/if}
               </th>
+              <th class="text-primary">24 Hour</th>
               <th
                 class="text-primary cursor-pointer"
                 on:click={() => toggleSort("temp_change")}
@@ -282,50 +283,52 @@
                             1,
                           )}°{$temperatureUnit}
                     </span>
-                    {#if item.sparkline_data}
-                      <svg
-                        class="w-20 h-8"
-                        viewBox="0 0 80 32"
-                        preserveAspectRatio="none"
-                      >
-                        {#if item.sparkline_data.length > 1}
-                          {@const temperatures = item.sparkline_data.map(
-                            (d) => d.temperature,
-                          )}
-                          {@const min = Math.min(...temperatures)}
-                          {@const max = Math.max(...temperatures)}
-                          {@const range = max - min}
-                          {@const points = item.sparkline_data
-                            .map(
-                              (d, i) =>
-                                `${(i * 80) / (item.sparkline_data.length - 1)},${32 - ((d.temperature - min) * 32) / (range || 1)}`,
-                            )
-                            .join(" ")}
-                          <polyline
-                            {points}
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="1.5"
-                            class={item.temp_change_24h > 0
-                              ? "text-error"
-                              : "text-info"}
-                          />
-                        {/if}
-                      </svg>
-                    {:else}
-                      <progress
-                        class="progress progress-error w-20"
-                        value={Math.max(
-                          0,
-                          Math.min(
-                            40,
-                            parseFloat(item.median_temperature) + 20 || 0,
-                          ),
-                        )}
-                        max="40"
-                      ></progress>
-                    {/if}
                   </div>
+                </td>
+                <td>
+                  {#if item.sparkline_data}
+                    <svg
+                      class="w-20 h-8"
+                      viewBox="0 0 80 32"
+                      preserveAspectRatio="none"
+                    >
+                      {#if item.sparkline_data.length > 1}
+                        {@const temperatures = item.sparkline_data.map(
+                          (d) => d.temperature,
+                        )}
+                        {@const min = Math.min(...temperatures)}
+                        {@const max = Math.max(...temperatures)}
+                        {@const range = max - min}
+                        {@const points = item.sparkline_data
+                          .map(
+                            (d, i) =>
+                              `${(i * 80) / (item.sparkline_data.length - 1)},${32 - ((d.temperature - min) * 32) / (range || 1)}`,
+                          )
+                          .join(" ")}
+                        <polyline
+                          {points}
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="1.5"
+                          class={item.temp_change_24h > 0
+                            ? "text-error"
+                            : "text-info"}
+                        />
+                      {/if}
+                    </svg>
+                  {:else}
+                    <progress
+                      class="progress progress-error w-20"
+                      value={Math.max(
+                        0,
+                        Math.min(
+                          40,
+                          parseFloat(item.median_temperature) + 20 || 0,
+                        ),
+                      )}
+                      max="40"
+                    ></progress>
+                  {/if}
                 </td>
                 <td>
                   {#if item.temp_change_24h !== null}
