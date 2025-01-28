@@ -1,12 +1,11 @@
-
 <script>
   export let data;
-  import { goto } from '$app/navigation';
+  import { goto } from "$app/navigation";
 
   const tabs = [
-    { id: 'city', label: 'Cities' },
-    { id: 'state', label: 'States' },
-    { id: 'country', label: 'Countries' }
+    { id: "city", label: "Cities" },
+    { id: "state", label: "States" },
+    { id: "country", label: "Countries" },
   ];
 
   function changeTab(tabId) {
@@ -38,7 +37,11 @@
             <tr>
               <th class="text-primary">Rank</th>
               <th class="text-primary">
-                {data.activeTab === 'city' ? 'City' : data.activeTab === 'state' ? 'State' : 'Country'}
+                {data.activeTab === "city"
+                  ? "City"
+                  : data.activeTab === "state"
+                    ? "State"
+                    : "Country"}
               </th>
               <th class="text-primary">Station Count</th>
               <th class="text-primary">Median Temperature</th>
@@ -50,7 +53,7 @@
               <tr class="hover">
                 <td class="font-semibold">#{i + 1}</td>
                 <td class="font-medium">
-                  {#if data.activeTab === 'city'}
+                  {#if data.activeTab === "city"}
                     <a href="/{item.location_name}" class="link link-primary">
                       {item.location_name}
                     </a>
@@ -66,15 +69,21 @@
                     <span class="text-error">{item.median_temperature}°C</span>
                     <progress
                       class="progress progress-error w-20"
-                      value={Math.max(0, Math.min(40, parseFloat(item.median_temperature) + 20 || 0))}
+                      value={Math.max(
+                        0,
+                        Math.min(
+                          40,
+                          parseFloat(item.median_temperature) + 20 || 0,
+                        ),
+                      )}
                       max="40"
                     ></progress>
                   </div>
                 </td>
                 <td>
                   {#if item.weather_icon}
-                    <img 
-                      src="https://weatherxm.com/icons/{item.weather_icon}.svg" 
+                    <img
+                      src="icons/{item.weather_icon}.svg"
                       alt={item.weather_icon}
                       class="w-8 h-8"
                     />
