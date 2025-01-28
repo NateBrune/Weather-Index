@@ -5,6 +5,7 @@ export async function load({ fetch, params, url }) {
   const weatherData = await response.json();
   return { 
     data: weatherData, 
-    state: params.state 
+    state: params.state,
+    timescale
   };
 }
