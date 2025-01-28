@@ -1,3 +1,4 @@
+
 <script>
   import { Line } from 'svelte-chartjs';
   import 'chartjs-adapter-date-fns';
@@ -28,7 +29,10 @@
       x: {
         type: 'time',
         time: {
-          unit: 'hour'
+          unit: data.timescale === 'hourly' ? 'hour' : 
+                data.timescale === 'daily' ? 'day' :
+                data.timescale === 'weekly' ? 'week' :
+                data.timescale === 'monthly' ? 'month' : 'year'
         }
       }
     }
