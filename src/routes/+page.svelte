@@ -68,7 +68,7 @@
     </div>
 
     <div class="grid grid-cols-2 gap-4 mb-8">
-      <div class="card bg-primary text-primary-content shadow-xl">
+      <div class="card bg-base-100 text-info shadow-xl">
         <div class="card-body">
           <h2 class="card-title text-2xl">Global Station Count</h2>
           <p class="text-4xl font-bold">
@@ -78,7 +78,7 @@
           </p>
         </div>
       </div>
-      <div class="card bg-secondary text-secondary-content shadow-xl">
+      <div class="card bg-base-100 text-info shadow-xl">
         <div class="card-body">
           <h2 class="card-title text-2xl">Network Median Temperature</h2>
           <div class="flex items-center gap-4">
@@ -89,7 +89,8 @@
                       (sum, item) =>
                         sum + parseFloat(item.median_temperature || 0),
                       0,
-                    ) / data.data.filter((item) => item.median_temperature).length
+                    ) /
+                    data.data.filter((item) => item.median_temperature).length
                   : ((data.data.reduce(
                       (sum, item) =>
                         sum + parseFloat(item.median_temperature || 0),
@@ -103,28 +104,34 @@
               ).toFixed(1)}°{$temperatureUnit}
             </p>
             {#if data.data[0]?.sparkline_data}
-                {#each [data.data[0].sparkline_data] as sparkline}
-                  {@const temperatures = sparkline.map((d) => d.temperature)}
-                  {@const min = Math.min(...temperatures)}
-                  {@const max = Math.max(...temperatures)}
-                  {@const range = max - min}
-                  {@const points = sparkline
-                    .map(
-                      (d, i) =>
-                        `${(i * 120) / (sparkline.length - 1)},${48 - ((d.temperature - min) * 48) / (range || 1)}`,
-                    )
-                    .join(" ")}
-                  <svg class="w-32 h-12" viewBox="0 0 120 48" preserveAspectRatio="none">
-                    <polyline
-                      {points}
-                      fill="none"
-                      stroke="currentColor"
-                      stroke-width="2"
-                      class={data.data[0]?.temp_change_24h > 0 ? "text-error" : "text-info"}
-                    />
-                  </svg>
-                {/each}
-              {/if}
+              {#each [data.data[0].sparkline_data] as sparkline}
+                {@const temperatures = sparkline.map((d) => d.temperature)}
+                {@const min = Math.min(...temperatures)}
+                {@const max = Math.max(...temperatures)}
+                {@const range = max - min}
+                {@const points = sparkline
+                  .map(
+                    (d, i) =>
+                      `${(i * 120) / (sparkline.length - 1)},${48 - ((d.temperature - min) * 48) / (range || 1)}`,
+                  )
+                  .join(" ")}
+                <svg
+                  class="w-32 h-12"
+                  viewBox="0 0 120 48"
+                  preserveAspectRatio="none"
+                >
+                  <polyline
+                    {points}
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    class={data.data[0]?.temp_change_24h > 0
+                      ? "text-error"
+                      : "text-info"}
+                  />
+                </svg>
+              {/each}
+            {/if}
           </div>
         </div>
       </div>
