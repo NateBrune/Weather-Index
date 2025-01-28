@@ -12,14 +12,18 @@ export async function GET() {
   try {
     const client = await pool.connect();
     const query = `
-      WITH station_history AS (
+      WITH hourly_data AS (
         SELECT 
-          timestamp,
-          total_stations
-        FROM station_counts 
-        WHERE timestamp >= NOW() - INTERVAL '24 hours'
-          AND city IS NULL AND state IS NULL AND country IS NULL
-        ORDER BY timestamp ASC
+          DATE_TRUNC('hour', observation_timestamp) as hour,
+          COUNT(DISTINCT station_id) as active_stations,
+          COUNT(DISTINCT CASE WHEN data_quality_score >= 0.8 THEN station_id END) as quality_stations,
+          ROUND(AVG(temperature)::numeric, 2) as avg_temp,
+          ROUND(AVG(humidity)::numeric, 2) as avg_humidity,
+          ROUND(AVG(wind_speed)::numeric, 2) as avg_wind
+        FROM observations
+        WHERE observation_timestamp >= NOW() - INTERVAL '24 hours'
+        GROUP BY DATE_TRUNC('hour', observation_timestamp)
+        ORDER BY hour ASC
       ),
       quality_stats AS (
         SELECT 
@@ -55,10 +59,11 @@ export async function GET() {
         ) as sparkline_data,
         (
           SELECT json_agg(json_build_object(
-            'timestamp', timestamp,
-            'count', total_stations
-          ) ORDER BY timestamp)
-          FROM station_history
+            'timestamp', hour,
+            'count', active_stations,
+            'quality_count', quality_stations
+          ) ORDER BY hour)
+          FROM hourly_data
         ) as station_count_history
       FROM quality_stats qs
       LIMIT 1;

@@ -126,19 +126,30 @@
             {#if data.networkStats?.station_count_history}
               {#if data.networkStats?.station_count_history}
                 {@const counts = data.networkStats.station_count_history.map(d => d.count)}
-                {@const min = Math.min(...counts)}
-                {@const max = Math.max(...counts)}
+                {@const qualityCounts = data.networkStats.station_count_history.map(d => d.quality_count)}
+                {@const min = Math.min(...counts, ...qualityCounts)}
+                {@const max = Math.max(...counts, ...qualityCounts)}
                 {@const range = max - min || 1}
-                {@const points = data.networkStats.station_count_history
+                {@const totalPoints = data.networkStats.station_count_history
                   .map((d, i) => `${(i * 120) / (data.networkStats.station_count_history.length - 1)},${48 - ((d.count - min) * 48) / range}`)
+                  .join(" ")}
+                {@const qualityPoints = data.networkStats.station_count_history
+                  .map((d, i) => `${(i * 120) / (data.networkStats.station_count_history.length - 1)},${48 - ((d.quality_count - min) * 48) / range}`)
                   .join(" ")}
                 <svg class="w-full h-12" viewBox="0 0 120 48" preserveAspectRatio="none">
                   <polyline
-                    {points}
+                    points={totalPoints}
                     fill="none"
                     stroke="currentColor"
                     stroke-width="2"
-                    class="text-primary"
+                    class="text-primary opacity-50"
+                  />
+                  <polyline
+                    points={qualityPoints}
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    class="text-success"
                   />
                 </svg>
               {/if}
