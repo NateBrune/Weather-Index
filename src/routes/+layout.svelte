@@ -30,7 +30,7 @@
 	<script src="https://cdn.tailwindcss.com"></script>
 </svelte:head>
 
-<header class="navbar bg-base-100 shadow-lg">
+<header class="navbar bg-base-100/90 shadow-lg backdrop-blur-xl fixed top-0 z-50 border-b border-base-300/50">
 	<div class="flex-1">
 		<a href="/" class="btn btn-ghost normal-case text-xl">Weather Index</a>
 	</div>

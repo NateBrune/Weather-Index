@@ -1,2 +1,21 @@
 
 /* Tailwind is now loaded via CDN */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  scroll-behavior: smooth;
+}
+
+* {
+  transition: all 0.2s ease-in-out;
+}
+
+.chart-container {
+  transition: transform 0.2s ease-in-out;
+}
+
+.chart-container:hover {
+  transform: scale(1.01);
+}

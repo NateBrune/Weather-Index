@@ -49,8 +49,8 @@
   }
 </script>
 
-<div class="min-h-screen bg-base-200 p-4">
-  <div class="max-w-4xl mx-auto">
+<div class="min-h-screen bg-base-200 pt-20 px-4 pb-8">
+  <div class="max-w-4xl mx-auto backdrop-blur-sm">
     <div class="mb-8">
       <h1 class="text-4xl font-bold text-primary">Weather Statistics</h1>
     </div>
@@ -75,9 +75,9 @@
       />
     </div>
 
-    <div class="card bg-base-100 shadow-xl">
-      <div class="card-body overflow-x-auto">
-        <table class="table table-zebra">
+    <div class="card bg-base-100/80 shadow-2xl backdrop-blur-sm border border-base-300/50">
+      <div class="card-body overflow-x-auto px-2 sm:px-6">
+        <table class="table table-zebra bg-transparent">
           <thead>
             <tr>
               <th class="text-primary">Rank</th>
