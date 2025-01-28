@@ -2,12 +2,12 @@
   import { onMount } from "svelte";
   import moment from "moment";
   import { temperatureUnit } from '$lib/stores';
-  
+
   $: chartData = {
     labels: timestamps,
     datasets: [{
       label: `Temperature (°${$temperatureUnit})`,
-      data: temperatures.map(temp => $temperatureUnit === 'C' ? temp : (temp * 9/5 + 32)),
+      data: temperatures.map(temp => $temperatureUnit === 'C' ? temp : parseFloat((temp * 9/5 + 32).toFixed(1))),
       borderColor: "rgb(255, 99, 132)",
       backgroundColor: "rgba(255, 99, 132, 0.2)",
       fill: { value: -100 },
