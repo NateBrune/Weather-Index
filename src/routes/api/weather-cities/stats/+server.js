@@ -33,16 +33,17 @@ export async function GET() {
         ORDER BY hour ASC
       ),
       current_temp AS (
-        SELECT PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY temperature) as current_temp,
-        (SELECT MAX(temperature) - MIN(temperature)
-         FROM observations
-         WHERE observation_timestamp >= NOW() - INTERVAL '24 hours'
-           AND data_quality_score >= 0.8
-           AND temperature BETWEEN -50 AND 50) as temp_change_24h
+        SELECT 
+          PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY temperature) as current_temp,
+          MAX(temperature) - MIN(temperature) as temp_change_24h
         FROM observations
-        WHERE observation_timestamp >= date_trunc('hour', NOW())
+        WHERE observation_timestamp >= NOW() - INTERVAL '1 hour'
           AND data_quality_score >= 0.8
           AND temperature BETWEEN -50 AND 50
+          AND temperature IS NOT NULL
+        GROUP BY date_trunc('hour', observation_timestamp)
+        ORDER BY date_trunc('hour', observation_timestamp) DESC
+        LIMIT 1
       )
       SELECT 
         qs.total_stations as station_count,
