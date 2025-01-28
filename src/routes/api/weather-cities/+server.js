@@ -38,16 +38,9 @@ export async function GET() {
           city
       )
       SELECT 
-        CASE 
-          WHEN g.state != '' THEN g.state 
-          ELSE 'Unknown State'
-        END as state,
-        CASE 
-          WHEN g.country != '' THEN g.country 
-          ELSE 'Unknown Country'
-        END as country,
+        g.city,
         COUNT(DISTINCT s.station_id) AS station_count,
-        ROUND(AVG(ctm.median_temperature)::numeric, 2) AS median_temperature
+        ROUND(ctm.median_temperature::numeric, 2) AS median_temperature
       FROM 
         stations s
       JOIN 
@@ -57,7 +50,7 @@ export async function GET() {
       WHERE 
         g.city != 'Unknown'
       GROUP BY 
-        state, country
+        g.city, ctm.median_temperature
       ORDER BY 
         station_count DESC;
     `;
