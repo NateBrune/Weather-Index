@@ -119,9 +119,29 @@
       <div class="card bg-base-100 text-neutral-content shadow-xl">
         <div class="card-body">
           <h2 class="card-title text-2xl">Global Station Count</h2>
-          <p class="text-4xl font-bold">
-            {data.networkStats?.station_count?.toLocaleString() ?? 0}
-          </p>
+          <div class="flex flex-col gap-2">
+            <p class="text-4xl font-bold">
+              {data.networkStats?.station_count?.toLocaleString() ?? 0}
+            </p>
+            {#if data.networkStats?.station_count_history}
+              <svg class="w-full h-12" viewBox="0 0 120 48" preserveAspectRatio="none">
+                {@const counts = data.networkStats.station_count_history.map(d => d.count)}
+                {@const min = Math.min(...counts)}
+                {@const max = Math.max(...counts)}
+                {@const range = max - min || 1}
+                {@const points = data.networkStats.station_count_history
+                  .map((d, i) => `${(i * 120) / (data.networkStats.station_count_history.length - 1)},${48 - ((d.count - min) * 48) / range}`)
+                  .join(" ")}
+                <polyline
+                  {points}
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  class="text-primary"
+                />
+              </svg>
+            {/if}
+          </div>
         </div>
       </div>
       <div class="card bg-base-100 text-neutral-content shadow-xl">
