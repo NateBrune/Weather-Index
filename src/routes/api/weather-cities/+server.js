@@ -17,61 +17,7 @@ export async function GET({ url }) {
     const groupBy = url.searchParams.get("groupBy") || "city";
 
     const query = `
-      WITH location_groups AS (
-        SELECT 
-          CASE 
-            WHEN $1 = 'city' THEN g.city
-            WHEN $1 = 'state' THEN COALESCE(g.state, 'Unknown')
-            ELSE COALESCE(g.country, 'Unknown')
-          END as location_name,
-          o.temperature,
-          o.observation_timestamp
-        FROM stations s
-        JOIN geocodes g ON s.latitude = g.latitude AND s.longitude = g.longitude
-        JOIN observations o ON s.station_id = o.station_id
-        WHERE o.observation_timestamp >= NOW() - INTERVAL '24 hours'
-          AND o.data_quality_score >= 0.8
-          AND o.temperature BETWEEN -50 AND 50
-      ),
-      hourly_temps AS (
-        SELECT 
-          location_name,
-          date_trunc('hour', observation_timestamp) as hour,
-          PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY temperature) as temperature
-        FROM location_groups
-        GROUP BY location_name, date_trunc('hour', observation_timestamp)
-      ),
-      recent_temps AS (
-        SELECT 
-          h1.location_name,
-          h1.temperature as current_temp,
-          h1.temperature - h2.temperature as temp_change_1h,
-          h1.temperature - h24.temperature as temp_change_24h,
-          h1.temperature - h168.temperature as temp_change_7d
-        FROM hourly_temps h1
-        LEFT JOIN hourly_temps h2 ON h1.location_name = h2.location_name 
-          AND h2.hour = h1.hour - INTERVAL '1 hour'
-        LEFT JOIN hourly_temps h24 ON h1.location_name = h24.location_name 
-          AND h24.hour = h1.hour - INTERVAL '24 hours'
-        LEFT JOIN hourly_temps h168 ON h1.location_name = h168.location_name 
-          AND h168.hour = h1.hour - INTERVAL '168 hours'
-        WHERE h1.hour = date_trunc('hour', NOW())
-      ),
-      sparklines AS (
-        SELECT 
-          location_name,
-          json_agg(json_build_object(
-            'temperature', temperature,
-            'timestamp', observation_timestamp
-          ) ORDER BY observation_timestamp) FILTER (WHERE temperature IS NOT NULL) as sparkline_data
-        FROM (
-          SELECT DISTINCT ON (location_name, date_trunc('hour', observation_timestamp))
-            location_name, temperature, observation_timestamp
-          FROM recent_temps
-        ) hourly
-        GROUP BY location_name
-      ),
-      grouped_stations AS (
+      WITH location_stats AS (
         SELECT 
           CASE 
             WHEN $1 = 'city' THEN g.city
@@ -84,32 +30,62 @@ export async function GET({ url }) {
           mode() WITHIN GROUP (ORDER BY o.weather_icon) as weather_icon
         FROM stations s
         JOIN geocodes g ON s.latitude = g.latitude AND s.longitude = g.longitude
-        LEFT JOIN observations o ON s.station_id = o.station_id
-        WHERE o.temperature IS NOT NULL
-          AND o.temperature BETWEEN -50 AND 50
+        JOIN observations o ON s.station_id = o.station_id
+        WHERE o.observation_timestamp >= NOW() - INTERVAL '24 hours'
           AND o.data_quality_score >= 0.8
-          AND CASE 
-            WHEN $1 = 'city' THEN g.city != 'Unknown'
-            WHEN $1 = 'state' THEN g.state IS NOT NULL AND g.state != 'Unknown'
-            ELSE g.country IS NOT NULL
+          AND o.temperature BETWEEN -50 AND 50
+        GROUP BY 
+          CASE 
+            WHEN $1 = 'city' THEN g.city
+            WHEN $1 = 'state' THEN COALESCE(g.state, 'Unknown')
+            ELSE COALESCE(g.country, 'Unknown')
           END
-        GROUP BY location_name
         HAVING COUNT(DISTINCT s.station_id) > 0
+      ),
+      sparkline_data AS (
+        SELECT 
+          location_name,
+          json_agg(
+            json_build_object(
+              'temperature', median_temp,
+              'timestamp', hour
+            ) ORDER BY hour
+          ) as hourly_data
+        FROM (
+          SELECT 
+            CASE 
+              WHEN $1 = 'city' THEN g.city
+              WHEN $1 = 'state' THEN COALESCE(g.state, 'Unknown')
+              ELSE COALESCE(g.country, 'Unknown')
+            END as location_name,
+            date_trunc('hour', o.observation_timestamp) as hour,
+            PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY o.temperature) as median_temp
+          FROM stations s
+          JOIN geocodes g ON s.latitude = g.latitude AND s.longitude = g.longitude
+          JOIN observations o ON s.station_id = o.station_id
+          WHERE o.observation_timestamp >= NOW() - INTERVAL '24 hours'
+            AND o.data_quality_score >= 0.8
+            AND o.temperature BETWEEN -50 AND 50
+          GROUP BY 
+            CASE 
+              WHEN $1 = 'city' THEN g.city
+              WHEN $1 = 'state' THEN COALESCE(g.state, 'Unknown')
+              ELSE COALESCE(g.country, 'Unknown')
+            END,
+            date_trunc('hour', o.observation_timestamp)
+        ) hourly
+        GROUP BY location_name
       )
-      SELECT DISTINCT ON (g.location_name)
-        g.location_name,
-        g.station_count,
-        ROUND(g.median_temperature::numeric, 2) as median_temperature,
-        COALESCE(ROUND(g.median_wind_speed::numeric, 2), 0)::float as median_wind_speed,
-        g.weather_icon,
-        s.sparkline_data,
-        ROUND(r.temp_change_24h::numeric, 1) as temp_change_24h,
-        ROUND(r.temp_change_1h::numeric, 1) as temp_change_1h,
-        ROUND(r.temp_change_7d::numeric, 1) as temp_change_7d
-      FROM grouped_stations g
-      LEFT JOIN sparklines s ON g.location_name = s.location_name
-      LEFT JOIN recent_temps r ON g.location_name = r.location_name
-      ORDER BY g.location_name, g.station_count DESC;
+      SELECT 
+        l.location_name,
+        l.station_count,
+        ROUND(l.median_temperature::numeric, 2) as median_temperature,
+        ROUND(l.median_wind_speed::numeric, 2) as median_wind_speed,
+        l.weather_icon,
+        s.hourly_data as sparkline_data
+      FROM location_stats l
+      LEFT JOIN sparkline_data s ON l.location_name = s.location_name
+      ORDER BY l.station_count DESC;
     `;
 
     const result = await client.query(query, [groupBy]);
