@@ -47,8 +47,8 @@
       } else if (sortBy === "wind_speed") {
         return (a.median_wind_speed - b.median_wind_speed) * modifier;
       } else if (sortBy === "temp_change_1h") {
-        const changeA = a.sparkline_data ? parseFloat(calculateTempChange(a.sparkline_data, 1)) || 0 : 0;
-        const changeB = b.sparkline_data ? parseFloat(calculateTempChange(b.sparkline_data, 1)) || 0 : 0;
+        const changeA = a.sparkline_data ? parseFloat(calculateTempChange(a.sparkline_data, 1).replace('°', '')) || 0 : 0;
+        const changeB = b.sparkline_data ? parseFloat(calculateTempChange(b.sparkline_data, 1).replace('°', '')) || 0 : 0;
         return (changeA - changeB) * modifier;
       } else if (sortBy === "temp_change_24h") {
         const changeA = a.sparkline_data ? parseFloat(calculateTempChange(a.sparkline_data, 24)) || 0 : 0;
@@ -75,8 +75,13 @@
 
   function calculateTempChange(sparklineData, hours = 24) {
     if (!sparklineData || sparklineData.length < 2) return 'N/A';
+    const now = new Date();
     const lastTemp = sparklineData[sparklineData.length - 1].temperature;
-    const compareTemp = sparklineData[Math.max(0, sparklineData.length - hours)].temperature;
+    const hourAgoIndex = sparklineData.findIndex(d => {
+      const timeDiff = (now - new Date(d.timestamp)) / (1000 * 60 * 60);
+      return timeDiff >= hours;
+    });
+    const compareTemp = hourAgoIndex >= 0 ? sparklineData[hourAgoIndex].temperature : sparklineData[0].temperature;
     const change = lastTemp - compareTemp;
     const sign = change > 0 ? '+' : '';
     return `${sign}${change.toFixed(1)}°`;
