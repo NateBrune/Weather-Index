@@ -1,0 +1,79 @@
+  "station_count": "7907",
+    "high_quality_stations": "6525",
+    "avg_quality_percentage": "83.77",
+    "median_temperature": null,
+    "temp_change_24h": 68.5,
+    "sparkline_data": [
+        {
+            "temperature": 6.6,
+            "timestamp": "2025-01-28T02:00:00"
+        },
+        {
+            "temperature": 6.08,
+            "timestamp": "2025-01-28T03:00:00"
+        },
+        {
+            "temperature": 6.140000000000001,
+            "timestamp": "2025-01-28T04:00:00"
+        },
+        {
+            "temperature": 5.9,
+            "timestamp": "2025-01-28T05:00:00"
+        },
+        {
+            "temperature": 5.9,
+            "timestamp": "2025-01-28T06:00:00"
+        },
+        {
+            "temperature": 6,
+            "timestamp": "2025-01-28T07:00:00"
+        },
+        {
+            "temperature": 6.3,
+            "timestamp": "2025-01-28T08:00:00"
+        },
+        {
+            "temperature": 6.94,
+            "timestamp": "2025-01-28T09:00:00"
+        },
+        {
+            "temperature": 7.6,
+            "timestamp": "2025-01-28T10:00:00"
+        },
+        {
+            "temperature": 8.1,
+            "timestamp": "2025-01-28T11:00:00"
+        },
+        {
+            "temperature": 8.4,
+            "timestamp": "2025-01-28T12:00:00"
+        },
+        {
+            "temperature": 8.5,
+            "timestamp": "2025-01-28T13:00:00"
+        },
+        {
+            "temperature": 8.4,
+            "timestamp": "2025-01-28T14:00:00"
+        },
+        {
+            "temperature": 8.3,
+            "timestamp": "2025-01-28T15:00:00"
+        },
+        {
+            "temperature": 8,
+            "timestamp": "2025-01-28T16:00:00"
+        },
+        {
+            "temperature": 8,
+            "timestamp": "2025-01-28T17:00:00"
+        },
+        {
+            "temperature": 8.1,
+            "timestamp": "2025-01-28T18:00:00"
+        },
+        {
+            "temperature": 8.06,
+            "timestamp": "2025-01-28T19:00:00"
+        }
+    ]
