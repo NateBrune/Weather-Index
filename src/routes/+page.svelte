@@ -125,12 +125,13 @@
                 {data.networkStats?.station_count?.toLocaleString() ?? 0}
               </p>
               {#if data.networkStats?.station_count_history}
-                {@const counts = data.networkStats.station_count_history.map(d => d.count)}
+                {@const historicalData = data.networkStats.station_count_history.slice(0, -1)}
+                {@const counts = historicalData.map(d => d.count)}
                 {@const min = Math.min(...counts)}
                 {@const max = Math.max(...counts)}
                 {@const range = max - min || 1}
-                {@const points = data.networkStats.station_count_history
-                  .map((d, i) => `${(i * 120) / (data.networkStats.station_count_history.length - 1)},${48 - ((d.count - min) * 48) / range}`)
+                {@const points = historicalData
+                  .map((d, i) => `${(i * 120) / (historicalData.length - 1)},${48 - ((d.count - min) * 48) / range}`)
                   .join(" ")}
                 <svg class="w-24 h-12" viewBox="0 0 120 48" preserveAspectRatio="none">
                   <polyline
