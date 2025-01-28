@@ -38,21 +38,33 @@
         const tempA =
           $temperatureUnit === "C"
             ? a.median_temperature
-            : ((a.median_temperature * 9) / 5) + 32;
+            : (a.median_temperature * 9) / 5 + 32;
         const tempB =
           $temperatureUnit === "C"
             ? b.median_temperature
-            : ((b.median_temperature * 9) / 5) + 32;
+            : (b.median_temperature * 9) / 5 + 32;
         return (tempA - tempB) * modifier;
       } else if (sortBy === "wind_speed") {
         return (a.median_wind_speed - b.median_wind_speed) * modifier;
       } else if (sortBy === "temp_change_1h") {
-        const changeA = a.sparkline_data ? parseFloat(calculateTempChange(a.sparkline_data, 1).replace('°', '')) || 0 : 0;
-        const changeB = b.sparkline_data ? parseFloat(calculateTempChange(b.sparkline_data, 1).replace('°', '')) || 0 : 0;
+        const changeA = a.sparkline_data
+          ? parseFloat(
+              calculateTempChange(a.sparkline_data, 1).replace("°", ""),
+            ) || 0
+          : 0;
+        const changeB = b.sparkline_data
+          ? parseFloat(
+              calculateTempChange(b.sparkline_data, 1).replace("°", ""),
+            ) || 0
+          : 0;
         return (changeA - changeB) * modifier;
       } else if (sortBy === "temp_change_24h") {
-        const changeA = a.sparkline_data ? parseFloat(calculateTempChange(a.sparkline_data, 24)) || 0 : 0;
-        const changeB = b.sparkline_data ? parseFloat(calculateTempChange(b.sparkline_data, 24)) || 0 : 0;
+        const changeA = a.sparkline_data
+          ? parseFloat(calculateTempChange(a.sparkline_data, 24)) || 0
+          : 0;
+        const changeB = b.sparkline_data
+          ? parseFloat(calculateTempChange(b.sparkline_data, 24)) || 0
+          : 0;
         return (changeA - changeB) * modifier;
       }
       return (a[sortBy] - b[sortBy]) * modifier;
@@ -70,13 +82,17 @@
   function formatTemperature(temp, unit) {
     if (temp == null || isNaN(temp)) return "N/A";
     const numTemp = Number(temp);
-    return unit === "C" ? numTemp.toFixed(1) : ((numTemp * 9) / 5 + 32).toFixed(1);
+    return unit === "C"
+      ? numTemp.toFixed(1)
+      : ((numTemp * 9) / 5 + 32).toFixed(1);
   }
 
   function calculateTempChange(sparklineData, hours = 24) {
-    if (!sparklineData || sparklineData.length < 2) return 'N/A';
+    if (!sparklineData || sparklineData.length < 2) return "N/A";
     const lastTemp = sparklineData[sparklineData.length - 1].temperature;
-    const lastTimestamp = new Date(sparklineData[sparklineData.length - 1].timestamp);
+    const lastTimestamp = new Date(
+      sparklineData[sparklineData.length - 1].timestamp,
+    );
 
     if (hours === 1) {
       // For 1 hour change, look for data point closest to 1 hour ago
@@ -84,25 +100,29 @@
       const hourAgoIndex = sparklineData.reduce((closest, point, index) => {
         const pointTime = new Date(point.timestamp);
         const currentDiff = Math.abs(pointTime - oneHourAgo);
-        const closestDiff = Math.abs(new Date(sparklineData[closest].timestamp) - oneHourAgo);
+        const closestDiff = Math.abs(
+          new Date(sparklineData[closest].timestamp) - oneHourAgo,
+        );
         return currentDiff < closestDiff ? index : closest;
       }, 0);
       const change = lastTemp - sparklineData[hourAgoIndex].temperature;
-      const convertedChange = $temperatureUnit === "C" ? change : (change * 9) / 5;
-      const sign = convertedChange > 0 ? '+' : '';
+      const convertedChange =
+        $temperatureUnit === "C" ? change : (change * 9) / 5;
+      const sign = convertedChange > 0 ? "+" : "";
       return `${sign}${convertedChange.toFixed(1)}°${$temperatureUnit}`;
     } else {
       // For 24 hour change, use the oldest available data point
       const change = lastTemp - sparklineData[0].temperature;
-      const convertedChange = $temperatureUnit === "C" ? change : (change * 9) / 5;
-      const sign = convertedChange > 0 ? '+' : '';
+      const convertedChange =
+        $temperatureUnit === "C" ? change : (change * 9) / 5;
+      const sign = convertedChange > 0 ? "+" : "";
       return `${sign}${convertedChange.toFixed(1)}°${$temperatureUnit}`;
     }
   }
 </script>
 
 <div class="min-h-screen bg-base-200 pt-20 px-4 pb-8">
-  <div class="max-w-4xl mx-auto backdrop-blur-sm">
+  <div class="max-w-6xl mx-auto backdrop-blur-sm">
     <div class="mb-8">
       <h1 class="text-4xl font-bold text-primary">Weather Statistics</h1>
       <div class="grid grid-cols-2 gap-4">
@@ -121,22 +141,33 @@
           <h2 class="card-title text-2xl">Global Station Count</h2>
           <div class="flex flex-col gap-2">
             <div class="flex items-center">
-              <a href="/stations" class="text-4xl font-bold flex-1 hover:text-primary transition-colors">
+              <a
+                href="/stations"
+                class="text-4xl font-bold flex-1 hover:text-primary transition-colors"
+              >
                 {data.networkStats?.station_count?.toLocaleString() ?? 0}
               </a>
               {#if data.networkStats?.station_count_history}
-                {@const historicalData = data.networkStats.station_count_history.slice(0, -1)}
-                {@const counts = historicalData.map(d => d.count)}
+                {@const historicalData =
+                  data.networkStats.station_count_history.slice(0, -1)}
+                {@const counts = historicalData.map((d) => d.count)}
                 {@const min = Math.min(...counts)}
                 {@const max = Math.max(...counts)}
                 {@const range = max - min || 1}
                 {@const points = historicalData
-                  .map((d, i) => `${(i * 120) / (historicalData.length - 1)},${48 - ((d.count - min) * 48) / range}`)
+                  .map(
+                    (d, i) =>
+                      `${(i * 120) / (historicalData.length - 1)},${48 - ((d.count - min) * 48) / range}`,
+                  )
                   .join(" ")}
                 <a href="/stations" class="hover:opacity-80 transition-opacity">
-                  <svg class="w-24 h-12" viewBox="0 0 120 48" preserveAspectRatio="none">
+                  <svg
+                    class="w-24 h-12"
+                    viewBox="0 0 120 48"
+                    preserveAspectRatio="none"
+                  >
                     <polyline
-                      points={points}
+                      {points}
                       fill="none"
                       stroke="currentColor"
                       stroke-width="2"
@@ -173,7 +204,10 @@
           <div class="grid grid-cols-2 gap-4">
             <div class="flex flex-col justify-center">
               <p class="text-4xl font-bold">
-                {formatTemperature(data.networkStats?.median_temperature, $temperatureUnit)}°{$temperatureUnit}
+                {formatTemperature(
+                  data.networkStats?.median_temperature,
+                  $temperatureUnit,
+                )}°{$temperatureUnit}
               </p>
               {#if data.networkStats?.sparkline_data}
                 {@const firstTemp =
@@ -327,7 +361,9 @@
           <tbody>
             {#each filteredData.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage) as item, i}
               <tr class="hover">
-                <td class="font-semibold">#{stationCountRanks[item.location_name]}</td>
+                <td class="font-semibold"
+                  >#{stationCountRanks[item.location_name]}</td
+                >
                 <td class="font-medium">
                   {#if data.activeTab === "city"}
                     <a href="/{item.location_name}" class="link link-primary">
@@ -360,22 +396,46 @@
                 <td>
                   <div class="flex items-center gap-2">
                     <span class="neutral-content">
-                      {formatTemperature(item.median_temperature, $temperatureUnit)}°{$temperatureUnit}
+                      {formatTemperature(
+                        item.median_temperature,
+                        $temperatureUnit,
+                      )}°{$temperatureUnit}
                     </span>
                   </div>
                 </td>
                 <td>
                   {#if true}
-                    {@const oneHourChange = calculateTempChange(item.sparkline_data, 1)}
-                    <span class="font-medium {oneHourChange !== 'N/A' && parseFloat(oneHourChange) > 0 ? 'text-error' : oneHourChange !== 'N/A' && parseFloat(oneHourChange) < 0 ? 'text-info' : 'text-base-content'}">
+                    {@const oneHourChange = calculateTempChange(
+                      item.sparkline_data,
+                      1,
+                    )}
+                    <span
+                      class="font-medium {oneHourChange !== 'N/A' &&
+                      parseFloat(oneHourChange) > 0
+                        ? 'text-error'
+                        : oneHourChange !== 'N/A' &&
+                            parseFloat(oneHourChange) < 0
+                          ? 'text-info'
+                          : 'text-base-content'}"
+                    >
                       {oneHourChange}
                     </span>
                   {/if}
                 </td>
                 <td>
                   {#if true}
-                    {@const dayChange = calculateTempChange(item.sparkline_data, 24)}
-                    <span class="font-medium {dayChange !== 'N/A' && parseFloat(dayChange) > 0 ? 'text-error' : dayChange !== 'N/A' && parseFloat(dayChange) < 0 ? 'text-info' : 'text-base-content'}">
+                    {@const dayChange = calculateTempChange(
+                      item.sparkline_data,
+                      24,
+                    )}
+                    <span
+                      class="font-medium {dayChange !== 'N/A' &&
+                      parseFloat(dayChange) > 0
+                        ? 'text-error'
+                        : dayChange !== 'N/A' && parseFloat(dayChange) < 0
+                          ? 'text-info'
+                          : 'text-base-content'}"
+                    >
                       {dayChange}
                     </span>
                   {/if}
@@ -401,13 +461,17 @@
                           )
                           .join(" ")}
                         {@const firstTemp = item.sparkline_data[0].temperature}
-                        {@const lastTemp = item.sparkline_data[item.sparkline_data.length - 1].temperature}
+                        {@const lastTemp =
+                          item.sparkline_data[item.sparkline_data.length - 1]
+                            .temperature}
                         <polyline
                           {points}
                           fill="none"
                           stroke="currentColor"
                           stroke-width="1.5"
-                          class={lastTemp > firstTemp ? "text-error" : "text-info"}
+                          class={lastTemp > firstTemp
+                            ? "text-error"
+                            : "text-info"}
                         />
                       {/if}
                     </svg>
