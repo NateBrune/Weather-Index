@@ -14,7 +14,7 @@
   let sortOrder = "desc"; // Default order
   let currentPage = 1;
   let itemsPerPage = 100;
-  
+
   const itemsPerPageOptions = [50, 100, 200, 500];
 
   function changeTab(tabId) {
@@ -90,9 +90,9 @@
             <div class="text-sm opacity-70">
               {data.networkStats.high_quality_stations} high quality stations
             </div>
-            <progress 
-              class="progress progress-success" 
-              value={data.networkStats.high_quality_stations} 
+            <progress
+              class="progress progress-success"
+              value={data.networkStats.high_quality_stations}
               max={data.networkStats.station_count}
             ></progress>
           </div>
@@ -104,20 +104,30 @@
           <div class="grid grid-cols-2 gap-4">
             <div class="flex flex-col justify-center">
               <p class="text-4xl font-bold">
-                {data.networkStats?.median_temperature != null ? 
-                  ($temperatureUnit === "C"
-                    ? data.networkStats.median_temperature
-                    : (data.networkStats.median_temperature * 9) / 5 + 32
-                  ).toFixed(1) 
+                {data.networkStats?.median_temperature != null
+                  ? ($temperatureUnit === "C"
+                      ? data.networkStats.median_temperature
+                      : (data.networkStats.median_temperature * 9) / 5 + 32
+                    ).toFixed(1)
                   : "N/A"}°{$temperatureUnit}
               </p>
               {#if data.networkStats?.sparkline_data}
-                {@const firstTemp = data.networkStats.sparkline_data[0].temperature}
-                {@const lastTemp = data.networkStats.sparkline_data[data.networkStats.sparkline_data.length - 1].temperature}
+                {@const firstTemp =
+                  data.networkStats.sparkline_data[0].temperature}
+                {@const lastTemp =
+                  data.networkStats.sparkline_data[
+                    data.networkStats.sparkline_data.length - 1
+                  ].temperature}
                 {@const change = lastTemp - firstTemp}
-                <p class="text-lg mt-2 {change > 0 ? 'text-error' : change < 0 ? 'text-info' : 'text-base-content'}">
-                  {change > 0 ? '+' : ''}{$temperatureUnit === 'C' 
-                    ? change.toFixed(1) 
+                <p
+                  class="text-lg mt-2 {change > 0
+                    ? 'text-error'
+                    : change < 0
+                      ? 'text-info'
+                      : 'text-base-content'}"
+                >
+                  {change > 0 ? "+" : ""}{$temperatureUnit === "C"
+                    ? change.toFixed(1)
                     : ((change * 9) / 5).toFixed(1)}°{$temperatureUnit} / 24h
                 </p>
               {/if}
@@ -175,7 +185,7 @@
           class="input input-bordered flex-grow"
           bind:value={searchQuery}
         />
-        <select 
+        <select
           class="select select-bordered w-full max-w-xs"
           bind:value={itemsPerPage}
         >
@@ -220,10 +230,10 @@
                 {/if}
               </th>
               <th
-                class="text-primary cursor-pointer w-40"
+                class="text-primary cursor-pointer"
                 on:click={() => toggleSort("temperature")}
               >
-                Median Temperature
+                Median °
                 {#if sortBy === "temperature"}
                   <span>{sortOrder === "desc" ? "↓" : "↑"}</span>
                 {/if}
@@ -364,30 +374,38 @@
       </div>
       <div class="flex items-center justify-between p-4">
         <div class="text-sm text-base-content/70">
-          Showing {Math.min((currentPage - 1) * itemsPerPage + 1, filteredData.length)} to {Math.min(currentPage * itemsPerPage, filteredData.length)} of {filteredData.length} entries
+          Showing {Math.min(
+            (currentPage - 1) * itemsPerPage + 1,
+            filteredData.length,
+          )} to {Math.min(currentPage * itemsPerPage, filteredData.length)} of {filteredData.length}
+          entries
         </div>
         <div class="join">
-          <button 
-            class="join-item btn" 
-            disabled={currentPage === 1}
-            on:click={() => currentPage = 1}
-          >«</button>
-          <button 
+          <button
             class="join-item btn"
             disabled={currentPage === 1}
-            on:click={() => currentPage--}
-          >‹</button>
+            on:click={() => (currentPage = 1)}>«</button
+          >
+          <button
+            class="join-item btn"
+            disabled={currentPage === 1}
+            on:click={() => currentPage--}>‹</button
+          >
           <button class="join-item btn">Page {currentPage}</button>
-          <button 
+          <button
             class="join-item btn"
-            disabled={currentPage >= Math.ceil(filteredData.length / itemsPerPage)}
-            on:click={() => currentPage++}
-          >›</button>
-          <button 
+            disabled={currentPage >=
+              Math.ceil(filteredData.length / itemsPerPage)}
+            on:click={() => currentPage++}>›</button
+          >
+          <button
             class="join-item btn"
-            disabled={currentPage >= Math.ceil(filteredData.length / itemsPerPage)}
-            on:click={() => currentPage = Math.ceil(filteredData.length / itemsPerPage)}
-          >»</button>
+            disabled={currentPage >=
+              Math.ceil(filteredData.length / itemsPerPage)}
+            on:click={() =>
+              (currentPage = Math.ceil(filteredData.length / itemsPerPage))}
+            >»</button
+          >
         </div>
       </div>
     </div>
