@@ -58,8 +58,12 @@
     <div class="mb-8">
       <h1 class="text-4xl font-bold text-primary">Weather Statistics</h1>
       <div class="grid grid-cols-2 gap-4">
-        <h3 class="text-1xl font-bold text-info">Powered By WeatherXM 🛰️</h3>
-        <h3 class="text-1xl font-bold text-info text-right">Made with Replit ❤️</h3>
+        <h3 class="text-1xl font-bold text-secondary">
+          Powered By WeatherXM 🛰️
+        </h3>
+        <h3 class="text-1xl font-bold text-accent text-right">
+          Made with Replit ❤️
+        </h3>
       </div>
     </div>
 
