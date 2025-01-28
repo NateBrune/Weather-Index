@@ -45,7 +45,7 @@ export async function GET({ url }) {
         location_name,
         station_count,
         ROUND(median_temperature::numeric, 2) as median_temperature,
-        ROUND(median_wind_speed::numeric, 2) as median_wind_speed,
+        COALESCE(ROUND(NULLIF(median_wind_speed::text, '')::numeric, 2), 0) as median_wind_speed,
         weather_icon
       FROM grouped_stations
       ORDER BY station_count DESC;
