@@ -30,23 +30,23 @@
 	<script src="https://cdn.tailwindcss.com"></script>
 </svelte:head>
 
-<header class="navbar bg-base-100 shadow-lg">
+<header class="navbar bg-base-100 shadow-lg backdrop-blur-lg bg-opacity-90 fixed top-0 z-50">
 	<div class="flex-1">
-		<a href="/" class="btn btn-ghost normal-case text-xl">Weather Index</a>
+		<a href="/" class="btn btn-ghost normal-case text-xl font-extrabold tracking-tight">Weather Index</a>
 	</div>
-	<div class="flex-none gap-2">
+	<div class="flex-none gap-3">
 		<a
 			href="https://weatherxm.com/ref/adeconde/"
 			target="_blank"
-			class="btn btn-primary btn-sm">Buy a Station</a
+			class="btn btn-primary btn-sm shadow-lg hover:shadow-xl transition-all">Buy a Station</a
 		>
-		<button class="btn btn-sm mr-2" on:click={() => {
+		<button class="btn btn-ghost btn-sm hover:bg-base-200 transition-all" on:click={() => {
 			$temperatureUnit = $temperatureUnit === 'C' ? 'F' : 'C';
 		}}>°{$temperatureUnit}</button>
-		<button class="btn btn-circle" on:click={toggleTheme}>
+		<button class="btn btn-ghost btn-circle hover:bg-base-200 transition-all" on:click={toggleTheme}>
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
-				class="h-6 w-6"
+				class="h-5 w-5"
 				fill="none"
 				viewBox="0 0 24 24"
 				stroke="currentColor"
@@ -61,6 +61,10 @@
 		</button>
 	</div>
 </header>
+
+<div class="pt-16">
+	<slot />
+</div>
 
 <div class="app">
 	<main>

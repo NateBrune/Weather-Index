@@ -68,6 +68,9 @@
       chart.destroy();
     }
     if (chartContainer) {
+      Chart.defaults.color = '#666';
+      Chart.defaults.borderColor = 'rgba(163, 163, 163, 0.2)';
+      Chart.defaults.font.family = 'system-ui, -apple-system, sans-serif';
       chart = new Chart(chartContainer, {
         type: "line",
         data: chartData,
@@ -180,17 +183,17 @@
     Weather Data for {city}
   </h1>
 
-  <div class="mb-6 flex justify-center gap-2">
+  <div class="mb-6 flex justify-center gap-3">
     <button
-      class="btn btn-primary btn-sm"
+      class="btn btn-sm glass hover:shadow-lg transition-all"
       on:click={() => changeTimescale("hourly")}>One Day</button
     >
     <button
-      class="btn btn-primary btn-sm"
+      class="btn btn-sm glass hover:shadow-lg transition-all"
       on:click={() => changeTimescale("daily")}>One Week</button
     >
     <button
-      class="btn btn-primary btn-sm"
+      class="btn btn-sm glass hover:shadow-lg transition-all"
       on:click={() => changeTimescale("weekly")}>One Month</button
     >
     <!-- <button
