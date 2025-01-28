@@ -120,39 +120,29 @@
         <div class="card-body">
           <h2 class="card-title text-2xl">Global Station Count</h2>
           <div class="flex flex-col gap-2">
-            <p class="text-4xl font-bold">
-              {data.networkStats?.station_count?.toLocaleString() ?? 0}
-            </p>
-            {#if data.networkStats?.station_count_history}
+            <div class="flex items-center">
+              <p class="text-4xl font-bold flex-1">
+                {data.networkStats?.station_count?.toLocaleString() ?? 0}
+              </p>
               {#if data.networkStats?.station_count_history}
                 {@const counts = data.networkStats.station_count_history.map(d => d.count)}
-                {@const qualityCounts = data.networkStats.station_count_history.map(d => d.quality_count)}
-                {@const min = Math.min(...counts, ...qualityCounts)}
-                {@const max = Math.max(...counts, ...qualityCounts)}
+                {@const min = Math.min(...counts)}
+                {@const max = Math.max(...counts)}
                 {@const range = max - min || 1}
-                {@const totalPoints = data.networkStats.station_count_history
+                {@const points = data.networkStats.station_count_history
                   .map((d, i) => `${(i * 120) / (data.networkStats.station_count_history.length - 1)},${48 - ((d.count - min) * 48) / range}`)
                   .join(" ")}
-                {@const qualityPoints = data.networkStats.station_count_history
-                  .map((d, i) => `${(i * 120) / (data.networkStats.station_count_history.length - 1)},${48 - ((d.quality_count - min) * 48) / range}`)
-                  .join(" ")}
-                <svg class="w-full h-12" viewBox="0 0 120 48" preserveAspectRatio="none">
+                <svg class="w-24 h-12" viewBox="0 0 120 48" preserveAspectRatio="none">
                   <polyline
-                    points={totalPoints}
+                    points={points}
                     fill="none"
                     stroke="currentColor"
                     stroke-width="2"
-                    class="text-primary opacity-50"
-                  />
-                  <polyline
-                    points={qualityPoints}
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    class="text-success"
+                    class="text-primary"
                   />
                 </svg>
               {/if}
+            </div>
             {/if}
           </div>
         </div>
