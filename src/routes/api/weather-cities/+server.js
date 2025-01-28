@@ -17,7 +17,7 @@ export async function GET({ url }) {
     const groupBy = url.searchParams.get("groupBy") || "city";
 
     const query = `
-      WITH recent_temps AS (
+      WITH location_groups AS (
         SELECT 
           CASE 
             WHEN $1 = 'city' THEN g.city
@@ -25,31 +25,24 @@ export async function GET({ url }) {
             ELSE COALESCE(g.country, 'Unknown')
           END as location_name,
           o.temperature,
-          o.observation_timestamp,
-          FIRST_VALUE(o.temperature) OVER (PARTITION BY 
-            CASE 
-              WHEN $1 = 'city' THEN g.city
-              WHEN $1 = 'state' THEN COALESCE(g.state, 'Unknown')
-              ELSE COALESCE(g.country, 'Unknown')
-            END
-            ORDER BY o.observation_timestamp DESC) - 
-          FIRST_VALUE(o.temperature) OVER (PARTITION BY 
-            CASE 
-              WHEN $1 = 'city' THEN g.city
-              WHEN $1 = 'state' THEN COALESCE(g.state, 'Unknown')
-              ELSE COALESCE(g.country, 'Unknown')
-            END
-            ORDER BY o.observation_timestamp ASC) as temp_change_24h,
-          FIRST_VALUE(o.temperature) OVER (PARTITION BY location_name ORDER BY o.observation_timestamp DESC) - 
-          FIRST_VALUE(o.temperature) OVER (PARTITION BY location_name ORDER BY o.observation_timestamp DESC RANGE INTERVAL '1 hour' PRECEDING) as temp_change_1h,
-          FIRST_VALUE(o.temperature) OVER (PARTITION BY location_name ORDER BY o.observation_timestamp DESC) - 
-          FIRST_VALUE(o.temperature) OVER (PARTITION BY location_name ORDER BY o.observation_timestamp DESC RANGE INTERVAL '7 days' PRECEDING) as temp_change_7d
+          o.observation_timestamp
         FROM stations s
         JOIN geocodes g ON s.latitude = g.latitude AND s.longitude = g.longitude
         JOIN observations o ON s.station_id = o.station_id
         WHERE o.observation_timestamp >= NOW() - INTERVAL '24 hours'
-          AND o.temperature BETWEEN -50 AND 50
-          AND o.data_quality_score >= 0.8
+      ),
+      recent_temps AS (
+        SELECT 
+          location_name,
+          temperature,
+          observation_timestamp,
+          FIRST_VALUE(temperature) OVER (PARTITION BY location_name ORDER BY observation_timestamp DESC) - 
+          FIRST_VALUE(temperature) OVER (PARTITION BY location_name ORDER BY observation_timestamp DESC RANGE INTERVAL '1 hour' PRECEDING) as temp_change_1h,
+          FIRST_VALUE(temperature) OVER (PARTITION BY location_name ORDER BY observation_timestamp DESC) - 
+          FIRST_VALUE(temperature) OVER (PARTITION BY location_name ORDER BY observation_timestamp DESC RANGE INTERVAL '7 days' PRECEDING) as temp_change_7d,
+          FIRST_VALUE(temperature) OVER (PARTITION BY location_name ORDER BY observation_timestamp DESC) - 
+          FIRST_VALUE(temperature) OVER (PARTITION BY location_name ORDER BY observation_timestamp ASC) as temp_change_24h
+        FROM location_groups
       ),
       sparklines AS (
         SELECT 
