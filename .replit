@@ -5,14 +5,16 @@ modules = ["svelte-kit-node-20", "nodejs-20"]
 channel = "stable-24_05"
 
 [deployment]
-build = ["sh", "-c", "vite build"]
-run = ["sh", "-c", "npm run preview --host high-crushing-transversal.replit.app"]
-deploymentTarget = "gce"
+build = ["sh", "-c", "npm run build"]
+run = ["sh", "-c", "node build/index.js"]
+deploymentTarget = "cloudrun"
+
+[[ports]]
+localPort = 3000
+externalPort = 80
 
 [[ports]]
 localPort = 4173
-externalPort = 80
-exposeLocalhost = true
 
 [[ports]]
 localPort = 5173
