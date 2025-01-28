@@ -7,13 +7,72 @@
     labels: timestamps,
     datasets: [{
       label: `Temperature (°${$temperatureUnit})`,
-      data: temperatures.map(temp => $temperatureUnit === 'C' ? temp : (temp * 9/5 + 32)),
+      data: temperatures.map(temp => $temperatureUnit === 'C' ? temp : (temp * 9/5 + 32).toFixed(1)),
       borderColor: "rgb(255, 99, 132)",
       backgroundColor: "rgba(255, 99, 132, 0.2)",
       fill: { value: -100 },
       tension: 0.1,
     }]
   };
+
+  $: if (chartContainer) {
+    new Chart(chartContainer, {
+      type: "line",
+      data: chartData,
+      options: {
+        responsive: true,
+        scales: {
+          x: {
+            type: "time",
+            adapters: {
+              date: {
+                zone: 'local'
+              }
+            },
+            time: {
+              unit: (() => {
+                const timescale = new URLSearchParams(window.location.search).get("timescale") || "daily";
+                switch (timescale) {
+                  case "hourly": return "hour";
+                  case "daily": return "day";
+                  case "weekly": return "week";
+                  case "monthly": return "month";
+                  default: return "day";
+                }
+              })(),
+              tooltipFormat: navigator.language.startsWith('en-US') ? "ll hh:mm A" : "ll HH:mm",
+              displayFormats: {
+                hour: navigator.language.startsWith('en-US') ? "hh:mm A" : "HH:mm",
+                day: "MMM D",
+                week: "MMM D",
+                month: "MMM YYYY",
+              },
+              stepSize: 1,
+            },
+            title: {
+              display: true,
+              text: "Time of Observation",
+            },
+          },
+          y: {
+            type: "linear",
+            title: {
+              display: true,
+              text: `Temperature (°${$temperatureUnit})`,
+            },
+            ticks: {
+              beginAtZero: false,
+            },
+          },
+        },
+        plugins: {
+          legend: {
+            display: true,
+          },
+        },
+      },
+    });
+  }
   import {
     Chart,
     CategoryScale,
