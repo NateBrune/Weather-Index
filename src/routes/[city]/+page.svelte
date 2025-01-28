@@ -39,7 +39,7 @@
 
   if (Array.isArray(data.data)) {
     timestamps = data.data.map((item) =>
-      moment(item.observation_timestamp, "YYYY-MM-DD HH:mm:ss"),
+      moment.parseZone(item.observation_timestamp).local(),
     );
     temperatures = data.data.map((item) => item.temperature);
   }
@@ -72,7 +72,7 @@
               type: "time",
               adapters: {
                 date: {
-                  zone: Intl.DateTimeFormat().resolvedOptions().timeZone
+                  zone: 'local'
                 }
               },
               time: {
