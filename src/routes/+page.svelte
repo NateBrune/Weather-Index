@@ -75,16 +75,27 @@
 
   function calculateTempChange(sparklineData, hours = 24) {
     if (!sparklineData || sparklineData.length < 2) return 'N/A';
-    const now = new Date();
     const lastTemp = sparklineData[sparklineData.length - 1].temperature;
-    const hourAgoIndex = sparklineData.findIndex(d => {
-      const timeDiff = (now - new Date(d.timestamp)) / (1000 * 60 * 60);
-      return timeDiff >= hours;
-    });
-    const compareTemp = hourAgoIndex >= 0 ? sparklineData[hourAgoIndex].temperature : sparklineData[0].temperature;
-    const change = lastTemp - compareTemp;
-    const sign = change > 0 ? '+' : '';
-    return `${sign}${change.toFixed(1)}°`;
+    const lastTimestamp = new Date(sparklineData[sparklineData.length - 1].timestamp);
+    
+    if (hours === 1) {
+      // For 1 hour change, look for data point closest to 1 hour ago
+      const oneHourAgo = new Date(lastTimestamp.getTime() - 3600000);
+      const hourAgoIndex = sparklineData.reduce((closest, point, index) => {
+        const pointTime = new Date(point.timestamp);
+        const currentDiff = Math.abs(pointTime - oneHourAgo);
+        const closestDiff = Math.abs(new Date(sparklineData[closest].timestamp) - oneHourAgo);
+        return currentDiff < closestDiff ? index : closest;
+      }, 0);
+      const change = lastTemp - sparklineData[hourAgoIndex].temperature;
+      const sign = change > 0 ? '+' : '';
+      return `${sign}${change.toFixed(1)}°`;
+    } else {
+      // For 24 hour change, use the oldest available data point
+      const change = lastTemp - sparklineData[0].temperature;
+      const sign = change > 0 ? '+' : '';
+      return `${sign}${change.toFixed(1)}°`;
+    }
   }
 </script>
 
