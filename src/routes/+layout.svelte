@@ -84,6 +84,22 @@
 
 <div class="app">
 	<main>
-		<slot />
+		{#each data.cities as city}
+			<div class="card w-96 bg-base-100 shadow-xl">
+				<div class="card-body">
+					<h2 class="card-title">{city.name}</h2>
+					<p>Temperature: {city.temperature}°C</p>
+				</div>
+			</div>
+		{/each}
+
+		<div>
+			<h2>Network Median Temperature</h2>
+			<p class="text-4xl font-bold">
+                {$temperatureUnit === "C" ? 
+                  data.networkStats?.median_temperature?.toFixed(1) : 
+                  ((data.networkStats?.median_temperature * 9/5) + 32).toFixed(1)}°{$temperatureUnit}
+              </p>
+		</div>
 	</main>
 </div>
