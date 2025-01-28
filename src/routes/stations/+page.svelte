@@ -44,25 +44,20 @@
     const newData = await response.json();
     stationData = newData;
     loading = false;
-    
-    // Destroy existing chart before creating a new one
+
+    // Check if there's a chart, destroy it before re-creating
     if (chart) {
       chart.destroy();
       chart = null;
     }
+
+    // Update the chart
     updateChart();
   }
 
   function updateChart() {
-    if (chart && stationData.length > 0) {
-      // Update the chart's dataset
-      chart.data.datasets[0].data = stationData.map((d) => ({
-        x: moment.utc(d.timestamp).local().valueOf(), // Parse as UTC and convert to local time
-        y: parseInt(d.active_stations, 10),
-      }));
-      chart.update(); // Update the chart
-    } else if (chartContainer && stationData.length > 0) {
-      // Create a new chart if it doesn't exist
+    if (stationData.length > 0) {
+      // Create chart if it doesn't exist
       const chartData = {
         datasets: [
           {
@@ -78,6 +73,8 @@
           },
         ],
       };
+
+      if (!chartContainer) return;
 
       chart = new Chart(chartContainer, {
         type: "line",
