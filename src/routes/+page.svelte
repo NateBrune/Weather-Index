@@ -115,6 +115,7 @@
                   <span>{sortOrder === "desc" ? "↓" : "↑"}</span>
                 {/if}
               </th>
+              <th class="text-primary">24h Change</th>
               <th class="text-primary">Weather</th>
             </tr>
           </thead>
@@ -187,6 +188,15 @@
                       ></progress>
                     {/if}
                   </div>
+                </td>
+                <td>
+                  {#if item.temp_change_24h !== null}
+                    <span class="font-medium {item.temp_change_24h > 0 ? 'text-error' : item.temp_change_24h < 0 ? 'text-info' : 'text-base-content'}">
+                      {item.temp_change_24h > 0 ? '+' : ''}{$temperatureUnit === 'C' 
+                        ? item.temp_change_24h 
+                        : (item.temp_change_24h * 9/5).toFixed(1)}°{$temperatureUnit}
+                    </span>
+                  {/if}
                 </td>
                 <td>
                   {#if item.weather_icon}

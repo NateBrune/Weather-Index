@@ -25,7 +25,21 @@ export async function GET({ url }) {
             ELSE COALESCE(g.country, 'Unknown')
           END as location_name,
           o.temperature,
-          o.observation_timestamp
+          o.observation_timestamp,
+          FIRST_VALUE(o.temperature) OVER (PARTITION BY 
+            CASE 
+              WHEN $1 = 'city' THEN g.city
+              WHEN $1 = 'state' THEN COALESCE(g.state, 'Unknown')
+              ELSE COALESCE(g.country, 'Unknown')
+            END
+            ORDER BY o.observation_timestamp DESC) - 
+          FIRST_VALUE(o.temperature) OVER (PARTITION BY 
+            CASE 
+              WHEN $1 = 'city' THEN g.city
+              WHEN $1 = 'state' THEN COALESCE(g.state, 'Unknown')
+              ELSE COALESCE(g.country, 'Unknown')
+            END
+            ORDER BY o.observation_timestamp ASC) as temp_change_24h
         FROM stations s
         JOIN geocodes g ON s.latitude = g.latitude AND s.longitude = g.longitude
         JOIN observations o ON s.station_id = o.station_id
@@ -78,9 +92,12 @@ export async function GET({ url }) {
         ROUND(g.median_temperature::numeric, 2) as median_temperature,
         COALESCE(ROUND(g.median_wind_speed::numeric, 2), 0)::float as median_wind_speed,
         g.weather_icon,
-        s.sparkline_data
+        s.sparkline_data,
+        ROUND(MAX(r.temp_change_24h)::numeric, 1) as temp_change_24h
       FROM grouped_stations g
       LEFT JOIN sparklines s ON g.location_name = s.location_name
+      LEFT JOIN recent_temps r ON g.location_name = r.location_name
+      GROUP BY g.location_name, g.station_count, g.median_temperature, g.median_wind_speed, g.weather_icon, s.sparkline_data
       ORDER BY station_count DESC;
     `;
 
