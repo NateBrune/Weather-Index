@@ -22,42 +22,35 @@ export async function GET() {
         LEFT JOIN observations o ON s.station_id = o.station_id
         WHERE o.data_quality_score IS NOT NULL
       ),
+      recent_temps AS (
+        SELECT o.temperature, o.observation_timestamp
+        FROM observations o
+        WHERE o.observation_timestamp >= NOW() - INTERVAL '1 hour'
+          AND o.data_quality_score >= 0.8
+          AND o.temperature BETWEEN -50 AND 50
+      ),
       hourly_temps AS (
         SELECT 
           date_trunc('hour', observation_timestamp) as hour,
           PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY temperature) as temperature
-        FROM observations
-        WHERE observation_timestamp >= NOW() - INTERVAL '24 hours'
-          AND data_quality_score >= 0.8
-          AND temperature BETWEEN -50 AND 50
+        FROM recent_temps
         GROUP BY hour
-        ORDER BY hour ASC
-      ),
-      current_median AS (
-        SELECT PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY temperature) as median_temperature
-        FROM observations
-        WHERE observation_timestamp >= NOW() - INTERVAL '1 hour'
-          AND data_quality_score >= 0.8
-          AND temperature BETWEEN -50 AND 50
+        ORDER BY hour DESC
+        LIMIT 24
       )
       SELECT 
         qs.total_stations as station_count,
         qs.high_quality_stations,
         qs.avg_quality_percentage,
-        cm.median_temperature,
-        COALESCE(
-          FIRST_VALUE(ht.temperature) OVER (ORDER BY ht.hour DESC) -
-          FIRST_VALUE(ht.temperature) OVER (ORDER BY ht.hour ASC),
-          0
-        ) as temp_change_24h,
+        PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY temperature) as median_temperature,
         (SELECT json_agg(json_build_object(
           'temperature', temperature,
           'timestamp', hour
-        ))
+        ) ORDER BY hour)
         FROM hourly_temps) as sparkline_data
-      FROM quality_stats qs, current_median cm
-      CROSS JOIN LATERAL (SELECT * FROM hourly_temps) ht
-      GROUP BY qs.total_stations, qs.high_quality_stations, qs.avg_quality_percentage, cm.median_temperature;
+      FROM quality_stats qs, recent_temps
+      GROUP BY qs.total_stations, qs.high_quality_stations, qs.avg_quality_percentage
+      LIMIT 1;
     `;
 
     const result = await client.query(query);

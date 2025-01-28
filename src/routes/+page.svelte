@@ -26,12 +26,12 @@
       if (sortBy === "temperature") {
         const tempA =
           $temperatureUnit === "C"
-            ? a.median_temperature || 0 //Added null check
-            : (a.median_temperature || 0) * 9 / 5 + 32; //Added null check
+            ? a.median_temperature
+            : (a.median_temperature * 9) / 5 + 32;
         const tempB =
           $temperatureUnit === "C"
-            ? b.median_temperature || 0 //Added null check
-            : (b.median_temperature || 0) * 9 / 5 + 32; //Added null check
+            ? b.median_temperature
+            : (b.median_temperature * 9) / 5 + 32;
         return (tempA - tempB) * modifier;
       } else if (sortBy === "wind_speed") {
         return (a.median_wind_speed - b.median_wind_speed) * modifier;
@@ -81,15 +81,15 @@
           <h2 class="card-title text-2xl">Network Data Quality</h2>
           <div class="flex flex-col gap-2">
             <div class="stat-value text-4xl font-bold">
-              {data.networkStats?.avg_quality_percentage}%
+              {data.networkStats.avg_quality_percentage}%
             </div>
             <div class="text-sm opacity-70">
-              {data.networkStats?.high_quality_stations} high quality stations
+              {data.networkStats.high_quality_stations} high quality stations
             </div>
             <progress 
               class="progress progress-success" 
-              value={data.networkStats?.high_quality_stations || 0}
-              max={data.networkStats?.station_count || 0}
+              value={data.networkStats.high_quality_stations} 
+              max={data.networkStats.station_count}
             ></progress>
           </div>
         </div>
@@ -101,8 +101,8 @@
             <div class="flex flex-col justify-center">
               <p class="text-4xl font-bold">
                 {($temperatureUnit === "C"
-                  ? data.networkStats?.median_temperature || 0 //Added null check
-                  : (data.networkStats?.median_temperature || 0) * 9 / 5 + 32 //Added null check
+                  ? data.networkStats.median_temperature
+                  : (data.networkStats.median_temperature * 9) / 5 + 32
                 ).toFixed(1)}°{$temperatureUnit}
               </p>
               {#if data.networkStats?.sparkline_data}
@@ -110,11 +110,9 @@
                 {@const lastTemp = data.networkStats.sparkline_data[data.networkStats.sparkline_data.length - 1].temperature}
                 {@const change = lastTemp - firstTemp}
                 <p class="text-lg mt-2 {change > 0 ? 'text-error' : change < 0 ? 'text-info' : 'text-base-content'}">
-                  {#if change !== undefined && change !== null}
-                    {change > 0 ? '+' : ''}{$temperatureUnit === 'C' 
-                      ? change.toFixed(1) 
-                      : ((change * 9) / 5).toFixed(1)}°{$temperatureUnit} / 24h
-                  {/if}
+                  {change > 0 ? '+' : ''}{$temperatureUnit === 'C' 
+                    ? change.toFixed(1) 
+                    : ((change * 9) / 5).toFixed(1)}°{$temperatureUnit} / 24h
                 </p>
               {/if}
             </div>
@@ -263,8 +261,8 @@
                   <div class="flex items-center gap-2">
                     <span class="neutral-content">
                       {$temperatureUnit === "C"
-                        ? item.median_temperature || 0 //Added null check
-                        : ((item.median_temperature || 0) * 9 / 5 + 32).toFixed( //Added null check
+                        ? item.median_temperature
+                        : ((item.median_temperature * 9) / 5 + 32).toFixed(
                             1,
                           )}°{$temperatureUnit}
                     </span>
@@ -305,7 +303,7 @@
                           0,
                           Math.min(
                             40,
-                            parseFloat(item.median_temperature || 0) + 20 || 0, //Added null check
+                            parseFloat(item.median_temperature) + 20 || 0,
                           ),
                         )}
                         max="40"
