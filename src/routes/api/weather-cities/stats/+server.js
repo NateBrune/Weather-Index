@@ -40,7 +40,7 @@ export async function GET() {
            AND data_quality_score >= 0.8
            AND temperature BETWEEN -50 AND 50) as temp_change_24h
         FROM observations
-        WHERE observation_timestamp >= NOW() - INTERVAL '5 minutes'
+        WHERE observation_timestamp >= date_trunc('hour', NOW())
           AND data_quality_score >= 0.8
           AND temperature BETWEEN -50 AND 50
       )
