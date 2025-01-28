@@ -15,6 +15,14 @@
     return moment(timestamp).format('MMM D, YYYY HH:mm');
   }
 
+  function formatTemperature(temp, unit) {
+    if (temp == null || isNaN(temp)) return "N/A";
+    const numTemp = Number(temp);
+    return unit === "C"
+      ? numTemp.toFixed(1)
+      : ((numTemp * 9) / 5 + 32).toFixed(1);
+  }
+
   $: chartData = {
     labels: timestamps,
     datasets: [
