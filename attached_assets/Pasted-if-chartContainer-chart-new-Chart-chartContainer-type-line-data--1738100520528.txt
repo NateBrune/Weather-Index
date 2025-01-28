@@ -1,0 +1,90 @@
+if (chartContainer) {
+      chart = new Chart(chartContainer, {
+        type: "line",
+        data: chartData,
+        options: {
+          responsive: true,
+          scales: {
+            x: {
+              type: "time",
+              adapters: {
+                date: {
+                  zone: 'local'
+                }
+              },
+              time: {
+                unit: (() => {
+                  const timescale =
+                    new URLSearchParams(window.location.search).get(
+                      "timescale",
+                    ) || "daily";
+                  switch (timescale) {
+                    case "hourly":
+                      return "hour";
+                    case "daily":
+                      return "day";
+                    case "weekly":
+                      return "week";
+                    case "monthly":
+                      return "month";
+                    default:
+                      return "day";
+                  }
+                })(),
+                tooltipFormat: navigator.language.startsWith('en-US') ? "ll hh:mm A" : "ll HH:mm",
+                displayFormats: {
+                  hour: navigator.language.startsWith('en-US') ? "hh:mm A" : "HH:mm",
+                  day: "MMM D",
+                  week: "MMM D",
+                  month: "MMM YYYY",
+                },
+                stepSize: 1,
+              },
+              title: {
+                display: true,
+                text: "Time of Observation",
+              },
+              ticks: {
+                source: "auto",
+                maxRotation: 0,
+                autoSkip: true,
+                maxTicksLimit: (() => {
+                  const timescale =
+                    new URLSearchParams(window.location.search).get(
+                      "timescale",
+                    ) || "daily";
+                  switch (timescale) {
+                    case "hourly":
+                      return 24;
+                    case "daily":
+                      return 28;
+                    case "weekly":
+                      return 28;
+                    case "monthly":
+                      return 24;
+                    default:
+                      return 12;
+                  }
+                })(),
+              },
+            },
+            y: {
+              type: "linear",
+              title: {
+                display: true,
+                text: `Temperature (°${$temperatureUnit})`,
+              },
+              ticks: {
+                beginAtZero: false,
+              },
+            },
+          },
+          plugins: {
+            legend: {
+              display: true,
+            },
+          },
+        },
+      });
+    }
+  }
