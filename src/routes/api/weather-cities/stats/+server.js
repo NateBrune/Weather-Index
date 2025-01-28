@@ -23,12 +23,12 @@ export async function GET() {
       ),
       hourly_temps AS (
         SELECT 
-          date_trunc('hour', observation_timestamp) as hour,
-          PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY temperature) as temperature
-        FROM observations
-        WHERE observation_timestamp >= NOW() - INTERVAL '24 hours'
-          AND data_quality_score >= 0.8
-          AND temperature BETWEEN -50 AND 50
+          date_trunc('hour', o.observation_timestamp) as hour,
+          PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY o.temperature) as temperature
+        FROM observations o
+        WHERE o.observation_timestamp >= NOW() - INTERVAL '24 hours'
+          AND o.data_quality_score >= 0.8
+          AND o.temperature BETWEEN -50 AND 50
         GROUP BY hour
         ORDER BY hour ASC
       ),
@@ -40,31 +40,31 @@ export async function GET() {
           curr.temp - week_ago.temp as temp_change_7d
         FROM (
           SELECT PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY temperature) as temp
-          FROM observations
-          WHERE observation_timestamp >= NOW() - INTERVAL '1 hour'
-            AND data_quality_score >= 0.8
-            AND temperature BETWEEN -50 AND 50
+          FROM observations o
+          WHERE o.observation_timestamp >= NOW() - INTERVAL '1 hour'
+            AND o.data_quality_score >= 0.8
+            AND o.temperature BETWEEN -50 AND 50
         ) curr
         CROSS JOIN (
           SELECT PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY temperature) as temp
-          FROM observations
-          WHERE observation_timestamp BETWEEN NOW() - INTERVAL '2 hour' AND NOW() - INTERVAL '1 hour'
-            AND data_quality_score >= 0.8
-            AND temperature BETWEEN -50 AND 50
+          FROM observations o
+          WHERE o.observation_timestamp BETWEEN NOW() - INTERVAL '2 hour' AND NOW() - INTERVAL '1 hour'
+            AND o.data_quality_score >= 0.8
+            AND o.temperature BETWEEN -50 AND 50
         ) hour_ago
         CROSS JOIN (
           SELECT PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY temperature) as temp
-          FROM observations
-          WHERE observation_timestamp BETWEEN NOW() - INTERVAL '25 hour' AND NOW() - INTERVAL '24 hour'
-            AND data_quality_score >= 0.8
-            AND temperature BETWEEN -50 AND 50
+          FROM observations o
+          WHERE o.observation_timestamp BETWEEN NOW() - INTERVAL '25 hour' AND NOW() - INTERVAL '24 hour'
+            AND o.data_quality_score >= 0.8
+            AND o.temperature BETWEEN -50 AND 50
         ) day_ago
         CROSS JOIN (
           SELECT PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY temperature) as temp
-          FROM observations
-          WHERE observation_timestamp BETWEEN NOW() - INTERVAL '8 day' AND NOW() - INTERVAL '7 day'
-            AND data_quality_score >= 0.8
-            AND temperature BETWEEN -50 AND 50
+          FROM observations o
+          WHERE o.observation_timestamp BETWEEN NOW() - INTERVAL '8 day' AND NOW() - INTERVAL '7 day'
+            AND o.data_quality_score >= 0.8
+            AND o.temperature BETWEEN -50 AND 50
         ) week_ago
         ORDER BY date_trunc('hour', observation_timestamp) DESC
         LIMIT 1
