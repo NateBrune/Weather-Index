@@ -322,16 +322,20 @@
                   </div>
                 </td>
                 <td>
-                  {@const oneHourChange = calculateTempChange(item.sparkline_data, 1)}
-                  <span class="font-medium {oneHourChange !== 'N/A' && parseFloat(oneHourChange) > 0 ? 'text-error' : oneHourChange !== 'N/A' && parseFloat(oneHourChange) < 0 ? 'text-info' : 'text-base-content'}">
-                    {oneHourChange}
-                  </span>
+                  {#if true}
+                    {@const oneHourChange = calculateTempChange(item.sparkline_data, 1)}
+                    <span class="font-medium {oneHourChange !== 'N/A' && parseFloat(oneHourChange) > 0 ? 'text-error' : oneHourChange !== 'N/A' && parseFloat(oneHourChange) < 0 ? 'text-info' : 'text-base-content'}">
+                      {oneHourChange}
+                    </span>
+                  {/if}
                 </td>
                 <td>
-                  {@const dayChange = calculateTempChange(item.sparkline_data, 24)}
-                  <span class="font-medium {dayChange !== 'N/A' && parseFloat(dayChange) > 0 ? 'text-error' : dayChange !== 'N/A' && parseFloat(dayChange) < 0 ? 'text-info' : 'text-base-content'}">
-                    {dayChange}
-                  </span>
+                  {#if true}
+                    {@const dayChange = calculateTempChange(item.sparkline_data, 24)}
+                    <span class="font-medium {dayChange !== 'N/A' && parseFloat(dayChange) > 0 ? 'text-error' : dayChange !== 'N/A' && parseFloat(dayChange) < 0 ? 'text-info' : 'text-base-content'}">
+                      {dayChange}
+                    </span>
+                  {/if}
                 </td>
                 <td>
                   {#if item.sparkline_data}
