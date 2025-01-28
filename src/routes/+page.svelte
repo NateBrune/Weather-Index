@@ -68,7 +68,7 @@
     </div>
 
     <div class="grid grid-cols-2 gap-4 mb-8">
-      <div class="card bg-base-100 text-info shadow-xl">
+      <div class="card bg-base-100 text-neutral-content shadow-xl">
         <div class="card-body">
           <h2 class="card-title text-2xl">Global Station Count</h2>
           <p class="text-4xl font-bold">
@@ -76,7 +76,7 @@
           </p>
         </div>
       </div>
-      <div class="card bg-base-100 text-info shadow-xl">
+      <div class="card bg-base-100 text-neutral-content shadow-xl">
         <div class="card-body">
           <h2 class="card-title text-2xl">Network Median Temperature</h2>
           <div class="flex items-center gap-4">
@@ -229,7 +229,7 @@
                 </td>
                 <td>
                   <div class="flex items-center gap-2">
-                    <span class="text-error">
+                    <span class="neutral-content">
                       {$temperatureUnit === "C"
                         ? item.median_temperature
                         : ((item.median_temperature * 9) / 5 + 32).toFixed(
