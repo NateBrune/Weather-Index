@@ -72,18 +72,34 @@
         <div class="card-body">
           <h2 class="card-title text-2xl">Global Station Count</h2>
           <p class="text-4xl font-bold">
-            {data.data.reduce((sum, item) => sum + parseInt(item.station_count || 0), 0).toLocaleString()}
+            {data.data
+              .reduce((sum, item) => sum + parseInt(item.station_count || 0), 0)
+              .toLocaleString()}
           </p>
         </div>
       </div>
       <div class="card bg-secondary text-secondary-content shadow-xl">
         <div class="card-body">
-          <h2 class="card-title text-2xl">Global Median Temperature</h2>
+          <h2 class="card-title text-2xl">Network Median Temperature</h2>
           <p class="text-4xl font-bold">
-            {(($temperatureUnit === "C" 
-              ? data.data.reduce((sum, item) => sum + parseFloat(item.median_temperature || 0), 0) / data.data.filter(item => item.median_temperature).length
-              : ((data.data.reduce((sum, item) => sum + parseFloat(item.median_temperature || 0), 0) / data.data.filter(item => item.median_temperature).length) * 9/5 + 32)
-            ) || 0).toFixed(1)}°{$temperatureUnit}
+            {(
+              ($temperatureUnit === "C"
+                ? data.data.reduce(
+                    (sum, item) =>
+                      sum + parseFloat(item.median_temperature || 0),
+                    0,
+                  ) / data.data.filter((item) => item.median_temperature).length
+                : ((data.data.reduce(
+                    (sum, item) =>
+                      sum + parseFloat(item.median_temperature || 0),
+                    0,
+                  ) /
+                    data.data.filter((item) => item.median_temperature)
+                      .length) *
+                    9) /
+                    5 +
+                  32) || 0
+            ).toFixed(1)}°{$temperatureUnit}
           </p>
         </div>
       </div>
