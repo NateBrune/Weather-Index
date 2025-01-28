@@ -38,11 +38,11 @@
         const tempA =
           $temperatureUnit === "C"
             ? a.median_temperature
-            : (a.median_temperature * 9) / 5 + 32;
+            : ((a.median_temperature * 9) / 5) + 32;
         const tempB =
           $temperatureUnit === "C"
             ? b.median_temperature
-            : (b.median_temperature * 9) / 5 + 32;
+            : ((b.median_temperature * 9) / 5) + 32;
         return (tempA - tempB) * modifier;
       } else if (sortBy === "wind_speed") {
         return (a.median_wind_speed - b.median_wind_speed) * modifier;
@@ -70,14 +70,14 @@
   function formatTemperature(temp, unit) {
     if (temp == null || isNaN(temp)) return "N/A";
     const numTemp = Number(temp);
-    return unit === "C" ? numTemp.toFixed(1) : ((numTemp * 9) / 5).toFixed(1);
+    return unit === "C" ? numTemp.toFixed(1) : ((numTemp * 9) / 5 + 32).toFixed(1);
   }
 
   function calculateTempChange(sparklineData, hours = 24) {
     if (!sparklineData || sparklineData.length < 2) return 'N/A';
     const lastTemp = sparklineData[sparklineData.length - 1].temperature;
     const lastTimestamp = new Date(sparklineData[sparklineData.length - 1].timestamp);
-    
+
     if (hours === 1) {
       // For 1 hour change, look for data point closest to 1 hour ago
       const oneHourAgo = new Date(lastTimestamp.getTime() - 3600000);
