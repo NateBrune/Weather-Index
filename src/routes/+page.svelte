@@ -70,7 +70,7 @@
       <input
         type="text"
         placeholder="Search locations..."
-        class="input input-bordered w-full max-w-md"
+        class="input input-bordered w-full"
         bind:value={searchQuery}
       />
     </div>
