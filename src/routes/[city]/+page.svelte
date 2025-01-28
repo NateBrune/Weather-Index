@@ -70,6 +70,11 @@
           scales: {
             x: {
               type: "time",
+              adapters: {
+                date: {
+                  zone: Intl.DateTimeFormat().resolvedOptions().timeZone
+                }
+              },
               time: {
                 unit: (() => {
                   const timescale =
