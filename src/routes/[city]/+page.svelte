@@ -237,9 +237,12 @@
     <div class="mb-6">
       <canvas bind:this={chartContainer}></canvas>
     </div>
-
+  </div>
+  
+  <div class="bg-base-200 shadow-lg rounded-lg p-6 mt-8">
+    <h2 class="text-2xl font-semibold mb-4">Active Weather Stations</h2>
     <div class="overflow-x-auto">
-      <table class="table table-zebra">
+      <table class="table table-zebra w-full">
         <thead>
           <tr>
             <th>Station ID</th>
