@@ -42,8 +42,14 @@
       `/api/weather-cities/stats/stations?timeRange=${timeRange}`,
     );
     const newData = await response.json();
-    stationData = newData; // Update stationData directly
+    stationData = newData;
     loading = false;
+    
+    // Destroy existing chart before creating a new one
+    if (chart) {
+      chart.destroy();
+      chart = null;
+    }
     updateChart();
   }
 
