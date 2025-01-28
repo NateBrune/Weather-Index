@@ -1,0 +1,44 @@
+TypeError: Cannot read properties of undefined (reading 'toFixed')
+    at /home/runner/workspace/src/routes/+page.svelte:142:51
+    at Module.each (/home/runner/workspace/node_modules/svelte/src/runtime/internal/ssr.js:114:10)
+    at eval (/home/runner/workspace/src/routes/+page.svelte:79:126)
+    at Object.$$render (/home/runner/workspace/node_modules/svelte/src/runtime/internal/ssr.js:156:16)
+    at Object.default (/home/runner/workspace/.svelte-kit/generated/root.svelte:44:41)
+    at /home/runner/workspace/src/routes/+layout.svelte:45:24
+    at Object.$$render (/home/runner/workspace/node_modules/svelte/src/runtime/internal/ssr.js:156:16)
+    at /home/runner/workspace/.svelte-kit/generated/root.svelte:43:40
+    at $$render (/home/runner/workspace/node_modules/svelte/src/runtime/internal/ssr.js:156:16)
+    at Object.render (/home/runner/workspace/node_modules/svelte/src/runtime/internal/ssr.js:164:17)
+TypeError: Cannot read properties of undefined (reading 'toFixed')
+    at /home/runner/workspace/src/routes/+page.svelte:142:51
+    at Module.each (/home/runner/workspace/node_modules/svelte/src/runtime/internal/ssr.js:114:10)
+    at eval (/home/runner/workspace/src/routes/+page.svelte:79:126)
+    at Object.$$render (/home/runner/workspace/node_modules/svelte/src/runtime/internal/ssr.js:156:16)
+    at Object.default (/home/runner/workspace/.svelte-kit/generated/root.svelte:44:41)
+    at /home/runner/workspace/src/routes/+layout.svelte:45:24
+    at Object.$$render (/home/runner/workspace/node_modules/svelte/src/runtime/internal/ssr.js:156:16)
+    at /home/runner/workspace/.svelte-kit/generated/root.svelte:43:40
+    at $$render (/home/runner/workspace/node_modules/svelte/src/runtime/internal/ssr.js:156:16)
+    at Object.render (/home/runner/workspace/node_modules/svelte/src/runtime/internal/ssr.js:164:17)
+TypeError: Cannot read properties of undefined (reading 'toFixed')
+    at /home/runner/workspace/src/routes/+page.svelte:142:51
+    at Module.each (/home/runner/workspace/node_modules/svelte/src/runtime/internal/ssr.js:114:10)
+    at eval (/home/runner/workspace/src/routes/+page.svelte:79:126)
+    at Object.$$render (/home/runner/workspace/node_modules/svelte/src/runtime/internal/ssr.js:156:16)
+    at Object.default (/home/runner/workspace/.svelte-kit/generated/root.svelte:44:41)
+    at /home/runner/workspace/src/routes/+layout.svelte:45:24
+    at Object.$$render (/home/runner/workspace/node_modules/svelte/src/runtime/internal/ssr.js:156:16)
+    at /home/runner/workspace/.svelte-kit/generated/root.svelte:43:40
+    at $$render (/home/runner/workspace/node_modules/svelte/src/runtime/internal/ssr.js:156:16)
+    at Object.render (/home/runner/workspace/node_modules/svelte/src/runtime/internal/ssr.js:164:17)
+TypeError: Cannot read properties of undefined (reading 'toFixed')
+    at /home/runner/workspace/src/routes/+page.svelte:142:51
+    at Module.each (/home/runner/workspace/node_modules/svelte/src/runtime/internal/ssr.js:114:10)
+    at eval (/home/runner/workspace/src/routes/+page.svelte:79:126)
+    at Object.$$render (/home/runner/workspace/node_modules/svelte/src/runtime/internal/ssr.js:156:16)
+    at Object.default (/home/runner/workspace/.svelte-kit/generated/root.svelte:44:41)
+    at /home/runner/workspace/src/routes/+layout.svelte:45:24
+    at Object.$$render (/home/runner/workspace/node_modules/svelte/src/runtime/internal/ssr.js:156:16)
+    at /home/runner/workspace/.svelte-kit/generated/root.svelte:43:40
+    at $$render (/home/runner/workspace/node_modules/svelte/src/runtime/internal/ssr.js:156:16)
+    at Object.render (/home/runner/workspace/node_modules/svelte/src/runtime/internal/ssr.js:164:17)
