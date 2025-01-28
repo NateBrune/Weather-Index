@@ -127,8 +127,14 @@
                     <a href="/{item.location_name}" class="link link-primary">
                       {item.location_name}
                     </a>
+                  {:else if data.activeTab === "state"}
+                    <a href="/state/{item.location_name}" class="link link-primary">
+                      {item.location_name}
+                    </a>
                   {:else}
-                    {item.location_name}
+                    <a href="/country/{item.location_name}" class="link link-primary">
+                      {item.location_name}
+                    </a>
                   {/if}
                 </td>
                 <td class="text-center">
