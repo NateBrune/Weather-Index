@@ -79,13 +79,25 @@
       <div class="card bg-base-100 text-neutral-content shadow-xl">
         <div class="card-body">
           <h2 class="card-title text-2xl">Network Median Temperature</h2>
-          <div class="flex items-center gap-4">
-            <p class="text-4xl font-bold">
-              {($temperatureUnit === "C"
-                ? data.networkStats.median_temperature
-                : (data.networkStats.median_temperature * 9) / 5 + 32
-              ).toFixed(1)}°{$temperatureUnit}
-            </p>
+          <div class="grid grid-cols-2 gap-4">
+            <div class="flex flex-col justify-center">
+              <p class="text-4xl font-bold">
+                {($temperatureUnit === "C"
+                  ? data.networkStats.median_temperature
+                  : (data.networkStats.median_temperature * 9) / 5 + 32
+                ).toFixed(1)}°{$temperatureUnit}
+              </p>
+              {#if data.networkStats?.sparkline_data}
+                {@const firstTemp = data.networkStats.sparkline_data[0].temperature}
+                {@const lastTemp = data.networkStats.sparkline_data[data.networkStats.sparkline_data.length - 1].temperature}
+                {@const change = lastTemp - firstTemp}
+                <p class="text-lg mt-2 {change > 0 ? 'text-error' : change < 0 ? 'text-info' : 'text-base-content'}">
+                  {change > 0 ? '+' : ''}{$temperatureUnit === 'C' 
+                    ? change.toFixed(1) 
+                    : ((change * 9) / 5).toFixed(1)}°{$temperatureUnit} / 24h
+                </p>
+              {/if}
+            </div>
             {#if data.networkStats?.sparkline_data}
               {#each [data.networkStats.sparkline_data] as sparkline}
                 {@const temperatures = sparkline.map((d) => d.temperature)}
@@ -99,8 +111,8 @@
                   )
                   .join(" ")}
                 <svg
-                  class="w-32 h-12"
-                  viewBox="0 0 120 48"
+                  class="w-full h-24"
+                  viewBox="0 0 200 96"
                   preserveAspectRatio="none"
                 >
                   <polyline
