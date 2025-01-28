@@ -33,6 +33,7 @@ export async function GET({ url }) {
         LEFT JOIN observations o ON s.station_id = o.station_id
         WHERE o.temperature IS NOT NULL
           AND o.temperature BETWEEN -50 AND 50
+          AND o.data_quality_score >= 0.8
           AND CASE 
             WHEN $1 = 'city' THEN g.city != 'Unknown'
             WHEN $1 = 'state' THEN g.state IS NOT NULL AND g.state != 'Unknown'

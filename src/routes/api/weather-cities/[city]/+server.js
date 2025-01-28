@@ -60,6 +60,7 @@ export async function GET({ params, url }) {
           AND o.temperature BETWEEN -50 AND 50  -- Filter unrealistic temperatures
           AND o.humidity BETWEEN 0 AND 100      -- Filter invalid humidity values
           AND o.pressure BETWEEN 870 AND 1085   -- Filter invalid pressure values (hPa)
+          AND o.data_quality_score >= 0.8       -- Filter low quality data
           AND o.observation_timestamp >= NOW() - INTERVAL '${timeRange}'
         GROUP BY timestamp_interval
         ORDER BY timestamp_interval DESC
