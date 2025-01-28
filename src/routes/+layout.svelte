@@ -48,8 +48,9 @@
 <header
 	class="navbar bg-base-100/90 shadow-lg backdrop-blur-xl fixed top-0 z-50 border-b border-base-300/50"
 >
-	<div class="flex-1">
+	<div class="flex-1 flex items-center gap-4">
 		<a href="/" class="btn btn-ghost normal-case text-xl">Weather Index</a>
+		<a href="/stations" class="btn btn-ghost btn-sm">Stations</a>
 	</div>
 	<div class="flex-none gap-2">
 		<a
