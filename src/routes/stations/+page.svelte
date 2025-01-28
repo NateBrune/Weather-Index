@@ -57,7 +57,7 @@
           label: 'Active Stations',
           data: stationData.map(d => ({
             x: moment(d.timestamp).valueOf(),
-            y: d.active_stations
+            y: parseInt(d.active_stations, 10)
           })),
           borderColor: "rgb(255, 99, 132)",
           backgroundColor: "rgba(255, 99, 132, 0.2)",
