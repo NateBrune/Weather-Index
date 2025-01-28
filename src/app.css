@@ -19,3 +19,8 @@ html {
 .chart-container:hover {
   transform: scale(1.01);
 }
+
+.station-count-link:hover {
+  cursor: pointer;
+  opacity: 0.9;
+}

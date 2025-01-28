@@ -121,9 +121,9 @@
           <h2 class="card-title text-2xl">Global Station Count</h2>
           <div class="flex flex-col gap-2">
             <div class="flex items-center">
-              <p class="text-4xl font-bold flex-1">
+              <a href="/stations" class="text-4xl font-bold flex-1 hover:text-primary transition-colors">
                 {data.networkStats?.station_count?.toLocaleString() ?? 0}
-              </p>
+              </a>
               {#if data.networkStats?.station_count_history}
                 {@const historicalData = data.networkStats.station_count_history.slice(0, -1)}
                 {@const counts = historicalData.map(d => d.count)}
