@@ -25,7 +25,8 @@ export async function GET({ url }) {
             ELSE COALESCE(g.country, 'Unknown')
           END as location_name,
           COUNT(DISTINCT s.station_id) AS station_count,
-          PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY o.temperature) as median_temperature
+          PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY o.temperature) as median_temperature,
+          mode() WITHIN GROUP (ORDER BY o.weather_condition) as weather_icon
         FROM stations s
         JOIN geocodes g ON s.latitude = g.latitude AND s.longitude = g.longitude
         LEFT JOIN observations o ON s.station_id = o.station_id
@@ -42,7 +43,8 @@ export async function GET({ url }) {
       SELECT 
         location_name,
         station_count,
-        ROUND(median_temperature::numeric, 2) as median_temperature
+        ROUND(median_temperature::numeric, 2) as median_temperature,
+        weather_icon
       FROM grouped_stations
       ORDER BY station_count DESC;
     `;

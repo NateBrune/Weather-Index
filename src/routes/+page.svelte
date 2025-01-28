@@ -40,6 +40,7 @@
               <th class="text-primary">
                 {data.activeTab === 'city' ? 'City' : data.activeTab === 'state' ? 'State' : 'Country'}
               </th>
+              <th class="text-primary">Weather</th>
               <th class="text-primary">Station Count</th>
               <th class="text-primary">Median Temperature</th>
             </tr>
@@ -55,6 +56,15 @@
                     </a>
                   {:else}
                     {item.location_name}
+                  {/if}
+                </td>
+                <td>
+                  {#if item.weather_icon}
+                    <img 
+                      src="https://weatherxm.com/icons/{item.weather_icon}.svg" 
+                      alt={item.weather_icon}
+                      class="w-8 h-8"
+                    />
                   {/if}
                 </td>
                 <td class="text-center">
