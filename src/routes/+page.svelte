@@ -72,7 +72,7 @@
         <div class="card-body">
           <h2 class="card-title text-2xl">Global Station Count</h2>
           <p class="text-4xl font-bold">
-            {data.networkStats.station_count.toLocaleString()}
+            {data.networkStats?.station_count?.toLocaleString() ?? 0}
           </p>
         </div>
       </div>
