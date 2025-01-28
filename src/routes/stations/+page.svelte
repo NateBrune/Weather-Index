@@ -1,5 +1,5 @@
 <script>
-  import { onMount, onDestroy } from "svelte";
+  import { onMount, onDestroy, tick } from "svelte";
   import moment from "moment";
   import {
     Chart,
@@ -42,16 +42,19 @@
       `/api/weather-cities/stats/stations?timeRange=${timeRange}`,
     );
     const newData = await response.json();
-    stationData = newData;
-    loading = false;
 
-    // Check if there's a chart, destroy it before re-creating
+    // Destroy existing chart
     if (chart) {
       chart.destroy();
       chart = null;
     }
 
-    // Update the chart
+    // Update data after chart is destroyed
+    stationData = newData;
+    loading = false;
+
+    // Wait for next tick to ensure DOM is updated
+    await tick();
     updateChart();
   }
 
