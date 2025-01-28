@@ -13,7 +13,16 @@ export async function GET() {
   try {
     const client = await pool.connect();
     const query = `
-      WITH active_stations AS (
+      WITH quality_stats AS (
+        SELECT 
+          COUNT(DISTINCT s.station_id) as total_stations,
+          COUNT(DISTINCT CASE WHEN o.data_quality_score >= 0.8 THEN s.station_id END) as high_quality_stations,
+          CAST(AVG(o.data_quality_score) * 100 AS DECIMAL(5,2)) as avg_quality_percentage
+        FROM stations s
+        LEFT JOIN observations o ON s.station_id = o.station_id
+        WHERE o.data_quality_score IS NOT NULL
+      ),
+      active_stations AS (
         SELECT DISTINCT s.station_id
         FROM stations s
         JOIN observations o ON s.station_id = o.station_id
@@ -39,7 +48,9 @@ export async function GET() {
         LIMIT 24
       )
       SELECT 
-        (SELECT COUNT(*) FROM active_stations) as station_count,
+        q.total_stations as station_count,
+        q.high_quality_stations,
+        q.avg_quality_percentage,
         PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY temperature) as median_temperature,
         (SELECT json_agg(json_build_object(
           'temperature', temperature,

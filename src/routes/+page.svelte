@@ -78,6 +78,24 @@
       </div>
       <div class="card bg-base-100 text-neutral-content shadow-xl">
         <div class="card-body">
+          <h2 class="card-title text-2xl">Network Data Quality</h2>
+          <div class="flex flex-col gap-2">
+            <div class="stat-value text-4xl font-bold">
+              {data.networkStats.avg_quality_percentage}%
+            </div>
+            <div class="text-sm opacity-70">
+              {data.networkStats.high_quality_stations} high quality stations
+            </div>
+            <progress 
+              class="progress progress-success" 
+              value={data.networkStats.high_quality_stations} 
+              max={data.networkStats.station_count}
+            ></progress>
+          </div>
+        </div>
+      </div>
+      <div class="card bg-base-100 text-neutral-content shadow-xl">
+        <div class="card-body">
           <h2 class="card-title text-2xl">Network Median Temperature</h2>
           <div class="grid grid-cols-2 gap-4">
             <div class="flex flex-col justify-center">
