@@ -81,26 +81,49 @@
       <div class="card bg-secondary text-secondary-content shadow-xl">
         <div class="card-body">
           <h2 class="card-title text-2xl">Network Median Temperature</h2>
-          <p class="text-4xl font-bold">
-            {(
-              ($temperatureUnit === "C"
-                ? data.data.reduce(
-                    (sum, item) =>
-                      sum + parseFloat(item.median_temperature || 0),
-                    0,
-                  ) / data.data.filter((item) => item.median_temperature).length
-                : ((data.data.reduce(
-                    (sum, item) =>
-                      sum + parseFloat(item.median_temperature || 0),
-                    0,
-                  ) /
-                    data.data.filter((item) => item.median_temperature)
-                      .length) *
-                    9) /
-                    5 +
-                  32) || 0
-            ).toFixed(1)}°{$temperatureUnit}
-          </p>
+          <div class="flex items-center gap-4">
+            <p class="text-4xl font-bold">
+              {(
+                ($temperatureUnit === "C"
+                  ? data.data.reduce(
+                      (sum, item) =>
+                        sum + parseFloat(item.median_temperature || 0),
+                      0,
+                    ) / data.data.filter((item) => item.median_temperature).length
+                  : ((data.data.reduce(
+                      (sum, item) =>
+                        sum + parseFloat(item.median_temperature || 0),
+                      0,
+                    ) /
+                      data.data.filter((item) => item.median_temperature)
+                        .length) *
+                      9) /
+                      5 +
+                    32) || 0
+              ).toFixed(1)}°{$temperatureUnit}
+            </p>
+            {#if data.data[0]?.sparkline_data}
+              <svg class="w-32 h-12" viewBox="0 0 120 48" preserveAspectRatio="none">
+                {@const temperatures = data.data[0].sparkline_data.map((d) => d.temperature)}
+                {@const min = Math.min(...temperatures)}
+                {@const max = Math.max(...temperatures)}
+                {@const range = max - min}
+                {@const points = data.data[0].sparkline_data
+                  .map(
+                    (d, i) =>
+                      `${(i * 120) / (data.data[0].sparkline_data.length - 1)},${48 - ((d.temperature - min) * 48) / (range || 1)}`,
+                  )
+                  .join(" ")}
+                <polyline
+                  {points}
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  class={data.data[0]?.temp_change_24h > 0 ? "text-error" : "text-info"}
+                />
+              </svg>
+            {/if}
+          </div>
         </div>
       </div>
     </div>
