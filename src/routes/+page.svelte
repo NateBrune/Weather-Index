@@ -59,7 +59,7 @@
       <h1 class="text-4xl font-bold text-primary">Weather Statistics</h1>
       <div class="grid grid-cols-2 gap-4">
         <h3 class="text-1xl font-bold text-secondary">
-          Powered By WeatherXM 🛰️
+          Powered By WeatherXM 🌦️
         </h3>
         <h3 class="text-1xl font-bold text-accent text-right">
           Made with Replit ❤️
@@ -81,10 +81,9 @@
           <h2 class="card-title text-2xl">Network Median Temperature</h2>
           <div class="flex items-center gap-4">
             <p class="text-4xl font-bold">
-              {(
-                $temperatureUnit === "C"
-                  ? data.networkStats.median_temperature
-                  : (data.networkStats.median_temperature * 9) / 5 + 32
+              {($temperatureUnit === "C"
+                ? data.networkStats.median_temperature
+                : (data.networkStats.median_temperature * 9) / 5 + 32
               ).toFixed(1)}°{$temperatureUnit}
             </p>
             {#if data.data[0]?.sparkline_data}
