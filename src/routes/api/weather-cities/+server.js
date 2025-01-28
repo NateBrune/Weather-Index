@@ -90,7 +90,9 @@ export async function GET({ url }) {
         COALESCE(ROUND(g.median_wind_speed::numeric, 2), 0)::float as median_wind_speed,
         g.weather_icon,
         s.sparkline_data,
-        ROUND(r.temp_change_24h::numeric, 1) as temp_change_24h
+        ROUND(r.temp_change_24h::numeric, 1) as temp_change_24h,
+        ROUND(r.temp_change_1h::numeric, 1) as temp_change_1h,
+        ROUND(r.temp_change_7d::numeric, 1) as temp_change_7d
       FROM grouped_stations g
       LEFT JOIN sparklines s ON g.location_name = s.location_name
       LEFT JOIN recent_temps r ON g.location_name = r.location_name
