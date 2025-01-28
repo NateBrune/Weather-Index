@@ -86,8 +86,8 @@
                 : (data.networkStats.median_temperature * 9) / 5 + 32
               ).toFixed(1)}°{$temperatureUnit}
             </p>
-            {#if data.data[0]?.sparkline_data}
-              {#each [data.data[0].sparkline_data] as sparkline}
+            {#if data.networkStats?.sparkline_data}
+              {#each [data.networkStats.sparkline_data] as sparkline}
                 {@const temperatures = sparkline.map((d) => d.temperature)}
                 {@const min = Math.min(...temperatures)}
                 {@const max = Math.max(...temperatures)}

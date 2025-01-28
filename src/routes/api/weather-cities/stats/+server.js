@@ -22,17 +22,32 @@ export async function GET() {
           AND o.temperature BETWEEN -50 AND 50
       ),
       recent_temps AS (
-        SELECT o.temperature
+        SELECT o.temperature, o.observation_timestamp
         FROM observations o
         JOIN active_stations a ON o.station_id = a.station_id
-        WHERE o.observation_timestamp >= NOW() - INTERVAL '1 hour'
+        WHERE o.observation_timestamp >= NOW() - INTERVAL '24 hours'
           AND o.data_quality_score >= 0.8
           AND o.temperature BETWEEN -50 AND 50
+      ),
+      hourly_temps AS (
+        SELECT 
+          date_trunc('hour', observation_timestamp) as hour,
+          PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY temperature) as temperature
+        FROM recent_temps
+        GROUP BY hour
+        ORDER BY hour DESC
+        LIMIT 24
       )
       SELECT 
         (SELECT COUNT(*) FROM active_stations) as station_count,
-        PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY temperature) as median_temperature
-      FROM recent_temps;
+        PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY temperature) as median_temperature,
+        (SELECT json_agg(json_build_object(
+          'temperature', temperature,
+          'timestamp', hour
+        ) ORDER BY hour)
+        FROM hourly_temps) as sparkline_data
+      FROM recent_temps
+      WHERE observation_timestamp >= NOW() - INTERVAL '1 hour';
     `;
 
     const result = await client.query(query);
