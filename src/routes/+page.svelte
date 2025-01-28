@@ -8,11 +8,40 @@
   $: selectedState = '';
   $: selectedCountry = '';
   
-  $: filteredData = data.data.filter(city => {
-    if (activeTab === 'state') return city.state === selectedState;
-    if (activeTab === 'country') return city.country === selectedCountry;
-    return true;
-  });
+  $: aggregatedData = data.data.reduce((acc, item) => {
+    if (activeTab === 'state') {
+      const key = item.state;
+      if (!acc[key]) {
+        acc[key] = {
+          state: item.state,
+          station_count: 0,
+          median_temperature: 0,
+          count: 0
+        };
+      }
+      acc[key].station_count += item.station_count;
+      acc[key].median_temperature += item.median_temperature;
+      acc[key].count++;
+    } else if (activeTab === 'country') {
+      const key = item.country;
+      if (!acc[key]) {
+        acc[key] = {
+          country: item.country,
+          station_count: 0,
+          median_temperature: 0,
+          count: 0
+        };
+      }
+      acc[key].station_count += item.station_count;
+      acc[key].median_temperature += item.median_temperature;
+      acc[key].count++;
+    } else {
+      acc[item.city] = item;
+    }
+    return acc;
+  }, {});
+
+  $: filteredData = activeTab === 'all' ? data.data : Object.values(aggregatedData);
 </script>
 
 <svelte:head>
@@ -73,9 +102,13 @@
               <tr class="hover">
                 <td class="font-semibold">#{i + 1}</td>
                 <td class="font-medium">
-                  <a href="/{city.city}" class="link link-primary"
-                    >{city.city}</a
-                  >
+                  {#if activeTab === 'all'}
+                    <a href="/{city.city}" class="link link-primary">{city.city}</a>
+                  {:else if activeTab === 'state'}
+                    <span>{city.state || 'Unknown State'}</span>
+                  {:else}
+                    <span>{city.country || 'Unknown Country'}</span>
+                  {/if}
                 </td>
                 <td class="text-center">
                   <div class="badge badge-info">{city.station_count}</div>
