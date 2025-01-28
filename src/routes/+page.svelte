@@ -12,6 +12,10 @@
   let searchQuery = "";
   let sortBy = "station_count"; // Default sort
   let sortOrder = "desc"; // Default order
+  let currentPage = 1;
+  let itemsPerPage = 100;
+  
+  const itemsPerPageOptions = [50, 100, 200, 500];
 
   function changeTab(tabId) {
     goto(`?groupBy=${tabId}`);
@@ -164,12 +168,22 @@
         {/each}
       </div>
 
-      <input
-        type="text"
-        placeholder="Search locations..."
-        class="input input-bordered w-full"
-        bind:value={searchQuery}
-      />
+      <div class="flex gap-4 items-center">
+        <input
+          type="text"
+          placeholder="Search locations..."
+          class="input input-bordered flex-grow"
+          bind:value={searchQuery}
+        />
+        <select 
+          class="select select-bordered w-full max-w-xs"
+          bind:value={itemsPerPage}
+        >
+          {#each itemsPerPageOptions as option}
+            <option value={option}>{option} per page</option>
+          {/each}
+        </select>
+      </div>
     </div>
 
     <div
@@ -227,7 +241,7 @@
             </tr>
           </thead>
           <tbody>
-            {#each filteredData as item, i}
+            {#each filteredData.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage) as item, i}
               <tr class="hover">
                 <td class="font-semibold">#{i + 1}</td>
                 <td class="font-medium">
@@ -344,6 +358,34 @@
             {/each}
           </tbody>
         </table>
+      </div>
+      <div class="flex items-center justify-between p-4">
+        <div class="text-sm text-base-content/70">
+          Showing {Math.min((currentPage - 1) * itemsPerPage + 1, filteredData.length)} to {Math.min(currentPage * itemsPerPage, filteredData.length)} of {filteredData.length} entries
+        </div>
+        <div class="join">
+          <button 
+            class="join-item btn" 
+            disabled={currentPage === 1}
+            on:click={() => currentPage = 1}
+          >«</button>
+          <button 
+            class="join-item btn"
+            disabled={currentPage === 1}
+            on:click={() => currentPage--}
+          >‹</button>
+          <button class="join-item btn">Page {currentPage}</button>
+          <button 
+            class="join-item btn"
+            disabled={currentPage >= Math.ceil(filteredData.length / itemsPerPage)}
+            on:click={() => currentPage++}
+          >›</button>
+          <button 
+            class="join-item btn"
+            disabled={currentPage >= Math.ceil(filteredData.length / itemsPerPage)}
+            on:click={() => currentPage = Math.ceil(filteredData.length / itemsPerPage)}
+          >»</button>
+        </div>
       </div>
     </div>
   </div>
