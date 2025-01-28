@@ -103,26 +103,28 @@
               ).toFixed(1)}°{$temperatureUnit}
             </p>
             {#if data.data[0]?.sparkline_data}
-              <svg class="w-32 h-12" viewBox="0 0 120 48" preserveAspectRatio="none">
-                {@const temperatures = data.data[0].sparkline_data.map((d) => d.temperature)}
-                {@const min = Math.min(...temperatures)}
-                {@const max = Math.max(...temperatures)}
-                {@const range = max - min}
-                {@const points = data.data[0].sparkline_data
-                  .map(
-                    (d, i) =>
-                      `${(i * 120) / (data.data[0].sparkline_data.length - 1)},${48 - ((d.temperature - min) * 48) / (range || 1)}`,
-                  )
-                  .join(" ")}
-                <polyline
-                  {points}
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  class={data.data[0]?.temp_change_24h > 0 ? "text-error" : "text-info"}
-                />
-              </svg>
-            {/if}
+                {#each [data.data[0].sparkline_data] as sparkline}
+                  {@const temperatures = sparkline.map((d) => d.temperature)}
+                  {@const min = Math.min(...temperatures)}
+                  {@const max = Math.max(...temperatures)}
+                  {@const range = max - min}
+                  {@const points = sparkline
+                    .map(
+                      (d, i) =>
+                        `${(i * 120) / (sparkline.length - 1)},${48 - ((d.temperature - min) * 48) / (range || 1)}`,
+                    )
+                    .join(" ")}
+                  <svg class="w-32 h-12" viewBox="0 0 120 48" preserveAspectRatio="none">
+                    <polyline
+                      {points}
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      class={data.data[0]?.temp_change_24h > 0 ? "text-error" : "text-info"}
+                    />
+                  </svg>
+                {/each}
+              {/if}
           </div>
         </div>
       </div>
