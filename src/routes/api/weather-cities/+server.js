@@ -86,19 +86,18 @@ export async function GET({ url }) {
         GROUP BY location_name
         HAVING COUNT(DISTINCT s.station_id) > 0
       )
-      SELECT 
+      SELECT DISTINCT ON (g.location_name)
         g.location_name,
         g.station_count,
         ROUND(g.median_temperature::numeric, 2) as median_temperature,
         COALESCE(ROUND(g.median_wind_speed::numeric, 2), 0)::float as median_wind_speed,
         g.weather_icon,
         s.sparkline_data,
-        ROUND(MAX(r.temp_change_24h)::numeric, 1) as temp_change_24h
+        ROUND(r.temp_change_24h::numeric, 1) as temp_change_24h
       FROM grouped_stations g
       LEFT JOIN sparklines s ON g.location_name = s.location_name
       LEFT JOIN recent_temps r ON g.location_name = r.location_name
-      GROUP BY g.location_name, g.station_count, g.median_temperature, g.median_wind_speed, g.weather_icon, s.sparkline_data
-      ORDER BY station_count DESC;
+      ORDER BY g.location_name, g.station_count DESC;
     `;
 
     const result = await client.query(query, [groupBy]);
