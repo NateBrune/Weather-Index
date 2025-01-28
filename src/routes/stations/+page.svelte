@@ -78,6 +78,12 @@
                 unit: 'hour',
                 displayFormats: {
                   hour: 'HH:mm'
+                },
+                parser: 'iso'
+              },
+              adapters: {
+                date: {
+                  zone: 'UTC'
                 }
               },
               title: {
