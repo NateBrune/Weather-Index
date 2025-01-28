@@ -63,9 +63,13 @@ export async function GET({ url }) {
           mode() WITHIN GROUP (ORDER BY o.weather_icon) as weather_icon
         FROM hourly_stats h
         JOIN stations s
-          JOIN geocodes g ON s.latitude = g.latitude AND s.longitude = g.longitude
+        JOIN geocodes g ON s.latitude = g.latitude AND s.longitude = g.longitude
         JOIN observations o ON s.station_id = o.station_id AND date_trunc('hour', o.observation_timestamp) = h.hour
-        GROUP BY h.location_name
+        GROUP BY 
+          h.location_name,
+          h.temperature,
+          h.wind_speed,
+          h.hour
         HAVING COUNT(DISTINCT s.station_id) > 0
       ),
       sparkline_data AS (
