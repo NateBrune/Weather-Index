@@ -1,12 +1,15 @@
 <script>
 	import "../app.css";
-	import { temperatureUnit } from '$lib/stores';
+	import { temperatureUnit } from "$lib/stores";
 	import { goto } from "$app/navigation";
 	import { onMount } from "svelte";
 
 	onMount(() => {
 		const html = document.querySelector("html");
-		const savedTheme = typeof localStorage !== 'undefined' ? localStorage.getItem("theme") : null;
+		const savedTheme =
+			typeof localStorage !== "undefined"
+				? localStorage.getItem("theme")
+				: null;
 		html.setAttribute("data-theme", savedTheme || "dark");
 	});
 
@@ -15,7 +18,7 @@
 		const currentTheme = html.getAttribute("data-theme");
 		const newTheme = currentTheme === "light" ? "dark" : "light";
 		html.setAttribute("data-theme", newTheme);
-		if (typeof localStorage !== 'undefined') {
+		if (typeof localStorage !== "undefined") {
 			localStorage.setItem("theme", newTheme);
 		}
 	}
@@ -28,9 +31,13 @@
 		type="text/css"
 	/>
 	<script src="https://cdn.tailwindcss.com"></script>
+	<title>WeatherXM Index</title>
+	<meta name="description" content="Weather statistics powered by WeatherXM" />
 </svelte:head>
 
-<header class="navbar bg-base-100/90 shadow-lg backdrop-blur-xl fixed top-0 z-50 border-b border-base-300/50">
+<header
+	class="navbar bg-base-100/90 shadow-lg backdrop-blur-xl fixed top-0 z-50 border-b border-base-300/50"
+>
 	<div class="flex-1">
 		<a href="/" class="btn btn-ghost normal-case text-xl">Weather Index</a>
 	</div>
@@ -40,9 +47,12 @@
 			target="_blank"
 			class="btn btn-primary btn-sm">Buy a Station</a
 		>
-		<button class="btn btn-sm mr-2" on:click={() => {
-			$temperatureUnit = $temperatureUnit === 'C' ? 'F' : 'C';
-		}}>°{$temperatureUnit}</button>
+		<button
+			class="btn btn-sm mr-2"
+			on:click={() => {
+				$temperatureUnit = $temperatureUnit === "C" ? "F" : "C";
+			}}>°{$temperatureUnit}</button
+		>
 		<button class="btn btn-circle" on:click={toggleTheme}>
 			<svg
 				xmlns="http://www.w3.org/2000/svg"

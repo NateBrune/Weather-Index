@@ -57,6 +57,10 @@
   <div class="max-w-4xl mx-auto backdrop-blur-sm">
     <div class="mb-8">
       <h1 class="text-4xl font-bold text-primary">Weather Statistics</h1>
+      <div>
+        <h3 class="text-1xl font-bold text-info">Powered By WeatherXM 🛰️</h3>
+        <h3 class="text-1xl font-bold text-info">Made with Replit ❤️</h3>
+      </div>
     </div>
 
     <div class="flex flex-col gap-4 mb-4">
@@ -79,7 +83,9 @@
       />
     </div>
 
-    <div class="card bg-base-100/80 shadow-2xl backdrop-blur-sm border border-base-300/50">
+    <div
+      class="card bg-base-100/80 shadow-2xl backdrop-blur-sm border border-base-300/50"
+    >
       <div class="card-body overflow-x-auto px-2 sm:px-6">
         <table class="table table-zebra bg-transparent">
           <thead>
@@ -141,11 +147,17 @@
                       {item.location_name}
                     </a>
                   {:else if data.activeTab === "state"}
-                    <a href="/state/{item.location_name}" class="link link-primary">
+                    <a
+                      href="/state/{item.location_name}"
+                      class="link link-primary"
+                    >
                       {item.location_name}
                     </a>
                   {:else}
-                    <a href="/country/{item.location_name}" class="link link-primary">
+                    <a
+                      href="/country/{item.location_name}"
+                      class="link link-primary"
+                    >
                       {item.location_name}
                     </a>
                   {/if}
@@ -168,21 +180,32 @@
                           )}°{$temperatureUnit}
                     </span>
                     {#if item.sparkline_data}
-                      <svg class="w-20 h-8" viewBox="0 0 80 32" preserveAspectRatio="none">
+                      <svg
+                        class="w-20 h-8"
+                        viewBox="0 0 80 32"
+                        preserveAspectRatio="none"
+                      >
                         {#if item.sparkline_data.length > 1}
-                          {@const temperatures = item.sparkline_data.map(d => d.temperature)}
+                          {@const temperatures = item.sparkline_data.map(
+                            (d) => d.temperature,
+                          )}
                           {@const min = Math.min(...temperatures)}
                           {@const max = Math.max(...temperatures)}
                           {@const range = max - min}
-                          {@const points = item.sparkline_data.map((d, i) => 
-                            `${(i * 80) / (item.sparkline_data.length - 1)},${32 - ((d.temperature - min) * 32) / (range || 1)}`
-                          ).join(' ')}
+                          {@const points = item.sparkline_data
+                            .map(
+                              (d, i) =>
+                                `${(i * 80) / (item.sparkline_data.length - 1)},${32 - ((d.temperature - min) * 32) / (range || 1)}`,
+                            )
+                            .join(" ")}
                           <polyline
-                            points={points}
+                            {points}
                             fill="none"
                             stroke="currentColor"
                             stroke-width="1.5"
-                            class={item.temp_change_24h > 0 ? "text-error" : "text-info"}
+                            class={item.temp_change_24h > 0
+                              ? "text-error"
+                              : "text-info"}
                           />
                         {/if}
                       </svg>
@@ -203,10 +226,19 @@
                 </td>
                 <td>
                   {#if item.temp_change_24h !== null}
-                    <span class="font-medium {item.temp_change_24h > 0 ? 'text-error' : item.temp_change_24h < 0 ? 'text-info' : 'text-base-content'}">
-                      {item.temp_change_24h > 0 ? '+' : ''}{$temperatureUnit === 'C' 
-                        ? item.temp_change_24h 
-                        : (item.temp_change_24h * 9/5).toFixed(1)}°{$temperatureUnit}
+                    <span
+                      class="font-medium {item.temp_change_24h > 0
+                        ? 'text-error'
+                        : item.temp_change_24h < 0
+                          ? 'text-info'
+                          : 'text-base-content'}"
+                    >
+                      {item.temp_change_24h > 0 ? "+" : ""}{$temperatureUnit ===
+                      "C"
+                        ? item.temp_change_24h
+                        : ((item.temp_change_24h * 9) / 5).toFixed(
+                            1,
+                          )}°{$temperatureUnit}
                     </span>
                   {/if}
                 </td>
