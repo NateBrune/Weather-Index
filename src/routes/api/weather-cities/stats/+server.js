@@ -66,9 +66,6 @@ export async function GET() {
             AND data_quality_score >= 0.8
             AND temperature BETWEEN -50 AND 50
         ) week_ago
-          AND temperature BETWEEN -50 AND 50
-          AND temperature IS NOT NULL
-        GROUP BY date_trunc('hour', observation_timestamp)
         ORDER BY date_trunc('hour', observation_timestamp) DESC
         LIMIT 1
       )
