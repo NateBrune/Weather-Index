@@ -182,7 +182,7 @@
                             fill="none"
                             stroke="currentColor"
                             stroke-width="1.5"
-                            class="text-error"
+                            class={item.temp_change_24h > 0 ? "text-error" : "text-info"}
                           />
                         {/if}
                       </svg>
