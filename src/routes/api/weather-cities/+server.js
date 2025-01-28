@@ -69,7 +69,9 @@ export async function GET({ url }) {
           h.location_name,
           h.temperature,
           h.wind_speed,
-          h.hour
+          h.hour,
+          s.station_id,
+          o.weather_icon
         HAVING COUNT(DISTINCT s.station_id) > 0
       ),
       sparkline_data AS (
