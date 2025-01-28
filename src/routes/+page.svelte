@@ -74,9 +74,10 @@
   }
 
   function formatTempChange(change) {
-    if (!change) return 'N/A';
-    const sign = change > 0 ? '+' : '';
-    return `${sign}${change.toFixed(1)}°`;
+    if (change === null || change === undefined || isNaN(change)) return 'N/A';
+    const value = Number(change);
+    const sign = value > 0 ? '+' : '';
+    return `${sign}${value.toFixed(1)}°`;
   }
 </script>
 
