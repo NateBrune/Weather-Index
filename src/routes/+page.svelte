@@ -55,6 +55,10 @@
       sortOrder = "desc";
     }
   }
+
+  function formatTemperature(temp, unit) {
+    return unit === "C" ? temp.toFixed(1) : ((temp * 9) / 5).toFixed(1);
+  }
 </script>
 
 <div class="min-h-screen bg-base-200 pt-20 px-4 pb-8">
@@ -238,16 +242,10 @@
                   <span>{sortOrder === "desc" ? "↓" : "↑"}</span>
                 {/if}
               </th>
-              <th class="text-primary">24 Hour</th>
-              <th
-                class="text-primary cursor-pointer"
-                on:click={() => toggleSort("temp_change")}
-              >
-                24h Change
-                {#if sortBy === "temp_change"}
-                  <span>{sortOrder === "desc" ? "↓" : "↑"}</span>
-                {/if}
-              </th>
+              <th class="text-primary">1h Change</th>
+              <th class="text-primary">24h Change</th>
+              <th class="text-primary">7d Change</th>
+              <th class="text-primary">Sparkline</th>
               <th class="text-primary">Weather</th>
             </tr>
           </thead>
@@ -296,6 +294,51 @@
                   </div>
                 </td>
                 <td>
+                  {#if item.temp_change_1h !== null}
+                    <span
+                      class="font-medium {item.temp_change_1h > 0
+                        ? 'text-error'
+                        : item.temp_change_1h < 0
+                          ? 'text-info'
+                          : 'text-base-content'}"
+                    >
+                      {item.temp_change_1h > 0 ? "+" : ""}{formatTemperature(item.temp_change_1h, $temperatureUnit)}°{$temperatureUnit}
+                    </span>
+                  {:else}
+                    N/A
+                  {/if}
+                </td>
+                <td>
+                  {#if item.temp_change_24h !== null}
+                    <span
+                      class="font-medium {item.temp_change_24h > 0
+                        ? 'text-error'
+                        : item.temp_change_24h < 0
+                          ? 'text-info'
+                          : 'text-base-content'}"
+                    >
+                      {item.temp_change_24h > 0 ? "+" : ""}{formatTemperature(item.temp_change_24h, $temperatureUnit)}°{$temperatureUnit}
+                    </span>
+                  {:else}
+                    N/A
+                  {/if}
+                </td>
+                <td>
+                  {#if item.temp_change_7d !== null}
+                    <span
+                      class="font-medium {item.temp_change_7d > 0
+                        ? 'text-error'
+                        : item.temp_change_7d < 0
+                          ? 'text-info'
+                          : 'text-base-content'}"
+                    >
+                      {item.temp_change_7d > 0 ? "+" : ""}{formatTemperature(item.temp_change_7d, $temperatureUnit)}°{$temperatureUnit}
+                    </span>
+                  {:else}
+                    N/A
+                  {/if}
+                </td>
+                <td>
                   {#if item.sparkline_data}
                     <svg
                       class="w-20 h-8"
@@ -338,24 +381,6 @@
                       )}
                       max="40"
                     ></progress>
-                  {/if}
-                </td>
-                <td>
-                  {#if item.temp_change_24h !== null}
-                    <span
-                      class="font-medium {item.temp_change_24h > 0
-                        ? 'text-error'
-                        : item.temp_change_24h < 0
-                          ? 'text-info'
-                          : 'text-base-content'}"
-                    >
-                      {item.temp_change_24h > 0 ? "+" : ""}{$temperatureUnit ===
-                      "C"
-                        ? item.temp_change_24h
-                        : ((item.temp_change_24h * 9) / 5).toFixed(
-                            1,
-                          )}°{$temperatureUnit}
-                    </span>
                   {/if}
                 </td>
                 <td>

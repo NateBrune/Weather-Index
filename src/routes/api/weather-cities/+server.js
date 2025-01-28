@@ -39,7 +39,11 @@ export async function GET({ url }) {
               WHEN $1 = 'state' THEN COALESCE(g.state, 'Unknown')
               ELSE COALESCE(g.country, 'Unknown')
             END
-            ORDER BY o.observation_timestamp ASC) as temp_change_24h
+            ORDER BY o.observation_timestamp ASC) as temp_change_24h,
+          FIRST_VALUE(o.temperature) OVER (PARTITION BY location_name ORDER BY o.observation_timestamp DESC) - 
+          FIRST_VALUE(o.temperature) OVER (PARTITION BY location_name ORDER BY o.observation_timestamp DESC ROWS BETWEEN 1 HOUR FOLLOWING AND 1 HOUR FOLLOWING) as temp_change_1h,
+          FIRST_VALUE(o.temperature) OVER (PARTITION BY location_name ORDER BY o.observation_timestamp DESC) - 
+          FIRST_VALUE(o.temperature) OVER (PARTITION BY location_name ORDER BY o.observation_timestamp DESC ROWS BETWEEN 7 DAY FOLLOWING AND 7 DAY FOLLOWING) as temp_change_7d
         FROM stations s
         JOIN geocodes g ON s.latitude = g.latitude AND s.longitude = g.longitude
         JOIN observations o ON s.station_id = o.station_id
