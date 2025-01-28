@@ -1,194 +1,60 @@
-
 <script>
-  import moment from "moment";
+  import { Line } from 'svelte-chartjs';
+  import 'chartjs-adapter-date-fns';
   import { temperatureUnit } from '$lib/stores';
+  import { goto } from '$app/navigation';
+
+  export let data;
+
+  function handleTimescaleChange(event) {
+    const timescale = event.target.value;
+    goto(`?timescale=${timescale}`);
+  }
 
   $: chartData = {
-    labels: data.data.map(d => moment.parseZone(d.observation_timestamp).local()),
+    labels: data.data.map(d => new Date(d.observation_timestamp)),
     datasets: [{
       label: `Temperature (°${$temperatureUnit})`,
       data: data.data.map(d => $temperatureUnit === 'C' ? d.temperature : (d.temperature * 9/5) + 32),
-      borderColor: "rgb(255, 99, 132)",
-      backgroundColor: "rgba(255, 99, 132, 0.2)",
-      fill: { value: -100 },
-      tension: 0.1,
+      borderColor: 'rgb(75, 192, 192)',
+      tension: 0.1
     }]
   };
 
-  import {
-    Chart,
-    CategoryScale,
-    LinearScale,
-    LineElement,
-    PointElement,
-    LineController,
-    Title,
-    Tooltip,
-    Legend,
-    TimeScale,
-    Filler,
-  } from "chart.js";
-  import "chartjs-adapter-moment";
-  import { page } from "$app/stores";
-
-  Chart.register(
-    CategoryScale,
-    LinearScale,
-    LineElement,
-    PointElement,
-    LineController,
-    Title,
-    Tooltip,
-    Legend,
-    TimeScale,
-    Filler,
-  );
-
-  export let data;
-  let country = $page.params.country;
-  let chartContainer;
-
-  const changeTimescale = (timescale) => {
-    window.location.href = `/country/${country}?timescale=${timescale}`;
+  $: options = {
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+      x: {
+        type: 'time',
+        time: {
+          unit: 'hour'
+        }
+      }
+    }
   };
-
-  let chart;
-
-  $: {
-    if (chart) {
-      chart.destroy();
-    }
-    if (chartContainer) {
-      chart = new Chart(chartContainer, {
-        type: "line",
-        data: chartData,
-        options: {
-          responsive: true,
-          scales: {
-            x: {
-              type: "time",
-              adapters: {
-                date: {
-                  zone: 'local'
-                }
-              },
-              time: {
-                unit: (() => {
-                  const timescale =
-                    new URLSearchParams(window.location.search).get(
-                      "timescale",
-                    ) || "daily";
-                  switch (timescale) {
-                    case "hourly":
-                      return "hour";
-                    case "daily":
-                      return "day";
-                    case "weekly":
-                      return "week";
-                    case "monthly":
-                      return "month";
-                    default:
-                      return "day";
-                  }
-                })(),
-                tooltipFormat: navigator.language.startsWith('en-US') ? "ll hh:mm A" : "ll HH:mm",
-                displayFormats: {
-                  hour: navigator.language.startsWith('en-US') ? "hh:mm A" : "HH:mm",
-                  day: "MMM D",
-                  week: "MMM D",
-                  month: "MMM YYYY",
-                },
-                stepSize: 1,
-              },
-              title: {
-                display: true,
-                text: "Time of Observation",
-              },
-              ticks: {
-                source: "auto",
-                maxRotation: 0,
-                autoSkip: true,
-                maxTicksLimit: (() => {
-                  const timescale =
-                    new URLSearchParams(window.location.search).get(
-                      "timescale",
-                    ) || "daily";
-                  switch (timescale) {
-                    case "hourly":
-                      return 24;
-                    case "daily":
-                      return 28;
-                    case "weekly":
-                      return 28;
-                    case "monthly":
-                      return 24;
-                    default:
-                      return 12;
-                  }
-                })(),
-              },
-            },
-            y: {
-              type: "linear",
-              title: {
-                display: true,
-                text: `Temperature (°${$temperatureUnit})`,
-              },
-              ticks: {
-                beginAtZero: false,
-              },
-            },
-          },
-          plugins: {
-            legend: {
-              display: true,
-            },
-          },
-        },
-      });
-    }
-  }
 </script>
 
-<svelte:head>
-  <title>Country Weather Statistics</title>
-  <meta name="description" content="Weather statistics by country" />
-  <link
-    href="https://cdn.jsdelivr.net/npm/daisyui@4.4.19/dist/full.css"
-    rel="stylesheet"
-    type="text/css"
-  />
-  <script src="https://cdn.tailwindcss.com"></script>
-</svelte:head>
-
-<main class="max-w-4xl mx-auto p-6 bg-base-200 rounded-lg shadow-lg">
-  <h1 class="text-3xl font-semibold text-center mb-6">
-    Weather Data for {country}
-  </h1>
-
-  <div class="mb-6 flex justify-center gap-2">
-    <button
-      class="btn btn-primary btn-sm"
-      on:click={() => changeTimescale("hourly")}>One Day</button
-    >
-    <button
-      class="btn btn-primary btn-sm"
-      on:click={() => changeTimescale("daily")}>One Week</button
-    >
-    <button
-      class="btn btn-primary btn-sm"
-      on:click={() => changeTimescale("weekly")}>One Month</button
-    >
+<div class="min-h-screen bg-base-200 p-4">
+  <div class="max-w-4xl mx-auto">
+    <h1 class="text-4xl font-bold text-primary mb-4">Temperature History for {data.country}</h1>
+    <div class="mb-4">
+      <select 
+        class="select select-bordered w-full max-w-xs" 
+        value={data.timescale} 
+        on:change={handleTimescaleChange}
+      >
+        <option value="hourly">Last 24 Hours</option>
+        <option value="daily">Last Week</option>
+        <option value="weekly">Last Month</option>
+        <option value="monthly">Last Year</option>
+        <option value="yearly">Last 10 Years</option>
+      </select>
+    </div>
+    <div class="card bg-base-100 shadow-xl">
+      <div class="card-body">
+        <Line data={chartData} options={options} />
+      </div>
+    </div>
   </div>
-
-  <div class="mb-6">
-    <canvas bind:this={chartContainer}></canvas>
-  </div>
-</main>
-
-<style>
-  canvas {
-    width: 100%;
-    height: 400px;
-  }
-</style>
+</div>
