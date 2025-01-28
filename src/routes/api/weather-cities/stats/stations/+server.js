@@ -14,7 +14,17 @@ export async function GET({ url }) {
     const client = await pool.connect();
     const timeRange = url.searchParams.get("timeRange") || "24h";
     
-    let interval = 'hour';
+    let interval;
+    switch(timeRange) {
+      case "7d":
+        interval = "hour";
+        break;
+      case "30d":
+        interval = "day";
+        break;
+      default:
+        interval = "hour";
+    }
 
     const query = `
       WITH time_series AS (
