@@ -97,7 +97,7 @@ export async function GET({ url }) {
       FROM grouped_stations g
       LEFT JOIN sparklines s ON g.location_name = s.location_name
       LEFT JOIN recent_temps r ON g.location_name = r.location_name
-      GROUP BY g.location_name, g.station_count, g.median_temperature, g.median_wind_speed, g.weather_icon, s.sparkline_data::text
+      GROUP BY g.location_name, g.station_count, g.median_temperature, g.median_wind_speed, g.weather_icon, s.sparkline_data
       ORDER BY station_count DESC;
     `;
 
