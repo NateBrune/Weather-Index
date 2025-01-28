@@ -5,7 +5,6 @@
 	import { onMount } from "svelte";
 	import { writable } from 'svelte/store';
 
-	export let data;
 	export const networkStats = writable({ station_count: 0, median_temperature: 0, sparkline_data: [] });
 
 	async function fetchNetworkStats() {
