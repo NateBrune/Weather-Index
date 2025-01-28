@@ -88,8 +88,8 @@
             </div>
             <progress 
               class="progress progress-success" 
-              value={data.networkStats?.high_quality_stations || 0} //Added null check
-              max={data.networkStats?.station_count || 0} //Added null check
+              value={data.networkStats?.high_quality_stations || 0}
+              max={data.networkStats?.station_count || 0}
             ></progress>
           </div>
         </div>
