@@ -80,7 +80,7 @@ export async function GET({ url }) {
         l.location_name,
         l.station_count,
         ROUND(l.median_temperature::numeric, 2) as median_temperature,
-        ROUND(l.median_wind_speed::numeric, 2) as median_wind_speed,
+        COALESCE(ROUND(l.median_wind_speed::numeric, 2), 0)::float as median_wind_speed,
         l.weather_icon,
         s.hourly_data as sparkline_data
       FROM location_stats l
