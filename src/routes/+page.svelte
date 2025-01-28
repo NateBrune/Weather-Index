@@ -39,9 +39,17 @@
         return (tempA - tempB) * modifier;
       } else if (sortBy === "wind_speed") {
         return (a.median_wind_speed - b.median_wind_speed) * modifier;
-      } else if (sortBy === "temp_change") {
+      } else if (sortBy === "temp_change_1h") {
+        const changeA = a.temp_change_1h || 0;
+        const changeB = b.temp_change_1h || 0;
+        return (changeA - changeB) * modifier;
+      } else if (sortBy === "temp_change_24h") {
         const changeA = a.temp_change_24h || 0;
         const changeB = b.temp_change_24h || 0;
+        return (changeA - changeB) * modifier;
+      } else if (sortBy === "temp_change_7d") {
+        const changeA = a.temp_change_7d || 0;
+        const changeB = b.temp_change_7d || 0;
         return (changeA - changeB) * modifier;
       }
       return (a[sortBy] - b[sortBy]) * modifier;
@@ -244,9 +252,33 @@
                   <span>{sortOrder === "desc" ? "↓" : "↑"}</span>
                 {/if}
               </th>
-              <th class="text-primary">1h Change</th>
-              <th class="text-primary">24h Change</th>
-              <th class="text-primary">7d Change</th>
+              <th
+                class="text-primary cursor-pointer"
+                on:click={() => toggleSort("temp_change_1h")}
+              >
+                1h Change
+                {#if sortBy === "temp_change_1h"}
+                  <span>{sortOrder === "desc" ? "↓" : "↑"}</span>
+                {/if}
+              </th>
+              <th
+                class="text-primary cursor-pointer"
+                on:click={() => toggleSort("temp_change_24h")}
+              >
+                24h Change
+                {#if sortBy === "temp_change_24h"}
+                  <span>{sortOrder === "desc" ? "↓" : "↑"}</span>
+                {/if}
+              </th>
+              <th
+                class="text-primary cursor-pointer"
+                on:click={() => toggleSort("temp_change_7d")}
+              >
+                7d Change
+                {#if sortBy === "temp_change_7d"}
+                  <span>{sortOrder === "desc" ? "↓" : "↑"}</span>
+                {/if}
+              </th>
               <th class="text-primary">Sparkline</th>
               <th class="text-primary">Weather</th>
             </tr>
