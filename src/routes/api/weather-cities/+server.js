@@ -33,18 +33,29 @@ export async function GET({ url }) {
           AND o.data_quality_score >= 0.8
           AND o.temperature BETWEEN -50 AND 50
       ),
-      recent_temps AS (
+      hourly_temps AS (
         SELECT 
           location_name,
-          temperature,
-          observation_timestamp,
-          FIRST_VALUE(temperature) OVER (PARTITION BY location_name ORDER BY observation_timestamp DESC) - 
-          FIRST_VALUE(temperature) OVER (PARTITION BY location_name ORDER BY observation_timestamp DESC RANGE INTERVAL '1 hour' PRECEDING) as temp_change_1h,
-          FIRST_VALUE(temperature) OVER (PARTITION BY location_name ORDER BY observation_timestamp DESC) - 
-          FIRST_VALUE(temperature) OVER (PARTITION BY location_name ORDER BY observation_timestamp DESC RANGE INTERVAL '7 days' PRECEDING) as temp_change_7d,
-          FIRST_VALUE(temperature) OVER (PARTITION BY location_name ORDER BY observation_timestamp DESC) - 
-          FIRST_VALUE(temperature) OVER (PARTITION BY location_name ORDER BY observation_timestamp ASC) as temp_change_24h
+          date_trunc('hour', observation_timestamp) as hour,
+          PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY temperature) as temperature
         FROM location_groups
+        GROUP BY location_name, date_trunc('hour', observation_timestamp)
+      ),
+      recent_temps AS (
+        SELECT 
+          h1.location_name,
+          h1.temperature as current_temp,
+          h1.temperature - h2.temperature as temp_change_1h,
+          h1.temperature - h24.temperature as temp_change_24h,
+          h1.temperature - h168.temperature as temp_change_7d
+        FROM hourly_temps h1
+        LEFT JOIN hourly_temps h2 ON h1.location_name = h2.location_name 
+          AND h2.hour = h1.hour - INTERVAL '1 hour'
+        LEFT JOIN hourly_temps h24 ON h1.location_name = h24.location_name 
+          AND h24.hour = h1.hour - INTERVAL '24 hours'
+        LEFT JOIN hourly_temps h168 ON h1.location_name = h168.location_name 
+          AND h168.hour = h1.hour - INTERVAL '168 hours'
+        WHERE h1.hour = date_trunc('hour', NOW())
       ),
       sparklines AS (
         SELECT 
