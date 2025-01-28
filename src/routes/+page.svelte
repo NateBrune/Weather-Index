@@ -100,10 +100,12 @@
           <div class="grid grid-cols-2 gap-4">
             <div class="flex flex-col justify-center">
               <p class="text-4xl font-bold">
-                {($temperatureUnit === "C"
-                  ? data.networkStats.median_temperature
-                  : (data.networkStats.median_temperature * 9) / 5 + 32
-                ).toFixed(1)}°{$temperatureUnit}
+                {data.networkStats?.median_temperature != null ? 
+                  ($temperatureUnit === "C"
+                    ? data.networkStats.median_temperature
+                    : (data.networkStats.median_temperature * 9) / 5 + 32
+                  ).toFixed(1) 
+                  : "N/A"}°{$temperatureUnit}
               </p>
               {#if data.networkStats?.sparkline_data}
                 {@const firstTemp = data.networkStats.sparkline_data[0].temperature}
