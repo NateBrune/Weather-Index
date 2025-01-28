@@ -400,14 +400,14 @@
                               `${(i * 80) / (item.sparkline_data.length - 1)},${32 - ((d.temperature - min) * 32) / (range || 1)}`,
                           )
                           .join(" ")}
+                        {@const firstTemp = item.sparkline_data[0].temperature}
+                        {@const lastTemp = item.sparkline_data[item.sparkline_data.length - 1].temperature}
                         <polyline
                           {points}
                           fill="none"
                           stroke="currentColor"
                           stroke-width="1.5"
-                          class={item.temp_change_24h > 0
-                            ? "text-error"
-                            : "text-info"}
+                          class={lastTemp > firstTemp ? "text-error" : "text-info"}
                         />
                       {/if}
                     </svg>
