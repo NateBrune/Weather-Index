@@ -5,13 +5,16 @@ const { Pool } = pg;
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: process.env.NODE_ENV === "production" ? { rejectUnauthorized: false } : false
+  ssl:
+    process.env.NODE_ENV === "production"
+      ? { rejectUnauthorized: false }
+      : false,
 });
 
 export async function GET({ url }) {
   try {
     const client = await pool.connect();
-    const groupBy = url.searchParams.get('groupBy') || 'city';
+    const groupBy = url.searchParams.get("groupBy") || "city";
 
     const query = `
       WITH grouped_stations AS (
@@ -30,7 +33,7 @@ export async function GET({ url }) {
           AND o.temperature BETWEEN -50 AND 50
           AND CASE 
             WHEN $1 = 'city' THEN g.city != 'Unknown'
-            WHEN $1 = 'state' THEN g.state IS NOT NULL AND g.state != 'unknown'
+            WHEN $1 = 'state' THEN g.state IS NOT NULL AND g.state != 'Unknown'
             ELSE g.country IS NOT NULL
           END
         GROUP BY location_name
