@@ -1,4 +1,3 @@
-
 <script>
   import { onMount, onDestroy } from "svelte";
   import moment from "moment";
@@ -30,19 +29,18 @@
     Filler,
   );
 
+  export let data;
   let timeRange = "24h";
-  let stationData = [];
-  let loading = true;
-  let chartContainer;
-  let chart;
+  let stationData = data.stationData;
+  let loading = false;
 
   async function fetchData() {
     loading = true;
     const response = await fetch(
       `/api/weather-cities/stats/stations?timeRange=${timeRange}`,
     );
-    const data = await response.json();
-    stationData = data;
+    const newData = await response.json();
+    stationData = newData;
     loading = false;
     updateChart();
   }
