@@ -27,6 +27,7 @@ function toggleTheme() {
     <a href="/" class="btn btn-ghost normal-case text-xl">InfoXM</a>
   </div>
   <div class="flex-none gap-2">
+    <a href="https://weatherxm.com/ref/adeconde/" target="_blank" class="btn btn-primary btn-sm">Buy WeatherXM</a>
     <button class="btn btn-circle" on:click={toggleTheme}>
       <svg
         xmlns="http://www.w3.org/2000/svg"
