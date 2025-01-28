@@ -21,6 +21,13 @@
     goto(`?groupBy=${tabId}`);
   }
 
+  $: stationCountRanks = data.data
+    .sort((a, b) => b.station_count - a.station_count)
+    .reduce((acc, item, index) => {
+      acc[item.location_name] = index + 1;
+      return acc;
+    }, {});
+
   $: filteredData = data.data
     .filter((item) =>
       item.location_name.toLowerCase().includes(searchQuery.toLowerCase()),
@@ -286,7 +293,7 @@
           <tbody>
             {#each filteredData.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage) as item, i}
               <tr class="hover">
-                <td class="font-semibold">#{i + 1}</td>
+                <td class="font-semibold">#{stationCountRanks[item.location_name]}</td>
                 <td class="font-medium">
                   {#if data.activeTab === "city"}
                     <a href="/{item.location_name}" class="link link-primary">
