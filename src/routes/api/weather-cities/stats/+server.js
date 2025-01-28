@@ -48,10 +48,11 @@ export async function GET() {
         LIMIT 24
       )
       SELECT 
-        q.total_stations as station_count,
-        q.high_quality_stations,
-        q.avg_quality_percentage,
+        qs.total_stations as station_count,
+        qs.high_quality_stations,
+        qs.avg_quality_percentage,
         PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY temperature) as median_temperature,
+      FROM quality_stats qs, recent_temps
         (SELECT json_agg(json_build_object(
           'temperature', temperature,
           'timestamp', hour
