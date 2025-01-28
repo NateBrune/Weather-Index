@@ -9,8 +9,33 @@
     { id: "country", label: "Countries" },
   ];
 
+  let searchQuery = "";
+  let sortBy = "station_count"; // Default sort
+  let sortOrder = "desc"; // Default order
+
   function changeTab(tabId) {
     goto(`?groupBy=${tabId}`);
+  }
+
+  $: filteredData = data.data.filter(item => 
+    item.location_name.toLowerCase().includes(searchQuery.toLowerCase())
+  ).sort((a, b) => {
+    const modifier = sortOrder === "desc" ? -1 : 1;
+    if (sortBy === "temperature") {
+      const tempA = $temperatureUnit === 'C' ? a.median_temperature : (a.median_temperature * 9/5 + 32);
+      const tempB = $temperatureUnit === 'C' ? b.median_temperature : (b.median_temperature * 9/5 + 32);
+      return (tempA - tempB) * modifier;
+    }
+    return (a[sortBy] - b[sortBy]) * modifier;
+  });
+
+  function toggleSort(field) {
+    if (sortBy === field) {
+      sortOrder = sortOrder === "desc" ? "asc" : "desc";
+    } else {
+      sortBy = field;
+      sortOrder = "desc";
+    }
   }
 </script>
 
@@ -20,15 +45,24 @@
       <h1 class="text-4xl font-bold text-primary">Weather Statistics</h1>
     </div>
 
-    <div class="tabs tabs-boxed mb-4">
-      {#each tabs as tab}
-        <button
-          class="tab {data.activeTab === tab.id ? 'tab-active' : ''}"
-          on:click={() => changeTab(tab.id)}
-        >
-          {tab.label}
-        </button>
-      {/each}
+    <div class="flex flex-col gap-4 mb-4">
+      <div class="tabs tabs-boxed">
+        {#each tabs as tab}
+          <button
+            class="tab {data.activeTab === tab.id ? 'tab-active' : ''}"
+            on:click={() => changeTab(tab.id)}
+          >
+            {tab.label}
+          </button>
+        {/each}
+      </div>
+
+      <input
+        type="text"
+        placeholder="Search locations..."
+        class="input input-bordered w-full max-w-md"
+        bind:value={searchQuery}
+      />
     </div>
 
     <div class="card bg-base-100 shadow-xl">
@@ -44,13 +78,23 @@
                     ? "State"
                     : "Country"}
               </th>
-              <th class="text-primary">Station Count</th>
-              <th class="text-primary">Median Temperature</th>
+              <th class="text-primary cursor-pointer" on:click={() => toggleSort('station_count')}>
+                Station Count
+                {#if sortBy === 'station_count'}
+                  <span>{sortOrder === 'desc' ? '↓' : '↑'}</span>
+                {/if}
+              </th>
+              <th class="text-primary cursor-pointer" on:click={() => toggleSort('temperature')}>
+                Median Temperature
+                {#if sortBy === 'temperature'}
+                  <span>{sortOrder === 'desc' ? '↓' : '↑'}</span>
+                {/if}
+              </th>
               <th class="text-primary">Weather</th>
             </tr>
           </thead>
           <tbody>
-            {#each data.data as item, i}
+            {#each filteredData as item, i}
               <tr class="hover">
                 <td class="font-semibold">#{i + 1}</td>
                 <td class="font-medium">
