@@ -33,6 +33,8 @@
   let timeRange = "24h";
   let stationData = data.stationData;
   let loading = false;
+  let chartContainer;
+  let chart;
 
   async function fetchData() {
     loading = true;
