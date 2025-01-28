@@ -26,6 +26,7 @@ export async function GET({ url }) {
           END as location_name,
           COUNT(DISTINCT s.station_id) AS station_count,
           PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY o.temperature) as median_temperature,
+          PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY o.wind_speed) as median_wind_speed,
           mode() WITHIN GROUP (ORDER BY o.weather_icon) as weather_icon
         FROM stations s
         JOIN geocodes g ON s.latitude = g.latitude AND s.longitude = g.longitude

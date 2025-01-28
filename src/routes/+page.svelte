@@ -25,6 +25,8 @@
       const tempA = $temperatureUnit === 'C' ? a.median_temperature : (a.median_temperature * 9/5 + 32);
       const tempB = $temperatureUnit === 'C' ? b.median_temperature : (b.median_temperature * 9/5 + 32);
       return (tempA - tempB) * modifier;
+    } else if (sortBy === "wind_speed") {
+      return (a.median_wind_speed - b.median_wind_speed) * modifier;
     }
     return (a[sortBy] - b[sortBy]) * modifier;
   });
@@ -90,6 +92,12 @@
                   <span>{sortOrder === 'desc' ? '↓' : '↑'}</span>
                 {/if}
               </th>
+              <th class="text-primary cursor-pointer" on:click={() => toggleSort('wind_speed')}>
+                Wind Speed
+                {#if sortBy === 'wind_speed'}
+                  <span>{sortOrder === 'desc' ? '↓' : '↑'}</span>
+                {/if}
+              </th>
               <th class="text-primary">Weather</th>
             </tr>
           </thead>
@@ -126,6 +134,16 @@
                         ),
                       )}
                       max="40"
+                    ></progress>
+                  </div>
+                </td>
+                <td>
+                  <div class="flex items-center gap-2">
+                    <span>{item.median_wind_speed.toFixed(1)} m/s</span>
+                    <progress
+                      class="progress progress-info w-20"
+                      value={Math.min(item.median_wind_speed, 20)}
+                      max="20"
                     ></progress>
                   </div>
                 </td>
