@@ -76,12 +76,6 @@
     const numTemp = Number(temp);
     return unit === "C" ? numTemp.toFixed(1) : ((numTemp * 9) / 5).toFixed(1);
   }
-
-  function formatTempChange(change) {
-    if (!change) return 'N/A';
-    const sign = change > 0 ? '+' : '';
-    return `${sign}${change.toFixed(1)}°`;
-  }
 </script>
 
 <div class="min-h-screen bg-base-200 pt-20 px-4 pb-8">
@@ -341,19 +335,49 @@
                   </div>
                 </td>
                 <td>
-                  <span class="font-medium {item.temp_change_1h > 0 ? 'text-error' : item.temp_change_1h < 0 ? 'text-info' : 'text-base-content'}">
-                    {formatTempChange(item.temp_change_1h)}
-                  </span>
+                  {#if item.temp_change_1h !== null}
+                    <span
+                      class="font-medium {item.temp_change_1h > 0
+                        ? 'text-error'
+                        : item.temp_change_1h < 0
+                          ? 'text-info'
+                          : 'text-base-content'}"
+                    >
+                      {item.temp_change_1h > 0 ? "+" : ""}{formatTemperature(item.temp_change_1h, $temperatureUnit)}°{$temperatureUnit}
+                    </span>
+                  {:else}
+                    N/A
+                  {/if}
                 </td>
                 <td>
-                  <span class="font-medium {item.temp_change_24h > 0 ? 'text-error' : item.temp_change_24h < 0 ? 'text-info' : 'text-base-content'}">
-                    {formatTempChange(item.temp_change_24h)}
-                  </span>
+                  {#if item.temp_change_24h !== null}
+                    <span
+                      class="font-medium {item.temp_change_24h > 0
+                        ? 'text-error'
+                        : item.temp_change_24h < 0
+                          ? 'text-info'
+                          : 'text-base-content'}"
+                    >
+                      {item.temp_change_24h > 0 ? "+" : ""}{formatTemperature(item.temp_change_24h, $temperatureUnit)}°{$temperatureUnit}
+                    </span>
+                  {:else}
+                    N/A
+                  {/if}
                 </td>
                 <td>
-                  <span class="font-medium {item.temp_change_7d > 0 ? 'text-error' : item.temp_change_7d < 0 ? 'text-info' : 'text-base-content'}">
-                    {formatTempChange(item.temp_change_7d)}
-                  </span>
+                  {#if item.temp_change_7d !== null}
+                    <span
+                      class="font-medium {item.temp_change_7d > 0
+                        ? 'text-error'
+                        : item.temp_change_7d < 0
+                          ? 'text-info'
+                          : 'text-base-content'}"
+                    >
+                      {item.temp_change_7d > 0 ? "+" : ""}{formatTemperature(item.temp_change_7d, $temperatureUnit)}°{$temperatureUnit}
+                    </span>
+                  {:else}
+                    N/A
+                  {/if}
                 </td>
                 <td>
                   {#if item.sparkline_data}
