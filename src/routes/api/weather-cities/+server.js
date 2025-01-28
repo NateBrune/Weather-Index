@@ -125,17 +125,16 @@ export async function GET({ url }) {
     const finalQuery = `
       SELECT 
         l.location_name,
-        SUM(l.station_count) as station_count,
-        ROUND(AVG(l.median_temperature)::numeric, 2) as median_temperature,
-        COALESCE(ROUND(AVG(l.median_wind_speed)::numeric, 2), 0)::float as median_wind_speed,
-        mode() WITHIN GROUP (ORDER BY w.weather_icon) as weather_icon,
+        l.station_count,
+        ROUND(l.median_temperature::numeric, 2) as median_temperature,
+        COALESCE(ROUND(l.median_wind_speed::numeric, 2), 0)::float as median_wind_speed,
+        w.weather_icon,
         s.hourly_data as sparkline_data
       FROM (${locationStatsQuery}) l
       LEFT JOIN (${weatherIconsQuery}) w ON l.location_name = w.location_name
       LEFT JOIN (${sparklineDataQuery}) s ON l.location_name = s.location_name
       WHERE l.location_name != 'Unknown'
-      GROUP BY l.location_name, s.hourly_data
-      ORDER BY SUM(l.station_count) DESC
+      ORDER BY l.station_count DESC
     `;
 
     const result = await client.query(finalQuery, [groupBy]);
