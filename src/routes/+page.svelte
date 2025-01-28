@@ -67,6 +67,28 @@
       </div>
     </div>
 
+    <div class="grid grid-cols-2 gap-4 mb-8">
+      <div class="card bg-primary text-primary-content shadow-xl">
+        <div class="card-body">
+          <h2 class="card-title text-2xl">Global Station Count</h2>
+          <p class="text-4xl font-bold">
+            {data.data.reduce((sum, item) => sum + item.station_count, 0).toLocaleString()}
+          </p>
+        </div>
+      </div>
+      <div class="card bg-secondary text-secondary-content shadow-xl">
+        <div class="card-body">
+          <h2 class="card-title text-2xl">Global Median Temperature</h2>
+          <p class="text-4xl font-bold">
+            {$temperatureUnit === "C" 
+              ? data.data.reduce((sum, item) => sum + item.median_temperature, 0) / data.data.length
+              : ((data.data.reduce((sum, item) => sum + item.median_temperature, 0) / data.data.length) * 9/5 + 32)
+            }°{$temperatureUnit}
+          </p>
+        </div>
+      </div>
+    </div>
+
     <div class="flex flex-col gap-4 mb-4">
       <div class="tabs tabs-boxed">
         {#each tabs as tab}
