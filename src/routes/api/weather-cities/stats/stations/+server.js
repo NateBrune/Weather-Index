@@ -33,7 +33,14 @@ export async function GET({ url }) {
           COUNT(DISTINCT station_id) as active_stations,
           COUNT(DISTINCT CASE WHEN data_quality_score >= 0.8 THEN station_id END) as quality_stations
         FROM observations 
-        WHERE observation_timestamp >= NOW() - INTERVAL '1 ' || $2
+        WHERE observation_timestamp >= NOW() - (
+          CASE 
+            WHEN $2 = '24h' THEN INTERVAL '24 hours'
+            WHEN $2 = '7d' THEN INTERVAL '7 days'
+            WHEN $2 = '30d' THEN INTERVAL '30 days'
+            ELSE INTERVAL '24 hours'
+          END
+        )
         GROUP BY time_bucket
         ORDER BY time_bucket ASC
       )
