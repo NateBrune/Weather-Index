@@ -28,38 +28,33 @@
       return acc;
     }, {});
 
+  // Pre-calculate temperature changes
+  $: temperatureCache = new Map(data.data.map(item => [
+    item.location_name,
+    {
+      latestTemp: getLatestTemperature(item),
+      change1h: item.sparkline_data ? parseFloat(calculateTempChange(item.sparkline_data, 1).replace("°", "")) || 0 : 0,
+      change24h: item.sparkline_data ? parseFloat(calculateTempChange(item.sparkline_data, 24)) || 0 : 0
+    }
+  ]));
+
   $: filteredData = data.data
     .filter((item) =>
       item.location_name.toLowerCase().includes(searchQuery.toLowerCase()),
     )
     .sort((a, b) => {
       const modifier = sortOrder === "desc" ? -1 : 1;
+      const cacheA = temperatureCache.get(a.location_name);
+      const cacheB = temperatureCache.get(b.location_name);
+      
       if (sortBy === "temperature") {
-        const tempA = getLatestTemperature(a);
-        const tempB = getLatestTemperature(b);
-        return (tempA - tempB) * modifier;
+        return (cacheA.latestTemp - cacheB.latestTemp) * modifier;
       } else if (sortBy === "wind_speed") {
         return (a.median_wind_speed - b.median_wind_speed) * modifier;
       } else if (sortBy === "temp_change_1h") {
-        const changeA = a.sparkline_data
-          ? parseFloat(
-              calculateTempChange(a.sparkline_data, 1).replace("°", ""),
-            ) || 0
-          : 0;
-        const changeB = b.sparkline_data
-          ? parseFloat(
-              calculateTempChange(b.sparkline_data, 1).replace("°", ""),
-            ) || 0
-          : 0;
-        return (changeA - changeB) * modifier;
+        return (cacheA.change1h - cacheB.change1h) * modifier;
       } else if (sortBy === "temp_change_24h") {
-        const changeA = a.sparkline_data
-          ? parseFloat(calculateTempChange(a.sparkline_data, 24)) || 0
-          : 0;
-        const changeB = b.sparkline_data
-          ? parseFloat(calculateTempChange(b.sparkline_data, 24)) || 0
-          : 0;
-        return (changeA - changeB) * modifier;
+        return (cacheA.change24h - cacheB.change24h) * modifier;
       }
       return (a[sortBy] - b[sortBy]) * modifier;
     });
