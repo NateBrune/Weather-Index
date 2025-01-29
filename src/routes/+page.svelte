@@ -1,3 +1,4 @@
+
 <script>
   export let data;
   import { temperatureUnit } from "$lib/stores";
@@ -334,279 +335,280 @@
         </div>
       </div>
 
-    <div class="flex flex-col gap-4 mb-4">
-      <div class="tabs tabs-boxed">
-        {#each tabs as tab}
-          <button
-            class="tab {data.activeTab === tab.id ? 'tab-active' : ''}"
-            on:click={() => changeTab(tab.id)}
-          >
-            {tab.label}
-          </button>
-        {/each}
-      </div>
-
-      <div class="flex gap-4 items-center">
-        <input
-          type="text"
-          placeholder="Search locations..."
-          class="input input-bordered flex-grow"
-          bind:value={searchQuery}
-        />
-        <select
-          class="select select-bordered w-full max-w-xs"
-          bind:value={itemsPerPage}
-        >
-          {#each itemsPerPageOptions as option}
-            <option value={option}>{option} per page</option>
+      <div class="flex flex-col gap-4 mb-4">
+        <div class="tabs tabs-boxed">
+          {#each tabs as tab}
+            <button
+              class="tab {data.activeTab === tab.id ? 'tab-active' : ''}"
+              on:click={() => changeTab(tab.id)}
+            >
+              {tab.label}
+            </button>
           {/each}
-        </select>
-      </div>
-    </div>
-
-    <div
-      class="card bg-base-100/80 shadow-2xl backdrop-blur-sm border border-base-300/50"
-    >
-      <div class="card-body overflow-x-auto px-2 sm:px-6">
-        <table class="table table-zebra bg-transparent">
-          <thead>
-            <tr>
-              <th class="text-primary">Rank</th>
-              <th class="text-primary">
-                {data.activeTab === "city"
-                  ? "City"
-                  : data.activeTab === "state"
-                    ? "State"
-                    : "Country"}
-              </th>
-              <th
-                class="text-primary cursor-pointer"
-                on:click={() => toggleSort("station_count")}
-              >
-                Station Count
-                {#if sortBy === "station_count"}
-                  <span>{sortOrder === "desc" ? "↓" : "↑"}</span>
-                {/if}
-              </th>
-              <th
-                class="text-primary cursor-pointer"
-                on:click={() => toggleSort("wind_speed")}
-              >
-                Wind Speed
-                {#if sortBy === "wind_speed"}
-                  <span>{sortOrder === "desc" ? "↓" : "↑"}</span>
-                {/if}
-              </th>
-              <th
-                class="text-primary cursor-pointer"
-                on:click={() => toggleSort("temperature")}
-              >
-                Median °
-                {#if sortBy === "temperature"}
-                  <span>{sortOrder === "desc" ? "↓" : "↑"}</span>
-                {/if}
-              </th>
-              <th
-                class="text-primary cursor-pointer"
-                on:click={() => toggleSort("temp_change_1h")}
-              >
-                1h Change
-                {#if sortBy === "temp_change_1h"}
-                  <span>{sortOrder === "desc" ? "↓" : "↑"}</span>
-                {/if}
-              </th>
-              <th
-                class="text-primary cursor-pointer"
-                on:click={() => toggleSort("temp_change_24h")}
-              >
-                24h Change
-                {#if sortBy === "temp_change_24h"}
-                  <span>{sortOrder === "desc" ? "↓" : "↑"}</span>
-                {/if}
-              </th>
-              <th class="text-primary">Sparkline</th>
-              <th class="text-primary">Weather</th>
-            </tr>
-          </thead>
-          <tbody>
-            {#each filteredData.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage) as item, i}
-              <tr class="hover">
-                <td class="font-semibold"
-                  >#{stationCountRanks[item.location_name]}</td
-                >
-                <td class="font-medium">
-                  {#if data.activeTab === "city"}
-                    <a href="/{item.location_name}" class="link link-primary">
-                      {item.location_name}
-                    </a>
-                  {:else if data.activeTab === "state"}
-                    <a
-                      href="/state/{item.location_name}"
-                      class="link link-primary"
-                    >
-                      {item.location_name}
-                    </a>
-                  {:else}
-                    <a
-                      href="/country/{item.location_name}"
-                      class="link link-primary"
-                    >
-                      {item.location_name}
-                    </a>
-                  {/if}
-                </td>
-                <td class="text-center">
-                  <div class="badge badge-info">{item.station_count}</div>
-                </td>
-                <td>
-                  <div class="flex items-center gap-2">
-                    <span>{(item.median_wind_speed || 0).toFixed(1)} m/s</span>
-                  </div>
-                </td>
-                <td>
-                  <div class="flex items-center gap-2">
-                    <span class="neutral-content">
-                      {formatTemperature(
-                        item.median_temperature,
-                        $temperatureUnit,
-                      )}°{$temperatureUnit}
-                    </span>
-                  </div>
-                </td>
-                <td>
-                  {#if true}
-                    {@const oneHourChange = calculateTempChange(
-                      item.sparkline_data,
-                      1,
-                    )}
-                    <span
-                      class="font-medium {oneHourChange !== 'N/A' &&
-                      parseFloat(oneHourChange) > 0
-                        ? 'text-error'
-                        : oneHourChange !== 'N/A' &&
-                            parseFloat(oneHourChange) < 0
-                          ? 'text-info'
-                          : 'text-base-content'}"
-                    >
-                      {oneHourChange}
-                    </span>
-                  {/if}
-                </td>
-                <td>
-                  {#if true}
-                    {@const dayChange = calculateTempChange(
-                      item.sparkline_data,
-                      24,
-                    )}
-                    <span
-                      class="font-medium {dayChange !== 'N/A' &&
-                      parseFloat(dayChange) > 0
-                        ? 'text-error'
-                        : dayChange !== 'N/A' && parseFloat(dayChange) < 0
-                          ? 'text-info'
-                          : 'text-base-content'}"
-                    >
-                      {dayChange}
-                    </span>
-                  {/if}
-                </td>
-                <td>
-                  {#if item.sparkline_data}
-                    <svg
-                      class="w-20 h-8"
-                      viewBox="0 0 80 32"
-                      preserveAspectRatio="none"
-                    >
-                      {#if item.sparkline_data.length > 1}
-                        {@const temperatures = item.sparkline_data.map(
-                          (d) => d.temperature,
-                        )}
-                        {@const min = Math.min(...temperatures)}
-                        {@const max = Math.max(...temperatures)}
-                        {@const range = max - min}
-                        {@const points = item.sparkline_data
-                          .map(
-                            (d, i) =>
-                              `${(i * 80) / (item.sparkline_data.length - 1)},${32 - ((d.temperature - min) * 32) / (range || 1)}`,
-                          )
-                          .join(" ")}
-                        {@const firstTemp = item.sparkline_data[0].temperature}
-                        {@const lastTemp =
-                          item.sparkline_data[item.sparkline_data.length - 1]
-                            .temperature}
-                        <polyline
-                          {points}
-                          fill="none"
-                          stroke="currentColor"
-                          stroke-width="1.5"
-                          class={lastTemp > firstTemp
-                            ? "text-error"
-                            : "text-info"}
-                        />
-                      {/if}
-                    </svg>
-                  {:else}
-                    <progress
-                      class="progress progress-error w-20"
-                      value={Math.max(
-                        0,
-                        Math.min(
-                          40,
-                          parseFloat(item.median_temperature) + 20 || 0,
-                        ),
-                      )}
-                      max="40"
-                    ></progress>
-                  {/if}
-                </td>
-                <td>
-                  {#if item.weather_icon}
-                    <img
-                      src="icons/{item.weather_icon}.svg"
-                      alt={item.weather_icon}
-                      class="w-8 h-8"
-                    />
-                  {/if}
-                </td>
-              </tr>
-            {/each}
-          </tbody>
-        </table>
-      </div>
-      <div class="flex items-center justify-between p-4">
-        <div class="text-sm text-base-content/70">
-          Showing {Math.min(
-            (currentPage - 1) * itemsPerPage + 1,
-            filteredData.length,
-          )} to {Math.min(currentPage * itemsPerPage, filteredData.length)} of {filteredData.length}
-          entries
         </div>
-        <div class="join">
-          <button
-            class="join-item btn"
-            disabled={currentPage === 1}
-            on:click={() => (currentPage = 1)}>«</button
+
+        <div class="flex gap-4 items-center">
+          <input
+            type="text"
+            placeholder="Search locations..."
+            class="input input-bordered flex-grow"
+            bind:value={searchQuery}
+          />
+          <select
+            class="select select-bordered w-full max-w-xs"
+            bind:value={itemsPerPage}
           >
-          <button
-            class="join-item btn"
-            disabled={currentPage === 1}
-            on:click={() => currentPage--}>‹</button
-          >
-          <button class="join-item btn">Page {currentPage}</button>
-          <button
-            class="join-item btn"
-            disabled={currentPage >=
-              Math.ceil(filteredData.length / itemsPerPage)}
-            on:click={() => currentPage++}>›</button
-          >
-          <button
-            class="join-item btn"
-            disabled={currentPage >=
-              Math.ceil(filteredData.length / itemsPerPage)}
-            on:click={() =>
-              (currentPage = Math.ceil(filteredData.length / itemsPerPage))}
-            >»</button
-          >
+            {#each itemsPerPageOptions as option}
+              <option value={option}>{option} per page</option>
+            {/each}
+          </select>
+        </div>
+      </div>
+
+      <div
+        class="card bg-base-100/80 shadow-2xl backdrop-blur-sm border border-base-300/50"
+      >
+        <div class="card-body overflow-x-auto px-2 sm:px-6">
+          <table class="table table-zebra bg-transparent">
+            <thead>
+              <tr>
+                <th class="text-primary">Rank</th>
+                <th class="text-primary">
+                  {data.activeTab === "city"
+                    ? "City"
+                    : data.activeTab === "state"
+                      ? "State"
+                      : "Country"}
+                </th>
+                <th
+                  class="text-primary cursor-pointer"
+                  on:click={() => toggleSort("station_count")}
+                >
+                  Station Count
+                  {#if sortBy === "station_count"}
+                    <span>{sortOrder === "desc" ? "↓" : "↑"}</span>
+                  {/if}
+                </th>
+                <th
+                  class="text-primary cursor-pointer"
+                  on:click={() => toggleSort("wind_speed")}
+                >
+                  Wind Speed
+                  {#if sortBy === "wind_speed"}
+                    <span>{sortOrder === "desc" ? "↓" : "↑"}</span>
+                  {/if}
+                </th>
+                <th
+                  class="text-primary cursor-pointer"
+                  on:click={() => toggleSort("temperature")}
+                >
+                  Median °
+                  {#if sortBy === "temperature"}
+                    <span>{sortOrder === "desc" ? "↓" : "↑"}</span>
+                  {/if}
+                </th>
+                <th
+                  class="text-primary cursor-pointer"
+                  on:click={() => toggleSort("temp_change_1h")}
+                >
+                  1h Change
+                  {#if sortBy === "temp_change_1h"}
+                    <span>{sortOrder === "desc" ? "↓" : "↑"}</span>
+                  {/if}
+                </th>
+                <th
+                  class="text-primary cursor-pointer"
+                  on:click={() => toggleSort("temp_change_24h")}
+                >
+                  24h Change
+                  {#if sortBy === "temp_change_24h"}
+                    <span>{sortOrder === "desc" ? "↓" : "↑"}</span>
+                  {/if}
+                </th>
+                <th class="text-primary">Sparkline</th>
+                <th class="text-primary">Weather</th>
+              </tr>
+            </thead>
+            <tbody>
+              {#each filteredData.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage) as item, i}
+                <tr class="hover">
+                  <td class="font-semibold"
+                    >#{stationCountRanks[item.location_name]}</td
+                  >
+                  <td class="font-medium">
+                    {#if data.activeTab === "city"}
+                      <a href="/{item.location_name}" class="link link-primary">
+                        {item.location_name}
+                      </a>
+                    {:else if data.activeTab === "state"}
+                      <a
+                        href="/state/{item.location_name}"
+                        class="link link-primary"
+                      >
+                        {item.location_name}
+                      </a>
+                    {:else}
+                      <a
+                        href="/country/{item.location_name}"
+                        class="link link-primary"
+                      >
+                        {item.location_name}
+                      </a>
+                    {/if}
+                  </td>
+                  <td class="text-center">
+                    <div class="badge badge-info">{item.station_count}</div>
+                  </td>
+                  <td>
+                    <div class="flex items-center gap-2">
+                      <span>{(item.median_wind_speed || 0).toFixed(1)} m/s</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="flex items-center gap-2">
+                      <span class="neutral-content">
+                        {formatTemperature(
+                          item.median_temperature,
+                          $temperatureUnit,
+                        )}°{$temperatureUnit}
+                      </span>
+                    </div>
+                  </td>
+                  <td>
+                    {#if true}
+                      {@const oneHourChange = calculateTempChange(
+                        item.sparkline_data,
+                        1,
+                      )}
+                      <span
+                        class="font-medium {oneHourChange !== 'N/A' &&
+                        parseFloat(oneHourChange) > 0
+                          ? 'text-error'
+                          : oneHourChange !== 'N/A' &&
+                              parseFloat(oneHourChange) < 0
+                            ? 'text-info'
+                            : 'text-base-content'}"
+                      >
+                        {oneHourChange}
+                      </span>
+                    {/if}
+                  </td>
+                  <td>
+                    {#if true}
+                      {@const dayChange = calculateTempChange(
+                        item.sparkline_data,
+                        24,
+                      )}
+                      <span
+                        class="font-medium {dayChange !== 'N/A' &&
+                        parseFloat(dayChange) > 0
+                          ? 'text-error'
+                          : dayChange !== 'N/A' && parseFloat(dayChange) < 0
+                            ? 'text-info'
+                            : 'text-base-content'}"
+                      >
+                        {dayChange}
+                      </span>
+                    {/if}
+                  </td>
+                  <td>
+                    {#if item.sparkline_data}
+                      <svg
+                        class="w-20 h-8"
+                        viewBox="0 0 80 32"
+                        preserveAspectRatio="none"
+                      >
+                        {#if item.sparkline_data.length > 1}
+                          {@const temperatures = item.sparkline_data.map(
+                            (d) => d.temperature,
+                          )}
+                          {@const min = Math.min(...temperatures)}
+                          {@const max = Math.max(...temperatures)}
+                          {@const range = max - min}
+                          {@const points = item.sparkline_data
+                            .map(
+                              (d, i) =>
+                                `${(i * 80) / (item.sparkline_data.length - 1)},${32 - ((d.temperature - min) * 32) / (range || 1)}`,
+                            )
+                            .join(" ")}
+                          {@const firstTemp = item.sparkline_data[0].temperature}
+                          {@const lastTemp =
+                            item.sparkline_data[item.sparkline_data.length - 1]
+                              .temperature}
+                          <polyline
+                            {points}
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="1.5"
+                            class={lastTemp > firstTemp
+                              ? "text-error"
+                              : "text-info"}
+                          />
+                        {/if}
+                      </svg>
+                    {:else}
+                      <progress
+                        class="progress progress-error w-20"
+                        value={Math.max(
+                          0,
+                          Math.min(
+                            40,
+                            parseFloat(item.median_temperature) + 20 || 0,
+                          ),
+                        )}
+                        max="40"
+                      ></progress>
+                    {/if}
+                  </td>
+                  <td>
+                    {#if item.weather_icon}
+                      <img
+                        src="icons/{item.weather_icon}.svg"
+                        alt={item.weather_icon}
+                        class="w-8 h-8"
+                      />
+                    {/if}
+                  </td>
+                </tr>
+              {/each}
+            </tbody>
+          </table>
+        </div>
+        <div class="flex items-center justify-between p-4">
+          <div class="text-sm text-base-content/70">
+            Showing {Math.min(
+              (currentPage - 1) * itemsPerPage + 1,
+              filteredData.length,
+            )} to {Math.min(currentPage * itemsPerPage, filteredData.length)} of {filteredData.length}
+            entries
+          </div>
+          <div class="join">
+            <button
+              class="join-item btn"
+              disabled={currentPage === 1}
+              on:click={() => (currentPage = 1)}>«</button
+            >
+            <button
+              class="join-item btn"
+              disabled={currentPage === 1}
+              on:click={() => currentPage--}>‹</button
+            >
+            <button class="join-item btn">Page {currentPage}</button>
+            <button
+              class="join-item btn"
+              disabled={currentPage >=
+                Math.ceil(filteredData.length / itemsPerPage)}
+              on:click={() => currentPage++}>›</button
+            >
+            <button
+              class="join-item btn"
+              disabled={currentPage >=
+                Math.ceil(filteredData.length / itemsPerPage)}
+              on:click={() =>
+                (currentPage = Math.ceil(filteredData.length / itemsPerPage))}
+              >»</button
+            >
+          </div>
         </div>
       </div>
     </div>
