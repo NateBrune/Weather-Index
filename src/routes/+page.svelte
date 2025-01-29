@@ -179,20 +179,22 @@
       </div>
       <div class="card bg-base-100 text-neutral-content shadow-xl">
         <div class="card-body p-4 md:p-6">
-          <h2 class="card-title text-xl md:text-2xl">Network Data Quality</h2>
-          <div class="flex flex-col gap-2">
-            <div class="text-2xl md:text-4xl font-bold">
-              {data.networkStats.avg_quality_percentage}%
-            </div>
-            <div class="text-xs md:text-sm opacity-70">
-              {data.networkStats.high_quality_stations} high quality stations
-            </div>
+          <a href="https://docs.weatherxm.com/rewards/quality-of-data" target="_blank" rel="noopener noreferrer" class="hover:opacity-80">
+            <h2 class="card-title text-xl md:text-2xl">Network Data Quality</h2>
+            <div class="flex flex-col gap-2">
+              <div class="text-2xl md:text-4xl font-bold">
+                {data.networkStats.avg_quality_percentage}%
+              </div>
+              <div class="text-xs md:text-sm opacity-70">
+                {data.networkStats.high_quality_stations} high quality stations
+              </div>
             <progress
               class="progress progress-success"
               value={data.networkStats.high_quality_stations}
               max={data.networkStats.station_count}
             ></progress>
           </div>
+          </a>
         </div>
       </div>
       <div class="card bg-base-100 text-neutral-content shadow-xl">
