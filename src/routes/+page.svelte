@@ -137,46 +137,43 @@
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
       <div class="card bg-base-100 text-neutral-content shadow-xl">
-        <div class="card-body p-4 md:p-6">
-          <h2 class="card-title text-xl md:text-2xl">Global Station Count</h2>
-          <div class="flex flex-col gap-2">
-            <div class="flex items-center justify-between">
+        <div class="card-body">
+          <h2 class="card-title text-2xl">Global Station Count</h2>
+          <div class="grid grid-cols-2 gap-4">
+            <div class="flex flex-col justify-center">
               <a
                 href="/stations"
-                class="text-2xl md:text-4xl font-bold hover:text-primary transition-colors"
+                class="text-4xl font-bold hover:text-primary transition-colors"
               >
                 {data.networkStats?.station_count?.toLocaleString() ?? 0}
               </a>
-              {#if data.networkStats?.station_count_history}
-                {@const historicalData =
-                  data.networkStats.station_count_history.slice(0, -1)}
-                {@const counts = historicalData.map((d) => d.count)}
-                {@const min = Math.min(...counts)}
-                {@const max = Math.max(...counts)}
-                {@const range = max - min || 1}
-                {@const points = historicalData
-                  .map(
-                    (d, i) =>
-                      `${(i * 120) / (historicalData.length - 1)},${48 - ((d.count - min) * 48) / range}`,
-                  )
-                  .join(" ")}
-                <a href="/stations" class="hover:opacity-80 transition-opacity shrink-0 ml-2">
-                  <svg
-                    class="w-20 h-12 md:w-24 md:h-12"
-                    viewBox="0 0 120 48"
-                    preserveAspectRatio="none"
-                  >
-                    <polyline
-                      {points}
-                      fill="none"
-                      stroke="currentColor"
-                      stroke-width="2"
-                      class="text-primary"
-                    />
-                  </svg>
-                </a>
-              {/if}
             </div>
+            {#if data.networkStats?.station_count_history}
+              {@const historicalData = data.networkStats.station_count_history.slice(0, -1)}
+              {@const counts = historicalData.map((d) => d.count)}
+              {@const min = Math.min(...counts)}
+              {@const max = Math.max(...counts)}
+              {@const range = max - min || 1}
+              {@const points = historicalData
+                .map(
+                  (d, i) =>
+                    `${(i * 120) / (historicalData.length - 1)},${48 - ((d.count - min) * 48) / range}`,
+                )
+                .join(" ")}
+              <svg
+                class="w-full h-24"
+                viewBox="0 0 200 96"
+                preserveAspectRatio="none"
+              >
+                <polyline
+                  {points}
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  class="text-primary"
+                />
+              </svg>
+            {/if}
           </div>
         </div>
       </div>
