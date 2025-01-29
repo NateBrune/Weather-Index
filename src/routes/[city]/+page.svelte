@@ -275,7 +275,7 @@
     </div>
 
     <div class="overflow-x-auto">
-      <div class="flex gap-4 items-center mb-4">
+      <div class="flex grid grid-cols-2 gap-4 items-center mb-4">
         <select
           class="select select-bordered w-full max-w-xs"
           bind:value={itemsPerPage}
@@ -284,6 +284,58 @@
             <option value={option}>{option} per page</option>
           {/each}
         </select>
+        <button
+          class="btn btn-sm btn-outline"
+          on:click={async () => {
+            const response = await fetch(
+              `/api/weather-cities/${city}?timescale=${timescale}`,
+            );
+            const data = await response.json();
+            const stations = data.stations;
+
+            const headers = [
+              "Station ID",
+              "Station Name",
+              "Latitude",
+              "Longitude",
+              "Temperature",
+              "Humidity",
+              "Wind Speed",
+              "Pressure",
+              "Quality Score",
+              "Last Update",
+            ];
+            const csvContent = [
+              headers.join(","),
+              ...stations.map((station) =>
+                [
+                  station.station_id,
+                  `"${station.station_name || ""}"`,
+                  station.latitude,
+                  station.longitude,
+                  station.temperature,
+                  station.humidity,
+                  station.wind_speed,
+                  station.pressure,
+                  station.data_quality_score,
+                  station.observation_timestamp,
+                ].join(","),
+              ),
+            ].join("\n");
+
+            const blob = new Blob([csvContent], { type: "text/csv" });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `${city}_stations.csv`;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+          }}
+        >
+          Download Stations Data
+        </button>
       </div>
       <table class="table table-zebra w-full hover:table-zebra bg-transparent">
         <thead>
@@ -339,12 +391,14 @@
         </tbody>
       </table>
       <div class="flex items-center justify-between p-4">
-        <div class="text-sm text-base-content/70">
-          Showing {Math.min(
-            (currentPage - 1) * itemsPerPage + 1,
-            stations.length,
-          )} to {Math.min(currentPage * itemsPerPage, stations.length)} of {stations.length}
-          stations
+        <div class="flex items-center gap-4">
+          <div class="text-sm text-base-content/70">
+            Showing {Math.min(
+              (currentPage - 1) * itemsPerPage + 1,
+              stations.length,
+            )} to {Math.min(currentPage * itemsPerPage, stations.length)} of {stations.length}
+            stations
+          </div>
         </div>
         <div class="join">
           <button

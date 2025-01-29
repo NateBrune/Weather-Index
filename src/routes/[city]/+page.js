@@ -32,5 +32,6 @@ export async function load({ fetch, params, url }) {
   return {
     data: weatherData,
     city: params.city,
+    timescale,
   };
 }
