@@ -360,7 +360,7 @@
           </thead>
           <tbody>
             {#each filteredData.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage) as item, i}
-              <tr class="hover">
+              <tr class="hover:bg-base-300 transition-colors duration-200 cursor-pointer">
                 <td class="font-semibold"
                   >#{stationCountRanks[item.location_name]}</td
                 >

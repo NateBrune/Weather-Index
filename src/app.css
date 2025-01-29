@@ -24,3 +24,8 @@ html {
   cursor: pointer;
   opacity: 0.9;
 }
+
+tr.hover:hover td {
+  background-color: hsl(var(--b3));
+  transition: background-color 0.2s ease-in-out;
+}
