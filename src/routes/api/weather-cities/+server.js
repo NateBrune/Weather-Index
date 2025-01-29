@@ -14,9 +14,8 @@ const pool = new Pool({
 
 export async function GET({ url }) {
   try {
-    const timeRange = url.searchParams.get("timeRange") || "24h";
-    const interval = timeRange === "24h" ? "hour" : "hour"; // day
-    const cacheKey = `stats-${timeRange}`;
+    const groupBy = url.searchParams.get("groupBy") || "city";
+    const cacheKey = `weather-cities-${groupBy}`;
 
     // Check cache first
     const cachedData = apiCache.get(cacheKey);
@@ -25,74 +24,140 @@ export async function GET({ url }) {
     }
 
     const client = await pool.connect();
-    const query = `
-      WITH hourly_data AS (
-        SELECT 
-          DATE_TRUNC($1, observation_timestamp) as hour,
-          COUNT(DISTINCT station_id) as active_stations,
-          COUNT(DISTINCT CASE WHEN data_quality_score >= 0.8 THEN station_id END) as quality_stations,
-          ROUND(AVG(temperature)::numeric, 2) as avg_temp,
-          ROUND(AVG(humidity)::numeric, 2) as avg_humidity,
-          ROUND(AVG(wind_speed)::numeric, 2) as avg_wind
-        FROM observations
-        WHERE observation_timestamp >= NOW() - (
+
+    // Subquery 1: Hourly Stats
+    const hourlyStatsQuery = `
+      SELECT 
+        CASE 
+          WHEN $1 = 'city' THEN g.city
+          WHEN $1 = 'state' THEN COALESCE(g.state, 'Unknown')
+          ELSE COALESCE(g.country, 'Unknown')
+        END AS location_name,
+        date_trunc('hour', o.observation_timestamp) AS hour,
+        PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY o.temperature) AS temperature,
+        PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY o.wind_speed) AS wind_speed
+      FROM stations s
+      JOIN geocodes g ON s.latitude = g.latitude AND s.longitude = g.longitude
+      JOIN observations o ON s.station_id = o.station_id
+      WHERE o.observation_timestamp >= NOW() - INTERVAL '7 days'
+        AND (
           CASE 
-            WHEN $2 = '24h' THEN INTERVAL '24 hours'
-            WHEN $2 = '7d' THEN INTERVAL '7 days'
-            WHEN $2 = '30d' THEN INTERVAL '30 days'
-            ELSE INTERVAL '24 hours'
+            WHEN $1 = 'city' THEN g.city
+            WHEN $1 = 'state' THEN g.state
+            ELSE g.country
           END
-        )
-        GROUP BY DATE_TRUNC($1, observation_timestamp)
-        ORDER BY hour ASC
-      ),
-      quality_stats AS (
+        ) IS NOT NULL
+        AND o.data_quality_score >= 0.8
+        AND o.temperature BETWEEN -50 AND 50
+      GROUP BY 
+        CASE 
+          WHEN $1 = 'city' THEN g.city
+          WHEN $1 = 'state' THEN COALESCE(g.state, 'Unknown')
+          ELSE COALESCE(g.country, 'Unknown')
+        END,
+        date_trunc('hour', o.observation_timestamp)
+    `;
+
+    // Subquery 2: Location Stats
+    const locationStatsQuery = `
+      SELECT 
+        h.location_name,
+        COUNT(DISTINCT s.station_id) AS station_count,
+        PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY h.temperature) AS median_temperature,
+        PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY h.wind_speed) AS median_wind_speed,
+        PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY h.temperature) - LAG(PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY h.temperature), 1) OVER (PARTITION BY h.location_name) AS temp_change_1h,
+        PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY h.temperature) - LAG(PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY h.temperature), 24) OVER (PARTITION BY h.location_name) AS temp_change_24h,
+        PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY h.temperature) - LAG(PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY h.temperature), 168) OVER (PARTITION BY h.location_name) AS temp_change_7d
+      FROM (${hourlyStatsQuery}) h
+      LEFT JOIN stations s ON (
+        CASE 
+          WHEN $1 = 'city' THEN s.city = h.location_name
+          WHEN $1 = 'state' THEN s.state = h.location_name
+          ELSE s.country = h.location_name
+        END
+      )
+      GROUP BY h.location_name
+    `;
+
+    // Subquery 3: Weather Icons
+    const weatherIconsQuery = `
+      SELECT 
+        CASE 
+          WHEN $1 = 'city' THEN g.city
+          WHEN $1 = 'state' THEN COALESCE(g.state, 'Unknown')
+          ELSE COALESCE(g.country, 'Unknown')
+        END as location_name,
+        mode() WITHIN GROUP (ORDER BY o.weather_icon) as weather_icon
+      FROM stations s
+      JOIN geocodes g ON s.latitude = g.latitude AND s.longitude = g.longitude
+      JOIN observations o ON s.station_id = o.station_id
+      WHERE o.observation_timestamp >= NOW() - INTERVAL '7 days'
+      GROUP BY 
+        CASE 
+          WHEN $1 = 'city' THEN g.city
+          WHEN $1 = 'state' THEN COALESCE(g.state, 'Unknown')
+          ELSE COALESCE(g.country, 'Unknown')
+        END
+    `;
+
+    // Subquery 4: Sparkline Data
+    const sparklineDataQuery = `
+      SELECT 
+        location_name,
+        json_agg(
+          json_build_object(
+            'temperature', median_temp,
+            'timestamp', hour
+          ) ORDER BY hour
+        ) as hourly_data
+      FROM (
         SELECT 
-          COUNT(DISTINCT s.station_id) as total_stations,
-          COUNT(DISTINCT CASE WHEN o.data_quality_score >= 0.8 THEN s.station_id END) as high_quality_stations,
-          CAST(AVG(o.data_quality_score) * 100 AS DECIMAL(5,2)) as avg_quality_percentage
-        FROM stations s
-        LEFT JOIN observations o ON s.station_id = o.station_id
-        WHERE o.data_quality_score IS NOT NULL
-      ),
-      hourly_temps AS (
-        SELECT 
+          CASE 
+            WHEN $1 = 'city' THEN g.city
+            WHEN $1 = 'state' THEN COALESCE(g.state, 'Unknown')
+            ELSE COALESCE(g.country, 'Unknown')
+          END as location_name,
           date_trunc('hour', o.observation_timestamp) as hour,
-          PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY o.temperature) as temperature
-        FROM observations o
+          PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY o.temperature) as median_temp
+        FROM stations s
+        JOIN geocodes g ON s.latitude = g.latitude AND s.longitude = g.longitude
+        JOIN observations o ON s.station_id = o.station_id
         WHERE o.observation_timestamp >= NOW() - INTERVAL '24 hours'
           AND o.data_quality_score >= 0.8
           AND o.temperature BETWEEN -50 AND 50
-        GROUP BY hour
-        ORDER BY hour ASC
-      )
-      SELECT 
-        qs.total_stations as station_count,
-        qs.high_quality_stations,
-        qs.avg_quality_percentage,
-        ROUND(CAST((SELECT temperature FROM hourly_temps ORDER BY hour DESC LIMIT 1) AS DECIMAL(5,2)), 2) as median_temperature,
-        (
-          SELECT json_agg(json_build_object(
-            'temperature', temperature,
-            'timestamp', hour
-          ) ORDER BY hour)
-          FROM hourly_temps
-        ) as sparkline_data,
-        (
-          SELECT json_agg(json_build_object(
-            'timestamp', hour,
-            'count', active_stations,
-            'quality_count', quality_stations
-          ) ORDER BY hour)
-          FROM hourly_data
-        ) as station_count_history
-      FROM quality_stats qs
-      LIMIT 1;
+        GROUP BY 
+          CASE 
+            WHEN $1 = 'city' THEN g.city
+            WHEN $1 = 'state' THEN COALESCE(g.state, 'Unknown')
+            ELSE COALESCE(g.country, 'Unknown')
+          END,
+          date_trunc('hour', o.observation_timestamp)
+      ) hourly
+      GROUP BY location_name
     `;
 
-    const result = await client.query(query, [interval, timeRange]);
+    // Final Query to combine all the subqueries
+    const finalQuery = `
+      SELECT 
+        l.location_name,
+        l.station_count,
+        ROUND(l.median_temperature::numeric, 2) as median_temperature,
+        COALESCE(ROUND(l.median_wind_speed::numeric, 2), 0)::float as median_wind_speed,
+        w.weather_icon,
+        s.hourly_data as sparkline_data
+      FROM (${locationStatsQuery}) l
+      LEFT JOIN (${weatherIconsQuery}) w ON l.location_name = w.location_name
+      LEFT JOIN (${sparklineDataQuery}) s ON l.location_name = s.location_name
+      WHERE l.location_name != 'Unknown'
+      ORDER BY l.station_count DESC
+    `;
+
+    const result = await client.query(finalQuery, [groupBy]);
     client.release();
-    return json(result.rows[0]);
+
+    // Cache the result
+    apiCache.set(cacheKey, result.rows);
+    return json(result.rows);
   } catch (err) {
     console.error("Database query failed:", err);
     return json({ error: "Failed to fetch data" }, { status: 500 });

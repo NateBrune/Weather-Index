@@ -12,9 +12,11 @@ const pool = new Pool({
       : false,
 });
 
-export async function GET() {
+export async function GET({ url }) {
   try {
-    const cacheKey = `stats`;
+    const timeRange = url.searchParams.get("timeRange") || "24h";
+    const interval = timeRange === "24h" ? "hour" : "hour";
+    const cacheKey = `stats-${timeRange}`;
 
     // Check cache first
     const cachedData = apiCache.get(cacheKey);
@@ -26,15 +28,22 @@ export async function GET() {
     const query = `
       WITH hourly_data AS (
         SELECT 
-          DATE_TRUNC('hour', observation_timestamp) as hour,
+          DATE_TRUNC($1, observation_timestamp) as hour,
           COUNT(DISTINCT station_id) as active_stations,
           COUNT(DISTINCT CASE WHEN data_quality_score >= 0.8 THEN station_id END) as quality_stations,
           ROUND(AVG(temperature)::numeric, 2) as avg_temp,
           ROUND(AVG(humidity)::numeric, 2) as avg_humidity,
           ROUND(AVG(wind_speed)::numeric, 2) as avg_wind
         FROM observations
-        WHERE observation_timestamp >= NOW() - INTERVAL '24 hours'
-        GROUP BY DATE_TRUNC('hour', observation_timestamp)
+        WHERE observation_timestamp >= NOW() - (
+          CASE 
+            WHEN $2 = '24h' THEN INTERVAL '24 hours'
+            WHEN $2 = '7d' THEN INTERVAL '7 days'
+            WHEN $2 = '30d' THEN INTERVAL '30 days'
+            ELSE INTERVAL '24 hours'
+          END
+        )
+        GROUP BY DATE_TRUNC($1, observation_timestamp)
         ORDER BY hour ASC
       ),
       quality_stats AS (
@@ -81,7 +90,7 @@ export async function GET() {
       LIMIT 1;
     `;
 
-    const result = await client.query(query);
+    const result = await client.query(query, [interval, timeRange]);
     client.release();
     return json(result.rows[0]);
   } catch (err) {

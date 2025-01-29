@@ -30,7 +30,7 @@ export async function load({ fetch, url }) {
 
   const [citiesResponse, statsResponse] = await Promise.all([
     fetch(`/api/weather-cities?groupBy=${groupBy}`),
-    fetch("/api/weather-cities/stats?timeRange=7d"),
+    fetch("/api/weather-cities/stats?timeRange=24h"),
   ]);
 
   const [data, networkStats] = await Promise.all([

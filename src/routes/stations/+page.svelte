@@ -59,6 +59,13 @@
   }
 
   function updateChart() {
+    loading = true;
+    console.log("update chart");
+    console.log(stationData);
+    if (chart) {
+      chart.destroy();
+      chart = null;
+    }
     if (stationData.length > 0) {
       // Create chart if it doesn't exist
       const chartData = {
@@ -78,6 +85,7 @@
       };
 
       if (!chartContainer) return;
+      console.log("we have chart contaier");
 
       chart = new Chart(chartContainer, {
         type: "line",
@@ -158,11 +166,12 @@
         },
       });
     }
+    loading = false;
   }
 
   onMount(() => {
     stationData = data.stationData; // Initialize with data from props
-    updateChart(); // Render the chart
+    updateChart();
   });
 
   onDestroy(() => {
@@ -213,7 +222,7 @@
           >
         </div>
 
-        {#if loading}
+        {#if loading || data.stationData}
           <div class="h-[400px] flex items-center justify-center">
             <span class="loading loading-dots loading-lg"></span>
           </div>
@@ -224,7 +233,7 @@
               class="absolute bottom-0 right-0 p-4 bg-base-100/80 backdrop-blur-sm rounded-lg"
             >
               <div class="text-4xl font-bold">
-                {stationData[stationData.length - 2]?.active_stations || 0}
+                {stationData[stationData.length - 1]?.active_stations || 0}
               </div>
               <div class="text-sm opacity-70">Active Stations</div>
             </div>
