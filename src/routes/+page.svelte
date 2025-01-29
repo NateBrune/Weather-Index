@@ -66,12 +66,9 @@
 
   function getLatestTemperature(item) {
     if (item.sparkline_data && item.sparkline_data.length > 0) {
-      const temp = item.sparkline_data[item.sparkline_data.length - 1].temperature;
-      return $temperatureUnit === "C" ? temp : ((temp * 9) / 5) + 32;
-    } else {
-      const temp = item.median_temperature;
-      return $temperatureUnit === "C" ? temp : ((temp * 9) / 5) + 32;
+      return item.sparkline_data[item.sparkline_data.length - 1].temperature;
     }
+    return item.median_temperature || 0;
   }
 
   function toggleSort(field) {
