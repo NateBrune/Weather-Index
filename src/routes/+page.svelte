@@ -84,36 +84,33 @@
   }
 
   function calculateTempChange(sparklineData, hours = 24) {
-    if (!sparklineData || sparklineData.length < 2) return "N/A";
-    const lastTemp = sparklineData[sparklineData.length - 1].temperature;
-    const lastTimestamp = new Date(
-      sparklineData[sparklineData.length - 1].timestamp,
-    );
+    if (!sparklineData?.length || sparklineData.length < 2) return "N/A";
+    
+    const lastPoint = sparklineData[sparklineData.length - 1];
+    const lastTemp = lastPoint.temperature;
 
+    let compareTemp;
     if (hours === 1) {
-      // For 1 hour change, look for data point closest to 1 hour ago
-      const oneHourAgo = new Date(lastTimestamp.getTime() - 3600000);
-      const hourAgoIndex = sparklineData.reduce((closest, point, index) => {
-        const pointTime = new Date(point.timestamp);
-        const currentDiff = Math.abs(pointTime - oneHourAgo);
-        const closestDiff = Math.abs(
-          new Date(sparklineData[closest].timestamp) - oneHourAgo,
-        );
-        return currentDiff < closestDiff ? index : closest;
-      }, 0);
-      const change = lastTemp - sparklineData[hourAgoIndex].temperature;
-      const convertedChange =
-        $temperatureUnit === "C" ? change : (change * 9) / 5;
-      const sign = convertedChange > 0 ? "+" : "";
-      return `${sign}${convertedChange.toFixed(1)}°${$temperatureUnit}`;
+      const targetTime = new Date(lastPoint.timestamp).getTime() - 3600000;
+      let closestIndex = 0;
+      let closestDiff = Infinity;
+      
+      for (let i = 0; i < sparklineData.length; i++) {
+        const diff = Math.abs(new Date(sparklineData[i].timestamp).getTime() - targetTime);
+        if (diff < closestDiff) {
+          closestDiff = diff;
+          closestIndex = i;
+        }
+      }
+      compareTemp = sparklineData[closestIndex].temperature;
     } else {
-      // For 24 hour change, use the oldest available data point
-      const change = lastTemp - sparklineData[0].temperature;
-      const convertedChange =
-        $temperatureUnit === "C" ? change : (change * 9) / 5;
-      const sign = convertedChange > 0 ? "+" : "";
-      return `${sign}${convertedChange.toFixed(1)}°${$temperatureUnit}`;
+      compareTemp = sparklineData[0].temperature;
     }
+
+    const change = lastTemp - compareTemp;
+    const convertedChange = $temperatureUnit === "C" ? change : (change * 9) / 5;
+    const sign = convertedChange > 0 ? "+" : "";
+    return `${sign}${convertedChange.toFixed(1)}°${$temperatureUnit}`;
   }
 </script>
 
