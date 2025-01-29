@@ -34,40 +34,32 @@
     )
     .sort((a, b) => {
       const modifier = sortOrder === "desc" ? -1 : 1;
-      if (sortBy === "temperature") {
-        const tempA =
-          $temperatureUnit === "C"
-            ? a.median_temperature
-            : (a.median_temperature * 9) / 5 + 32;
-        const tempB =
-          $temperatureUnit === "C"
-            ? b.median_temperature
-            : (b.median_temperature * 9) / 5 + 32;
-        return (tempA - tempB) * modifier;
-      } else if (sortBy === "wind_speed") {
-        return (a.median_wind_speed - b.median_wind_speed) * modifier;
-      } else if (sortBy === "temp_change_1h") {
-        const changeA = a.sparkline_data
-          ? parseFloat(
-              calculateTempChange(a.sparkline_data, 1).replace("°", ""),
-            ) || 0
-          : 0;
-        const changeB = b.sparkline_data
-          ? parseFloat(
-              calculateTempChange(b.sparkline_data, 1).replace("°", ""),
-            ) || 0
-          : 0;
-        return (changeA - changeB) * modifier;
-      } else if (sortBy === "temp_change_24h") {
-        const changeA = a.sparkline_data
-          ? parseFloat(calculateTempChange(a.sparkline_data, 24)) || 0
-          : 0;
-        const changeB = b.sparkline_data
-          ? parseFloat(calculateTempChange(b.sparkline_data, 24)) || 0
-          : 0;
-        return (changeA - changeB) * modifier;
+      
+      switch (sortBy) {
+        case "temperature":
+          const tempA = $temperatureUnit === "C" ? a.median_temperature : (a.median_temperature * 9) / 5 + 32;
+          const tempB = $temperatureUnit === "C" ? b.median_temperature : (b.median_temperature * 9) / 5 + 32;
+          return (tempA - tempB) * modifier;
+          
+        case "wind_speed":
+          return ((a.median_wind_speed || 0) - (b.median_wind_speed || 0)) * modifier;
+          
+        case "station_count":
+          return ((a.station_count || 0) - (b.station_count || 0)) * modifier;
+          
+        case "temp_change_1h":
+          const change1hA = a.sparkline_data ? parseFloat(calculateTempChange(a.sparkline_data, 1)) || 0 : 0;
+          const change1hB = b.sparkline_data ? parseFloat(calculateTempChange(b.sparkline_data, 1)) || 0 : 0;
+          return (change1hA - change1hB) * modifier;
+          
+        case "temp_change_24h":
+          const change24hA = a.sparkline_data ? parseFloat(calculateTempChange(a.sparkline_data, 24)) || 0 : 0;
+          const change24hB = b.sparkline_data ? parseFloat(calculateTempChange(b.sparkline_data, 24)) || 0 : 0;
+          return (change24hA - change24hB) * modifier;
+          
+        default:
+          return ((a[sortBy] || 0) - (b[sortBy] || 0)) * modifier;
       }
-      return (a[sortBy] - b[sortBy]) * modifier;
     });
 
   function toggleSort(field) {
