@@ -59,7 +59,6 @@
   }
 
   function updateChart() {
-    loading = true;
     console.log("update chart");
     console.log(stationData);
     if (chart) {
@@ -166,13 +165,18 @@
         },
       });
     }
-    loading = false;
   }
 
-  onMount(() => {
-    stationData = data.stationData; // Initialize with data from props
-    updateChart();
-  });
+  // onMount(() => {
+  //   stationData = data.stationData; // Initialize with data from props
+  //   updateChart();
+  // });
+  $: {
+    if (data.stationData) {
+      stationData = data.stationData;
+      updateChart();
+    }
+  }
 
   onDestroy(() => {
     if (chart) {
@@ -222,11 +226,11 @@
           >
         </div>
 
-        {#if loading || !data.stationData}
+        {#if loading}
           <div class="h-[400px] flex items-center justify-center">
             <span class="loading loading-dots loading-lg"></span>
           </div>
-        {:else if data.stationData.length > 0}
+        {:else}
           <div class="h-[400px] relative">
             <canvas bind:this={chartContainer}></canvas>
             <div
