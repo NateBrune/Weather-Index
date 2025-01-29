@@ -5,7 +5,7 @@
 
   const tabs = [
     { id: "city", label: "Cities" },
-    { id: "state", label: "States & Regions" },
+    { id: "state", label: "States" },
     { id: "country", label: "Countries" },
   ];
 
@@ -149,8 +149,7 @@
               </a>
             </div>
             {#if data.networkStats?.station_count_history}
-              {@const historicalData =
-                data.networkStats.station_count_history.slice(0, -1)}
+              {@const historicalData = data.networkStats.station_count_history.slice(0, -1)}
               {@const counts = historicalData.map((d) => d.count)}
               {@const min = Math.min(...counts)}
               {@const max = Math.max(...counts)}
@@ -304,7 +303,7 @@
                 {data.activeTab === "city"
                   ? "City"
                   : data.activeTab === "state"
-                    ? "States & Regions"
+                    ? "State"
                     : "Country"}
               </th>
               <th
@@ -354,11 +353,6 @@
               </th>
               <th class="text-primary">Sparkline</th>
               <th class="text-primary">Weather</th>
-              <th class="text-primary">
-                <a href="https://docs.weatherxm.com/rewards/quality-of-data" target="_blank" rel="noopener noreferrer" class="link link-primary hover:link-hover">
-                  Quality Score
-                </a>
-              </th>
             </tr>
           </thead>
           <tbody>
@@ -501,7 +495,6 @@
                     />
                   {/if}
                 </td>
-                <td>{item.quality_score}%</td>
               </tr>
             {/each}
           </tbody>
