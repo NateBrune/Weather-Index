@@ -4,7 +4,7 @@
   import { temperatureUnit } from "$lib/stores";
 
   let stations = [];
-  
+
   $: {
     if (Array.isArray(data.data.stations)) {
       stations = data.data.stations;
@@ -12,7 +12,7 @@
   }
 
   function formatTimestamp(timestamp) {
-    return moment(timestamp).format('MMM D, YYYY HH:mm');
+    return moment(timestamp).format("MMM D, YYYY HH:mm");
   }
 
   function formatTemperature(temp, unit) {
@@ -238,10 +238,12 @@
       <canvas bind:this={chartContainer}></canvas>
     </div>
   </div>
-  
-  <div class="bg-base-200 shadow-lg rounded-lg p-6 mt-8">
+
+  <div
+    class="card bg-base-200/80 shadow-2xl backdrop-blur-sm border border-base-300/50"
+  >
     <h2 class="text-2xl font-semibold mb-4">Active Weather Stations</h2>
-    <div class="overflow-x-auto">
+    <div class="card-body overflow-x-auto px-2 sm:px-6">
       <table class="table table-zebra w-full">
         <thead>
           <tr>
@@ -258,12 +260,22 @@
           {#each stations as station}
             <tr>
               <td>{station.station_id}</td>
-              <td>{formatTemperature(station.temperature, $temperatureUnit)}°{$temperatureUnit}</td>
+              <td
+                >{formatTemperature(
+                  station.temperature,
+                  $temperatureUnit,
+                )}°{$temperatureUnit}</td
+              >
               <td>{station.humidity?.toFixed(1)}%</td>
               <td>{station.wind_speed?.toFixed(1)} m/s</td>
               <td>{station.pressure?.toFixed(1)} hPa</td>
               <td>
-                <div class="radial-progress text-primary" style="--value:{(station.data_quality_score * 100).toFixed(0)};">
+                <div
+                  class="radial-progress text-primary"
+                  style="--value:{(station.data_quality_score * 100).toFixed(
+                    0,
+                  )};"
+                >
                   {(station.data_quality_score * 100).toFixed(0)}%
                 </div>
               </td>
