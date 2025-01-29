@@ -65,11 +65,12 @@
     });
 
   function getLatestTemperature(item) {
-    const temp = $temperatureUnit === "C" ? item.median_temperature : (item.median_temperature * 9) / 5 + 32;
     if (item.sparkline_data && item.sparkline_data.length > 0) {
-      return $temperatureUnit === "C" ? item.sparkline_data[item.sparkline_data.length - 1].temperature : (item.sparkline_data[item.sparkline_data.length - 1].temperature * 9) / 5 + 32;
+      const temp = item.sparkline_data[item.sparkline_data.length - 1].temperature;
+      return $temperatureUnit === "C" ? temp : ((temp * 9) / 5) + 32;
     } else {
-      return temp;
+      const temp = item.median_temperature;
+      return $temperatureUnit === "C" ? temp : ((temp * 9) / 5) + 32;
     }
   }
 
