@@ -8,23 +8,11 @@ const pool = new Pool({
   ssl: process.env.NODE_ENV === "production" ? { rejectUnauthorized: false } : false,
 });
 
-export async function GET({ url }) {
+export async function GET() {
   try {
     const client = await pool.connect();
-    const groupBy = url.searchParams.get('groupBy') || 'city';
     const query = `
-      WITH hourly_temps AS (
-        SELECT 
-          date_trunc('hour', o.observation_timestamp) as hour,
-          PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY o.temperature) as temperature
-        FROM observations o
-        WHERE o.observation_timestamp >= NOW() - INTERVAL '24 hours'
-          AND o.data_quality_score >= 0.8
-          AND o.temperature BETWEEN -50 AND 50
-        GROUP BY hour
-        ORDER BY hour ASC
-      ),
-      hourly_data AS (
+      WITH hourly_data AS (
         SELECT 
           DATE_TRUNC('hour', observation_timestamp) as hour,
           COUNT(DISTINCT station_id) as active_stations,
@@ -46,6 +34,7 @@ export async function GET({ url }) {
         LEFT JOIN observations o ON s.station_id = o.station_id
         WHERE o.data_quality_score IS NOT NULL
       ),
+      hourly_temps AS (
         SELECT 
           date_trunc('hour', o.observation_timestamp) as hour,
           PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY o.temperature) as temperature
@@ -78,59 +67,6 @@ export async function GET({ url }) {
         ) as station_count_history
       FROM quality_stats qs
       LIMIT 1;
-
-      WITH top_temp_changes AS (
-        SELECT 
-          CASE 
-            WHEN '${groupBy}' = 'city' THEN g.city
-            WHEN '${groupBy}' = 'state' THEN COALESCE(g.state, 'Unknown')
-            ELSE COALESCE(g.country, 'Unknown')
-          END as location_name,
-          ROUND(CAST(
-            AVG(CASE 
-              WHEN o.observation_timestamp >= NOW() - INTERVAL '1 hour' THEN o.temperature
-              ELSE NULL
-            END) - 
-            AVG(CASE 
-              WHEN o.observation_timestamp < NOW() - INTERVAL '1 hour' THEN o.temperature
-              ELSE NULL
-            END)
-          AS DECIMAL(10,2)), 2) as temp_change
-        FROM stations s
-        JOIN geocodes g ON s.latitude = g.latitude AND s.longitude = g.longitude
-        JOIN observations o ON s.station_id = o.station_id
-        WHERE o.observation_timestamp >= NOW() - INTERVAL '2 hours'
-          AND o.data_quality_score >= 0.8
-          AND o.temperature BETWEEN -50 AND 50
-        GROUP BY 
-          CASE 
-            WHEN '${groupBy}' = 'city' THEN g.city
-            WHEN '${groupBy}' = 'state' THEN COALESCE(g.state, 'Unknown')
-            ELSE COALESCE(g.country, 'Unknown')
-          END
-        HAVING COUNT(*) > 5
-        ORDER BY temp_change DESC
-        LIMIT 3
-      ),
-      temp_changes AS (
-        SELECT 
-          location_name,
-          ROUND(CAST((last_temp - first_temp) AS DECIMAL(10,2)), 2) as temp_change
-        FROM (
-          SELECT 
-            location_name,
-            FIRST_VALUE(temperature) OVER (PARTITION BY location_name ORDER BY hour ASC) as first_temp,
-            FIRST_VALUE(temperature) OVER (PARTITION BY location_name ORDER BY hour DESC) as last_temp
-          FROM hourly_temps
-        ) subq
-        WHERE last_temp IS NOT NULL AND first_temp IS NOT NULL
-      )
-      SELECT 
-        location_name,
-        temp_change
-      FROM temp_changes
-      ORDER BY temp_change DESC
-      LIMIT 3;
     `;
 
     const result = await client.query(query);
