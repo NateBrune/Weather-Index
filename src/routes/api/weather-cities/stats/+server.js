@@ -13,7 +13,18 @@ export async function GET({ url }) {
     const client = await pool.connect();
     const groupBy = url.searchParams.get('groupBy') || 'city';
     const query = `
-      WITH hourly_data AS (
+      WITH hourly_temps AS (
+        SELECT 
+          date_trunc('hour', o.observation_timestamp) as hour,
+          PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY o.temperature) as temperature
+        FROM observations o
+        WHERE o.observation_timestamp >= NOW() - INTERVAL '24 hours'
+          AND o.data_quality_score >= 0.8
+          AND o.temperature BETWEEN -50 AND 50
+        GROUP BY hour
+        ORDER BY hour ASC
+      ),
+      hourly_data AS (
         SELECT 
           DATE_TRUNC('hour', observation_timestamp) as hour,
           COUNT(DISTINCT station_id) as active_stations,
@@ -35,7 +46,6 @@ export async function GET({ url }) {
         LEFT JOIN observations o ON s.station_id = o.station_id
         WHERE o.data_quality_score IS NOT NULL
       ),
-      hourly_temps AS (
         SELECT 
           date_trunc('hour', o.observation_timestamp) as hour,
           PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY o.temperature) as temperature
