@@ -258,7 +258,7 @@
             >
               <td class="font-semibold">
                 <a 
-                  href="https://pro.weatherxm.com/?station={station.station_id}"
+                  href="https://pro.weatherxm.com/?station={station.station_name || station.station_id}"
                   target="_blank"
                   rel="noopener noreferrer" 
                   class="link link-primary hover:text-primary-focus"
