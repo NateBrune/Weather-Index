@@ -239,22 +239,22 @@
     </div>
 
     <div class="overflow-x-auto">
-      <table class="table table-zebra">
+      <table class="table table-zebra w-full hover:table-zebra bg-transparent">
         <thead>
           <tr>
-            <th>Station ID</th>
-            <th>Temperature</th>
-            <th>Humidity</th>
-            <th>Wind Speed</th>
-            <th>Pressure</th>
-            <th>Quality Score</th>
-            <th>Last Update</th>
+            <th class="text-primary">Station ID</th>
+            <th class="text-primary">Temperature</th>
+            <th class="text-primary">Humidity</th>
+            <th class="text-primary">Wind Speed</th>
+            <th class="text-primary">Pressure</th>
+            <th class="text-primary">Quality Score</th>
+            <th class="text-primary">Last Update</th>
           </tr>
         </thead>
         <tbody>
           {#each stations as station}
-            <tr>
-              <td>{station.station_id}</td>
+            <tr class="hover:bg-base-300 transition-colors duration-200 cursor-pointer">
+              <td class="font-semibold">{station.station_id}</td>
               <td>{formatTemperature(station.temperature, $temperatureUnit)}°{$temperatureUnit}</td>
               <td>{station.humidity?.toFixed(1)}%</td>
               <td>{station.wind_speed?.toFixed(1)} m/s</td>
