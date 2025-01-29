@@ -4,7 +4,7 @@
   import { temperatureUnit } from "$lib/stores";
 
   let stations = [];
-  
+
   $: {
     if (Array.isArray(data.data.stations)) {
       stations = data.data.stations;
@@ -12,7 +12,7 @@
   }
 
   function formatTimestamp(timestamp) {
-    return moment(timestamp).format('MMM D, YYYY HH:mm');
+    return moment(timestamp).format("MMM D, YYYY HH:mm");
   }
 
   function formatTemperature(temp, unit) {
@@ -206,7 +206,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
 </svelte:head>
 <main class="max-w-4xl mx-auto p-6 pt-20">
-  <div class="bg-base-200 shadow-lg rounded-lg p-6">
+  <div class="bg-base-100/80 shadow-2xl rounded-lg p-6">
     <h1 class="text-3xl font-semibold text-center mb-6">
       Weather Data for {city}
     </h1>
@@ -253,14 +253,26 @@
         </thead>
         <tbody>
           {#each stations as station}
-            <tr class="hover:bg-base-300 transition-colors duration-200 cursor-pointer">
+            <tr
+              class="hover:bg-base-300 transition-colors duration-200 cursor-pointer"
+            >
               <td class="font-semibold">{station.station_id}</td>
-              <td>{formatTemperature(station.temperature, $temperatureUnit)}°{$temperatureUnit}</td>
+              <td
+                >{formatTemperature(
+                  station.temperature,
+                  $temperatureUnit,
+                )}°{$temperatureUnit}</td
+              >
               <td>{station.humidity?.toFixed(1)}%</td>
               <td>{station.wind_speed?.toFixed(1)} m/s</td>
               <td>{station.pressure?.toFixed(1)} hPa</td>
               <td>
-                <div class="radial-progress text-primary" style="--value:{(station.data_quality_score * 100).toFixed(0)};">
+                <div
+                  class="radial-progress text-primary"
+                  style="--value:{(station.data_quality_score * 100).toFixed(
+                    0,
+                  )};"
+                >
                   {(station.data_quality_score * 100).toFixed(0)}%
                 </div>
               </td>
