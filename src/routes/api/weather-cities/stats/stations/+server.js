@@ -1,4 +1,3 @@
-
 import { json } from "@sveltejs/kit";
 import pg from "pg";
 
@@ -6,21 +5,24 @@ const { Pool } = pg;
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: process.env.NODE_ENV === "production" ? { rejectUnauthorized: false } : false,
+  ssl:
+    process.env.NODE_ENV === "production"
+      ? { rejectUnauthorized: false }
+      : false,
 });
 
 export async function GET({ url }) {
   try {
     const client = await pool.connect();
     const timeRange = url.searchParams.get("timeRange") || "24h";
-    
+
     let interval;
-    switch(timeRange) {
+    switch (timeRange) {
       case "7d":
         interval = "hour";
         break;
       case "30d":
-        interval = "day";
+        interval = "hour";
         break;
       default:
         interval = "hour";
@@ -53,7 +55,7 @@ export async function GET({ url }) {
 
     const result = await client.query(query, [interval, timeRange]);
     client.release();
-    
+
     return json(result.rows);
   } catch (err) {
     console.error("Database query failed:", err);

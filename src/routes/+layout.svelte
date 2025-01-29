@@ -11,11 +11,11 @@
 		sparkline_data: [],
 	});
 
-	async function fetchNetworkStats() {
-		const response = await fetch("/api/weather-cities/stats");
-		const stats = await response.json();
-		networkStats.set(stats);
-	}
+	// async function fetchNetworkStats() {
+	// 	const response = await fetch("/api/weather-cities/stats");
+	// 	const stats = await response.json();
+	// 	networkStats.set(stats);
+	// }
 
 	onMount(() => {
 		const html = document.querySelector("html");
@@ -24,7 +24,7 @@
 				? localStorage.getItem("theme")
 				: null;
 		html.setAttribute("data-theme", savedTheme || "dark");
-		fetchNetworkStats();
+		//fetchNetworkStats();
 	});
 
 	function toggleTheme() {

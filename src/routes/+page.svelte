@@ -7,6 +7,7 @@
     "Weather Statistics Dashboard | Real-time Global Weather Data";
   import { temperatureUnit } from "$lib/stores";
   import { goto } from "$app/navigation";
+  import { LogarithmicScale } from "chart.js";
 
   const tabs = [
     { id: "city", label: "Cities" },
@@ -184,7 +185,7 @@
                     </a>
                     {#if data.networkStats?.station_count_history}
                       {@const firstCount =
-                        data.networkStats.station_count_history[0].count}
+                        data.networkStats.station_count_history[1].count}
                       {@const lastCount =
                         data.networkStats.station_count_history[
                           data.networkStats.station_count_history.length - 2
@@ -197,14 +198,15 @@
                             ? 'text-info'
                             : 'text-base-content'}"
                       >
-                        {change > 0 ? "+" : ""}{change} / 24h
+                        {change > 0 ? "+" : ""}{change}
+                        / 24h
                       </p>
                     {/if}
                   </div>
                 </div>
                 {#if data.networkStats?.station_count_history}
                   {@const historicalData =
-                    data.networkStats.station_count_history.slice(1, -1)}
+                    data.networkStats.station_count_history.slice(0, -1)}
                   {@const counts = historicalData.map((d) => d.count)}
                   {@const min = Math.min(...counts)}
                   {@const max = Math.max(...counts)}
