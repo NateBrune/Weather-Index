@@ -96,7 +96,6 @@
   };
 
   let chart;
-  let timescale = new URLSearchParams(window.location.search).get("timescale") || "daily";
 
   $: {
     if (chart) {
@@ -118,6 +117,10 @@
               },
               time: {
                 unit: (() => {
+                  const timescale =
+                    new URLSearchParams(window.location.search).get(
+                      "timescale",
+                    ) || "daily";
                   switch (timescale) {
                     case "hourly":
                       return "hour";
@@ -153,6 +156,10 @@
                 maxRotation: 0,
                 autoSkip: true,
                 maxTicksLimit: (() => {
+                  const timescale =
+                    new URLSearchParams(window.location.search).get(
+                      "timescale",
+                    ) || "daily";
                   switch (timescale) {
                     case "hourly":
                       return 24; // One label every hour for 24h
@@ -212,17 +219,17 @@
       Weather Data for {city}
     </h1>
 
-    <div class="flex justify-end gap-2 mb-4">
+    <div class="mb-6 flex justify-center gap-2">
       <button
-        class="btn btn-sm {timescale === 'hourly' ? 'btn-primary' : 'btn-ghost'}"
+        class="btn btn-primary btn-sm"
         on:click={() => changeTimescale("hourly")}>One Day</button
       >
       <button
-        class="btn btn-sm {timescale === 'daily' ? 'btn-primary' : 'btn-ghost'}"
+        class="btn btn-primary btn-sm"
         on:click={() => changeTimescale("daily")}>One Week</button
       >
       <button
-        class="btn btn-sm {timescale === 'weekly' ? 'btn-primary' : 'btn-ghost'}"
+        class="btn btn-primary btn-sm"
         on:click={() => changeTimescale("weekly")}>One Month</button
       >
       <!-- <button
