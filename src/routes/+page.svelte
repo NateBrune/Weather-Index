@@ -135,7 +135,7 @@
       </div>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
       <div class="card bg-base-100 text-neutral-content shadow-xl">
         <div class="card-body">
           <h2 class="card-title text-2xl">Global Station Count</h2>
@@ -274,6 +274,23 @@
                 </svg>
               {/each}
             {/if}
+          </div>
+        </div>
+      </div>
+      <div class="card bg-base-100 text-neutral-content shadow-xl">
+        <div class="card-body">
+          <h2 class="card-title text-2xl">Top 1hr Heat Gain</h2>
+          <div class="flex flex-col gap-2">
+            {#each data.networkStats?.top_heat_gainers || [] as gainer}
+              <div class="flex justify-between items-center">
+                <span class="text-lg">{gainer.location_name}</span>
+                <span class="text-error text-lg font-bold">
+                  +{$temperatureUnit === 'C' 
+                    ? gainer.temp_change.toFixed(1) 
+                    : (gainer.temp_change * 9/5).toFixed(1)}°{$temperatureUnit}
+                </span>
+              </div>
+            {/each}
           </div>
         </div>
       </div>

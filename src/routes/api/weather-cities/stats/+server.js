@@ -67,6 +67,49 @@ export async function GET() {
         ) as station_count_history
       FROM quality_stats qs
       LIMIT 1;
+
+      WITH hourly_temps AS (
+        SELECT 
+          CASE 
+            WHEN $1 = 'city' THEN g.city
+            WHEN $1 = 'state' THEN COALESCE(g.state, 'Unknown')
+            ELSE COALESCE(g.country, 'Unknown')
+          END as location_name,
+          date_trunc('hour', o.observation_timestamp) as hour,
+          PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY o.temperature) as temperature
+        FROM stations s
+        JOIN geocodes g ON s.latitude = g.latitude AND s.longitude = g.longitude
+        JOIN observations o ON s.station_id = o.station_id
+        WHERE o.observation_timestamp >= NOW() - INTERVAL '2 hours'
+          AND o.data_quality_score >= 0.8
+          AND o.temperature BETWEEN -50 AND 50
+        GROUP BY 
+          CASE 
+            WHEN $1 = 'city' THEN g.city
+            WHEN $1 = 'state' THEN COALESCE(g.state, 'Unknown')
+            ELSE COALESCE(g.country, 'Unknown')
+          END,
+          date_trunc('hour', o.observation_timestamp)
+      ),
+      temp_changes AS (
+        SELECT 
+          location_name,
+          ROUND(CAST((last_temp - first_temp) AS DECIMAL(10,2)), 2) as temp_change
+        FROM (
+          SELECT 
+            location_name,
+            FIRST_VALUE(temperature) OVER (PARTITION BY location_name ORDER BY hour ASC) as first_temp,
+            FIRST_VALUE(temperature) OVER (PARTITION BY location_name ORDER BY hour DESC) as last_temp
+          FROM hourly_temps
+        ) subq
+        WHERE last_temp IS NOT NULL AND first_temp IS NOT NULL
+      )
+      SELECT 
+        location_name,
+        temp_change
+      FROM temp_changes
+      ORDER BY temp_change DESC
+      LIMIT 3;
     `;
 
     const result = await client.query(query);
