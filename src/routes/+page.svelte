@@ -213,6 +213,34 @@
           </a>
         </div>
       </div>
+
+      <div class="card bg-base-100 text-neutral-content shadow-xl">
+        <div class="card-body p-4 md:p-6">
+          <h2 class="card-title text-xl md:text-2xl">Top Temperature Gainers (1h)</h2>
+          <div class="flex flex-col gap-2">
+            {#each filteredData.sort((a, b) => calculateTempChange(b.sparkline_data, 1).replace(/[^0-9.-]/g, '') - calculateTempChange(a.sparkline_data, 1).replace(/[^0-9.-]/g, '')).slice(0, 3) as item}
+              <div class="flex justify-between items-center">
+                <span class="font-medium">{item.location_name}</span>
+                <span class="text-error font-bold">{calculateTempChange(item.sparkline_data, 1)}</span>
+              </div>
+            {/each}
+          </div>
+        </div>
+      </div>
+
+      <div class="card bg-base-100 text-neutral-content shadow-xl">
+        <div class="card-body p-4 md:p-6">
+          <h2 class="card-title text-xl md:text-2xl">Top Temperature Drops (1h)</h2>
+          <div class="flex flex-col gap-2">
+            {#each filteredData.sort((a, b) => calculateTempChange(a.sparkline_data, 1).replace(/[^0-9.-]/g, '') - calculateTempChange(b.sparkline_data, 1).replace(/[^0-9.-]/g, '')).slice(0, 3) as item}
+              <div class="flex justify-between items-center">
+                <span class="font-medium">{item.location_name}</span>
+                <span class="text-info font-bold">{calculateTempChange(item.sparkline_data, 1)}</span>
+              </div>
+            {/each}
+          </div>
+        </div>
+      </div>
       <div class="card bg-base-100 text-neutral-content shadow-xl">
         <div class="card-body">
           <h2 class="card-title text-2xl">Network Median Temperature</h2>
