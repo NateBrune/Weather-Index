@@ -61,10 +61,6 @@
   function updateChart() {
     console.log("update chart");
     console.log(stationData);
-    if (chart) {
-      chart.destroy();
-      chart = null;
-    }
     if (stationData.length > 0) {
       // Create chart if it doesn't exist
       const chartData = {
@@ -167,14 +163,24 @@
     }
   }
 
-  // onMount(() => {
-  //   stationData = data.stationData; // Initialize with data from props
-  //   updateChart();
-  // });
+  onMount(async () => {
+    if (data.stationData) {
+      stationData = data.stationData;
+      await tick();
+      updateChart();
+    }
+  });
+
   $: {
     if (data.stationData) {
       stationData = data.stationData;
-      updateChart();
+      if (chartContainer) {
+        if (chart) {
+          chart.destroy();
+          chart = null;
+        }
+        updateChart();
+      }
     }
   }
 
