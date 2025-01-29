@@ -222,18 +222,19 @@
           >
         </div>
 
-        {#if loading || data.stationData}
+        {#if loading || !data.stationData}
           <div class="h-[400px] flex items-center justify-center">
             <span class="loading loading-dots loading-lg"></span>
           </div>
-        {:else}
+        {:else if data.stationData.length > 0}
           <div class="h-[400px] relative">
             <canvas bind:this={chartContainer}></canvas>
             <div
               class="absolute bottom-0 right-0 p-4 bg-base-100/80 backdrop-blur-sm rounded-lg"
             >
               <div class="text-4xl font-bold">
-                {stationData[stationData.length - 1]?.active_stations || 0}
+                {data.stationData[data.stationData.length - 1]
+                  ?.active_stations || 0}
               </div>
               <div class="text-sm opacity-70">Active Stations</div>
             </div>
