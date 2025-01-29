@@ -184,6 +184,14 @@
             legend: {
               display: true,
             },
+            tooltip: {
+              intersect: false,
+              mode: "nearest",
+            },
+          },
+          hover: {
+            intersect: false,
+            mode: "nearest",
           },
         },
       });

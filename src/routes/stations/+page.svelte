@@ -66,7 +66,7 @@
         datasets: [
           {
             label: "Active Stations",
-            data: stationData.slice(0, -1).map((d) => ({
+            data: stationData.slice(1, -1).map((d) => ({
               x: moment.utc(d.timestamp).local().valueOf(), // Parse as UTC and convert to local time
               y: parseInt(d.count, 10),
             })),
@@ -155,6 +155,14 @@
             legend: {
               display: true,
             },
+            tooltip: {
+              intersect: false,
+              mode: "nearest",
+            },
+          },
+          hover: {
+            intersect: false,
+            mode: "nearest",
           },
         },
       });
