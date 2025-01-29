@@ -139,7 +139,6 @@
   <meta name="twitter:title" content={pageTitle} />
   <meta name="twitter:description" content={metaDescription} />
 </svelte:head>
-<!-- Google tag (gtag.js) -->
 
 <div class="min-h-screen bg-base-200 pt-20 px-4 pb-8">
   <div class="max-w-6xl mx-auto backdrop-blur-sm">

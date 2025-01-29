@@ -4,7 +4,6 @@
 	import { goto } from "$app/navigation";
 	import { onMount } from "svelte";
 	import { writable } from "svelte/store";
-	import Analytics from "$lib/analytics.svelte";
 
 	export const networkStats = writable({
 		station_count: 0,
@@ -87,7 +86,6 @@
 </header>
 
 <div class="app">
-	<Analytics />
 	<main>
 		<slot />
 	</main>

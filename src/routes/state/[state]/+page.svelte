@@ -2,7 +2,6 @@
   import { onMount, onDestroy } from "svelte";
   import moment from "moment";
   import { temperatureUnit } from "$lib/stores";
-  import Analytics from "$lib/analytics.svelte";
 
   let stations = [];
   let currentPage = 1;
@@ -209,7 +208,6 @@
   />
   <script src="https://cdn.tailwindcss.com"></script>
 </svelte:head>
-<Analytics />
 <main class="max-w-4xl mx-auto p-6 pt-20">
   <div class="bg-base-100/80 shadow-2xl rounded-lg p-6">
     <h1 class="text-3xl font-semibold text-center mb-6">
@@ -265,7 +263,7 @@
             >
               <td class="font-semibold">
                 <a
-                  href="https://pro.weatherxm.com/?station={station.station_name
+                  href="https://explorer.weatherxm.com/stations/{station.station_name
                     .toLowerCase()
                     .replace(/\s+/g, '-')}"
                   target="_blank"

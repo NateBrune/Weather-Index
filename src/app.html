@@ -4,14 +4,34 @@
 		<meta charset="utf-8" />
 		<link rel="icon" href="%sveltekit.assets%/favicon.svg" />
 		<meta name="viewport" content="width=device-width" />
-		<meta name="description" content="Real-time weather statistics and temperature tracking across cities worldwide. Powered by WeatherXM." />
-		<meta name="keywords" content="weather, temperature, statistics, WeatherXM, real-time weather, global weather" />
+		<meta
+			name="description"
+			content="Real-time weather statistics and temperature tracking across cities worldwide. Powered by WeatherXM."
+		/>
+		<meta
+			name="keywords"
+			content="weather, temperature, statistics, WeatherXM, real-time weather, global weather"
+		/>
 		<meta name="robots" content="index, follow" />
 		<meta property="og:type" content="website" />
 		<meta property="og:site_name" content="Weather Statistics" />
 		<meta name="twitter:card" content="summary_large_image" />
 		%sveltekit.head%
 	</head>
+	<!-- Google tag (gtag.js) -->
+	<script
+		async
+		src="https://www.googletagmanager.com/gtag/js?id=G-Q5W2P7PCEM"
+	></script>
+	<script>
+		window.dataLayer = window.dataLayer || [];
+		function gtag() {
+			dataLayer.push(arguments);
+		}
+		gtag("js", new Date());
+
+		gtag("config", "G-Q5W2P7PCEM");
+	</script>
 	<body data-sveltekit-preload-data="hover">
 		<div style="display: contents">%sveltekit.body%</div>
 	</body>

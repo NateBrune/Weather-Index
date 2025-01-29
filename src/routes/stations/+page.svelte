@@ -15,7 +15,6 @@
     Filler,
   } from "chart.js";
   import "chartjs-adapter-moment";
-  import Analytics from "$lib/analytics.svelte";
 
   Chart.register(
     CategoryScale,
@@ -180,7 +179,6 @@
   });
 </script>
 
-<Analytics />
 <div class="min-h-screen bg-base-200 pt-20 px-4 pb-8">
   <div class="max-w-4xl mx-auto">
     <div class="mb-8">
