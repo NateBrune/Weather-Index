@@ -2,14 +2,26 @@ import { json } from "@sveltejs/kit";
 import pg from "pg";
 
 const { Pool } = pg;
+import { apiCache } from "$lib/cache";
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: process.env.NODE_ENV === "production" ? { rejectUnauthorized: false } : false,
+  ssl:
+    process.env.NODE_ENV === "production"
+      ? { rejectUnauthorized: false }
+      : false,
 });
 
 export async function GET() {
   try {
+    const cacheKey = `stats`;
+
+    // Check cache first
+    const cachedData = apiCache.get(cacheKey);
+    if (cachedData) {
+      return json(cachedData);
+    }
+
     const client = await pool.connect();
     const query = `
       WITH hourly_data AS (

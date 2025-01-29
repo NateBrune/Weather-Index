@@ -2,6 +2,7 @@ import { json } from "@sveltejs/kit";
 import pg from "pg";
 
 const { Pool } = pg;
+import { apiCache } from '$lib/cache';
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
@@ -11,7 +12,7 @@ const pool = new Pool({
       : false,
 });
 
-import { apiCache } from '$lib/cache';
+
 
 export async function GET({ url }) {
   try {
