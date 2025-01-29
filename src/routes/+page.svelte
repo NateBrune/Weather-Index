@@ -154,7 +154,7 @@
                   {@const change = lastCount - firstCount}
                   <p
                     class="text-lg mt-2 {change > 0
-                      ? 'text-error'
+                      ? 'text-success'
                       : change < 0
                         ? 'text-info'
                         : 'text-base-content'}"
