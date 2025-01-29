@@ -277,7 +277,62 @@
           </div>
         </div>
       </div>
-    </div>
+
+      <!-- Top Heat Gainers -->
+      <div class="card bg-base-100 text-neutral-content shadow-xl">
+        <div class="card-body">
+          <h2 class="card-title text-2xl">Top Heat Gain (1h)</h2>
+          <div class="flex flex-col gap-2">
+            {#each filteredData
+              .filter(item => calculateTempChange(item.sparkline_data, 1) !== 'N/A')
+              .sort((a, b) => parseFloat(calculateTempChange(b.sparkline_data, 1)) - parseFloat(calculateTempChange(a.sparkline_data, 1)))
+              .slice(0, 3) as item}
+              <div class="flex justify-between items-center">
+                <a 
+                  href={data.activeTab === 'city' ? `/${item.location_name}` : 
+                       data.activeTab === 'state' ? `/state/${item.location_name}` :
+                       `/country/${item.location_name}`} 
+                  class="link link-primary hover:opacity-80"
+                >
+                  {item.location_name}
+                </a>
+                <div class="flex flex-col items-end">
+                  <span class="text-error font-bold">{calculateTempChange(item.sparkline_data, 1)}</span>
+                  <span class="text-xs opacity-70">1hr change</span>
+                </div>
+              </div>
+            {/each}
+          </div>
+        </div>
+      </div>
+
+      <!-- Top Heat Losers -->
+      <div class="card bg-base-100 text-neutral-content shadow-xl">
+        <div class="card-body">
+          <h2 class="card-title text-2xl">Top Heat Loss (1h)</h2>
+          <div class="flex flex-col gap-2">
+            {#each filteredData
+              .filter(item => calculateTempChange(item.sparkline_data, 1) !== 'N/A')
+              .sort((a, b) => parseFloat(calculateTempChange(a.sparkline_data, 1)) - parseFloat(calculateTempChange(b.sparkline_data, 1)))
+              .slice(0, 3) as item}
+              <div class="flex justify-between items-center">
+                <a 
+                  href={data.activeTab === 'city' ? `/${item.location_name}` : 
+                       data.activeTab === 'state' ? `/state/${item.location_name}` :
+                       `/country/${item.location_name}`} 
+                  class="link link-primary hover:opacity-80"
+                >
+                  {item.location_name}
+                </a>
+                <div class="flex flex-col items-end">
+                  <span class="text-info font-bold">{calculateTempChange(item.sparkline_data, 1)}</span>
+                  <span class="text-xs opacity-70">1hr change</span>
+                </div>
+              </div>
+            {/each}
+          </div>
+        </div>
+      </div>
 
     <div class="flex flex-col gap-4 mb-4">
       <div class="tabs tabs-boxed">
