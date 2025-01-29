@@ -5,7 +5,7 @@
 
   const tabs = [
     { id: "city", label: "Cities" },
-    { id: "state", label: "States" },
+    { id: "state", label: "States & Regions" },
     { id: "country", label: "Countries" },
   ];
 
@@ -149,7 +149,8 @@
               </a>
             </div>
             {#if data.networkStats?.station_count_history}
-              {@const historicalData = data.networkStats.station_count_history.slice(0, -1)}
+              {@const historicalData =
+                data.networkStats.station_count_history.slice(0, -1)}
               {@const counts = historicalData.map((d) => d.count)}
               {@const min = Math.min(...counts)}
               {@const max = Math.max(...counts)}
@@ -303,7 +304,7 @@
                 {data.activeTab === "city"
                   ? "City"
                   : data.activeTab === "state"
-                    ? "State"
+                    ? "States & Regions"
                     : "Country"}
               </th>
               <th
