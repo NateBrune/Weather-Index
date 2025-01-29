@@ -138,21 +138,8 @@
   <meta property="og:description" content={metaDescription} />
   <meta name="twitter:title" content={pageTitle} />
   <meta name="twitter:description" content={metaDescription} />
-  <!-- Google tag (gtag.js) -->
-  <script
-    async
-    src="https://www.googletagmanager.com/gtag/js?id=G-Q5W2P7PCEM"
-  ></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag() {
-      dataLayer.push(arguments);
-    }
-    gtag("js", new Date());
-
-    gtag("config", "G-Q5W2P7PCEM");
-  </script>
 </svelte:head>
+<!-- Google tag (gtag.js) -->
 
 <div class="min-h-screen bg-base-200 pt-20 px-4 pb-8">
   <div class="max-w-6xl mx-auto backdrop-blur-sm">
@@ -181,7 +168,9 @@
                       href="/stations"
                       class="text-4xl font-bold hover:text-primary transition-colors"
                     >
-                      {data.networkStats?.station_count?.toLocaleString() ?? 0}
+                      {data.networkStats.station_count_history[
+                        data.networkStats.station_count_history.length - 2
+                      ].count?.toLocaleString() ?? 0}
                     </a>
                     {#if data.networkStats?.station_count_history}
                       {@const firstCount =
@@ -206,7 +195,7 @@
                 </div>
                 {#if data.networkStats?.station_count_history}
                   {@const historicalData =
-                    data.networkStats.station_count_history.slice(0, -1)}
+                    data.networkStats.station_count_history.slice(1, -1)}
                   {@const counts = historicalData.map((d) => d.count)}
                   {@const min = Math.min(...counts)}
                   {@const max = Math.max(...counts)}

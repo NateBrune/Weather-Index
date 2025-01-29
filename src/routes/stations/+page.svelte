@@ -15,6 +15,7 @@
     Filler,
   } from "chart.js";
   import "chartjs-adapter-moment";
+  import Analytics from "$lib/analytics.svelte";
 
   Chart.register(
     CategoryScale,
@@ -39,7 +40,7 @@
   async function fetchData() {
     loading = true;
     const response = await fetch(
-      `/api/weather-cities/stats/stations?timeRange=${timeRange}`,
+      `/api/weather-cities/stats?timeRange=${timeRange}`,
     );
     const newData = await response.json();
 
@@ -50,7 +51,7 @@
     }
 
     // Update data after chart is destroyed
-    stationData = newData;
+    stationData = newData.station_count_history;
     loading = false;
 
     // Wait for next tick to ensure DOM is updated
@@ -59,8 +60,6 @@
   }
 
   function updateChart() {
-    console.log("update chart");
-    console.log(stationData);
     if (stationData.length > 0) {
       // Create chart if it doesn't exist
       const chartData = {
@@ -69,7 +68,7 @@
             label: "Active Stations",
             data: stationData.slice(1, -1).map((d) => ({
               x: moment.utc(d.timestamp).local().valueOf(), // Parse as UTC and convert to local time
-              y: parseInt(d.active_stations, 10),
+              y: parseInt(d.count, 10),
             })),
             borderColor: "rgb(255, 99, 132)",
             backgroundColor: "rgba(255, 99, 132, 0.2)",
@@ -80,7 +79,6 @@
       };
 
       if (!chartContainer) return;
-      console.log("we have chart contaier");
 
       chart = new Chart(chartContainer, {
         type: "line",
@@ -164,25 +162,8 @@
   }
 
   onMount(async () => {
-    if (data.stationData) {
-      stationData = data.stationData;
-      await tick();
-      updateChart();
-    }
+    fetchData();
   });
-
-  $: {
-    if (data.stationData) {
-      stationData = data.stationData;
-      if (chartContainer) {
-        if (chart) {
-          chart.destroy();
-          chart = null;
-        }
-        updateChart();
-      }
-    }
-  }
 
   onDestroy(() => {
     if (chart) {
@@ -191,6 +172,7 @@
   });
 </script>
 
+<Analytics />
 <div class="min-h-screen bg-base-200 pt-20 px-4 pb-8">
   <div class="max-w-4xl mx-auto">
     <div class="mb-8">
@@ -243,8 +225,7 @@
               class="absolute bottom-0 right-0 p-4 bg-base-100/80 backdrop-blur-sm rounded-lg"
             >
               <div class="text-4xl font-bold">
-                {data.stationData[data.stationData.length - 1]
-                  ?.active_stations || 0}
+                {stationData[stationData.length - 2]?.count || 0}
               </div>
               <div class="text-sm opacity-70">Active Stations</div>
             </div>

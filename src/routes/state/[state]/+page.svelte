@@ -2,6 +2,7 @@
   import { onMount, onDestroy } from "svelte";
   import moment from "moment";
   import { temperatureUnit } from "$lib/stores";
+  import Analytics from "$lib/analytics.svelte";
 
   let stations = [];
   let currentPage = 1;
@@ -199,22 +200,8 @@
     type="text/css"
   />
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Google tag (gtag.js) -->
-  <script
-    async
-    src="https://www.googletagmanager.com/gtag/js?id=G-Q5W2P7PCEM"
-  ></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag() {
-      dataLayer.push(arguments);
-    }
-    gtag("js", new Date());
-
-    gtag("config", "G-Q5W2P7PCEM");
-  </script>
 </svelte:head>
-
+<Analytics />
 <main class="max-w-4xl mx-auto p-6 pt-20">
   <div class="bg-base-100/80 shadow-2xl rounded-lg p-6">
     <h1 class="text-3xl font-semibold text-center mb-6">
