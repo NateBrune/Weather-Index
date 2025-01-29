@@ -5,7 +5,7 @@
 
   const tabs = [
     { id: "city", label: "Cities" },
-    { id: "state", label: "States" },
+    { id: "state", label: "States/Regions" },
     { id: "country", label: "Countries" },
   ];
 
@@ -379,7 +379,7 @@
                 {data.activeTab === "city"
                   ? "City"
                   : data.activeTab === "state"
-                    ? "State"
+                    ? "State/Region"
                     : "Country"}
               </th>
               <th
