@@ -136,7 +136,7 @@
     <div class="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-8">
       <!-- Left Column - Station Count and Temperature -->
       <div class="lg:col-span-1">
-        <div class="grid grid-rows-2 gap-4">
+        <div class="grid grid-rows-2 gap-4 h-full">
           <!-- Global Station Count -->
           <div class="card bg-base-100 text-neutral-content shadow-xl">
             <div class="card-body">
@@ -269,7 +269,7 @@
       </div>
 
       <!-- Center Column - Network Quality -->
-      <div class="lg:col-span-2">
+      <div class="lg:col-span-2 h-full">
         <!-- Network Quality -->
         <div class="card bg-base-100 text-neutral-content shadow-xl h-full">
           <div class="card-body flex flex-col justify-center items-center">
@@ -300,7 +300,7 @@
 
       <!-- Right Column - Gainers and Losers -->
       <div class="lg:col-span-1">
-        <div class="grid grid-rows-2 gap-4">
+        <div class="grid grid-rows-2 gap-4 h-full">
           <!-- Top Heat Gainers -->
           <div class="card bg-base-100 text-neutral-content shadow-xl">
             <div class="card-body">

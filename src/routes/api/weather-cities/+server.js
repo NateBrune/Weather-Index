@@ -65,9 +65,9 @@ export async function GET({ url }) {
         COUNT(DISTINCT s.station_id) AS station_count,
         PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY h.temperature) AS median_temperature,
         PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY h.wind_speed) AS median_wind_speed,
-        PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY h.temperature) - LAG(PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY h.temperature), 1) OVER (PARTITION BY h.location_name ORDER BY h.hour) AS temp_change_1h,
-        PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY h.temperature) - LAG(PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY h.temperature), 24) OVER (PARTITION BY h.location_name ORDER BY h.hour) AS temp_change_24h,
-        PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY h.temperature) - LAG(PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY h.temperature), 168) OVER (PARTITION BY h.location_name ORDER BY h.hour) AS temp_change_7d
+        PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY h.temperature) - LAG(PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY h.temperature), 1) OVER (PARTITION BY h.location_name) AS temp_change_1h,
+        PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY h.temperature) - LAG(PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY h.temperature), 24) OVER (PARTITION BY h.location_name) AS temp_change_24h,
+        PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY h.temperature) - LAG(PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY h.temperature), 168) OVER (PARTITION BY h.location_name) AS temp_change_7d
       FROM (${hourlyStatsQuery}) h
       LEFT JOIN stations s ON (
         CASE 
