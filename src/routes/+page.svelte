@@ -35,14 +35,8 @@
     .sort((a, b) => {
       const modifier = sortOrder === "desc" ? -1 : 1;
       if (sortBy === "temperature") {
-        const tempA =
-          $temperatureUnit === "C"
-            ? a.median_temperature
-            : (a.median_temperature * 9) / 5 + 32;
-        const tempB =
-          $temperatureUnit === "C"
-            ? b.median_temperature
-            : (b.median_temperature * 9) / 5 + 32;
+        const tempA = getLatestTemperature(a);
+        const tempB = getLatestTemperature(b);
         return (tempA - tempB) * modifier;
       } else if (sortBy === "wind_speed") {
         return (a.median_wind_speed - b.median_wind_speed) * modifier;
@@ -69,6 +63,15 @@
       }
       return (a[sortBy] - b[sortBy]) * modifier;
     });
+
+  function getLatestTemperature(item) {
+    const temp = $temperatureUnit === "C" ? item.median_temperature : (item.median_temperature * 9) / 5 + 32;
+    if (item.sparkline_data && item.sparkline_data.length > 0) {
+      return $temperatureUnit === "C" ? item.sparkline_data[item.sparkline_data.length - 1].temperature : (item.sparkline_data[item.sparkline_data.length - 1].temperature * 9) / 5 + 32;
+    } else {
+      return temp;
+    }
+  }
 
   function toggleSort(field) {
     if (sortBy === field) {
@@ -208,7 +211,7 @@
                 <div class="flex flex-col justify-center">
                   <p class="text-4xl font-bold">
                     {formatTemperature(
-                      data.networkStats?.median_temperature,
+                      getLatestTemperature(data.networkStats),
                       $temperatureUnit,
                     )}°{$temperatureUnit}
                   </p>
@@ -502,7 +505,7 @@
                   <div class="flex items-center gap-2">
                     <span class="neutral-content">
                       {formatTemperature(
-                        item.median_temperature,
+                        getLatestTemperature(item),
                         $temperatureUnit,
                       )}°{$temperatureUnit}
                     </span>
