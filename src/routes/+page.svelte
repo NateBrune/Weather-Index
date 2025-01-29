@@ -354,6 +354,11 @@
               </th>
               <th class="text-primary">Sparkline</th>
               <th class="text-primary">Weather</th>
+              <th class="text-primary">
+                <a href="https://docs.weatherxm.com/rewards/quality-of-data" target="_blank" rel="noopener noreferrer" class="link link-primary hover:link-hover">
+                  Quality Score
+                </a>
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -496,6 +501,7 @@
                     />
                   {/if}
                 </td>
+                <td>{item.quality_score}%</td>
               </tr>
             {/each}
           </tbody>
