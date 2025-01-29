@@ -1,13 +1,42 @@
 
 <script>
+  import { onMount, onDestroy } from "svelte";
   import moment from "moment";
-  import { temperatureUnit } from '$lib/stores';
+  import { temperatureUnit } from "$lib/stores";
+
+  let stations = [];
+  let currentPage = 1;
+  let itemsPerPage = 10;
+  const itemsPerPageOptions = [10, 25, 50, 100];
+
+  $: {
+    if (Array.isArray(data.data.stations)) {
+      stations = data.data.stations;
+    }
+  }
+
+  $: paginatedStations = stations.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  function formatTimestamp(timestamp) {
+    return moment(timestamp).format("MMM D, YYYY HH:mm");
+  }
+
+  function formatTemperature(temp, unit) {
+    if (temp == null || isNaN(temp)) return "N/A";
+    const numTemp = Number(temp);
+    return unit === "C"
+      ? numTemp.toFixed(1)
+      : ((numTemp * 9) / 5 + 32).toFixed(1);
+  }
 
   $: chartData = {
-    labels: data.data.map(d => moment.parseZone(d.observation_timestamp).local()),
+    labels: data.data.timeseries.map(d => moment.parseZone(d.observation_timestamp).local()),
     datasets: [{
       label: `Temperature (°${$temperatureUnit})`,
-      data: data.data.map(d => $temperatureUnit === 'C' ? d.temperature : (d.temperature * 9/5) + 32),
+      data: data.data.timeseries.map(d => $temperatureUnit === 'C' ? d.temperature : (d.temperature * 9/5) + 32),
       borderColor: "rgb(255, 99, 132)",
       backgroundColor: "rgba(255, 99, 132, 0.2)",
       fill: { value: -100 },
@@ -162,28 +191,115 @@
 </svelte:head>
 
 <main class="max-w-4xl mx-auto p-6 pt-20">
-  <div class="bg-base-200 shadow-lg rounded-lg p-6">
-  <h1 class="text-3xl font-semibold text-center mb-6">
-    Weather Data for {state}
-  </h1>
+  <div class="bg-base-100/80 shadow-2xl rounded-lg p-6">
+    <h1 class="text-3xl font-semibold text-center mb-6">
+      Weather Data for {state}
+    </h1>
 
-  <div class="mb-6 flex justify-center gap-2">
-    <button
-      class="btn btn-primary btn-sm"
-      on:click={() => changeTimescale("hourly")}>One Day</button
-    >
-    <button
-      class="btn btn-primary btn-sm"
-      on:click={() => changeTimescale("daily")}>One Week</button
-    >
-    <button
-      class="btn btn-primary btn-sm"
-      on:click={() => changeTimescale("weekly")}>One Month</button
-    >
-  </div>
+    <div class="mb-6 flex justify-center gap-2">
+      <button
+        class="btn btn-primary btn-sm"
+        on:click={() => changeTimescale("hourly")}>One Day</button
+      >
+      <button
+        class="btn btn-primary btn-sm"
+        on:click={() => changeTimescale("daily")}>One Week</button
+      >
+      <button
+        class="btn btn-primary btn-sm"
+        on:click={() => changeTimescale("weekly")}>One Month</button
+      >
+    </div>
 
-  <div class="mb-6">
-    <canvas bind:this={chartContainer}></canvas>
+    <div class="mb-6">
+      <canvas bind:this={chartContainer}></canvas>
+    </div>
+
+    <div class="overflow-x-auto">
+      <div class="flex gap-4 items-center mb-4">
+        <select
+          class="select select-bordered w-full max-w-xs"
+          bind:value={itemsPerPage}
+        >
+          {#each itemsPerPageOptions as option}
+            <option value={option}>{option} per page</option>
+          {/each}
+        </select>
+      </div>
+      <table class="table table-zebra w-full hover:table-zebra bg-transparent">
+        <thead>
+          <tr>
+            <th class="text-primary">Station Name</th>
+            <th class="text-primary">Temperature</th>
+            <th class="text-primary">Humidity</th>
+            <th class="text-primary">Wind Speed</th>
+            <th class="text-primary">Pressure</th>
+            <th class="text-primary">Quality Score</th>
+            <th class="text-primary">Last Update</th>
+          </tr>
+        </thead>
+        <tbody>
+          {#each paginatedStations as station}
+            <tr
+              class="hover:bg-base-300 transition-colors duration-200 cursor-pointer"
+            >
+              <td class="font-semibold">
+                <a 
+                  href="https://pro.weatherxm.com/?station={station.station_name.toLowerCase().replace(/\s+/g, '-')}"
+                  target="_blank"
+                  rel="noopener noreferrer" 
+                  class="link link-primary hover:text-primary-focus"
+                >
+                  {station.station_name || station.station_id}
+                </a>
+              </td>
+              <td>{formatTemperature(station.temperature, $temperatureUnit)}°{$temperatureUnit}</td>
+              <td>{station.humidity?.toFixed(1)}%</td>
+              <td>{station.wind_speed?.toFixed(1)} m/s</td>
+              <td>{station.pressure?.toFixed(1)} hPa</td>
+              <td>
+                <div
+                  class="radial-progress text-primary"
+                  style="--value:{(station.data_quality_score * 100).toFixed(0)};"
+                >
+                  {(station.data_quality_score * 100).toFixed(0)}%
+                </div>
+              </td>
+              <td>{formatTimestamp(station.observation_timestamp)}</td>
+            </tr>
+          {/each}
+        </tbody>
+      </table>
+      <div class="flex items-center justify-between p-4">
+        <div class="text-sm text-base-content/70">
+          Showing {Math.min((currentPage - 1) * itemsPerPage + 1, stations.length)} to {Math.min(currentPage * itemsPerPage, stations.length)} of {stations.length} stations
+        </div>
+        <div class="join">
+          <button
+            class="join-item btn"
+            disabled={currentPage === 1}
+            on:click={() => (currentPage = 1)}>«</button
+          >
+          <button
+            class="join-item btn"
+            disabled={currentPage === 1}
+            on:click={() => currentPage--}>‹</button
+          >
+          <button class="join-item btn">Page {currentPage}</button>
+          <button
+            class="join-item btn"
+            disabled={currentPage >= Math.ceil(stations.length / itemsPerPage)}
+            on:click={() => currentPage++}>›</button
+          >
+          <button
+            class="join-item btn"
+            disabled={currentPage >= Math.ceil(stations.length / itemsPerPage)}
+            on:click={() => (currentPage = Math.ceil(stations.length / itemsPerPage))}
+            >»</button
+          >
+        </div>
+      </div>
+    </div>
   </div>
 </main>
 

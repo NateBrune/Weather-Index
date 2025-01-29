@@ -14,6 +14,30 @@ export async function GET({ params, url }) {
     const client = await pool.connect();
     const timescale = url.searchParams.get("timescale") || "daily";
 
+    // Get station data first
+    const stationQuery = `
+      SELECT DISTINCT ON (s.station_id)
+        s.station_id,
+        s.name as station_name,
+        s.latitude,
+        s.longitude,
+        o.temperature,
+        o.humidity,
+        o.wind_speed,
+        o.pressure,
+        o.observation_timestamp,
+        o.data_quality_score
+      FROM stations s
+      JOIN geocodes g ON s.latitude = g.latitude AND s.longitude = g.longitude
+      JOIN observations o ON s.station_id = o.station_id
+      WHERE g.state = $1
+        AND o.observation_timestamp >= NOW() - INTERVAL '1 hour'
+        AND o.data_quality_score >= 0.8
+      ORDER BY s.station_id, o.observation_timestamp DESC;
+    `;
+
+    const stationResult = await client.query(stationQuery, [params.state]);
+
     let timeInterval;
     let timeRange;
     switch (timescale) {
@@ -29,25 +53,39 @@ export async function GET({ params, url }) {
       WITH time_aggregated AS (
         SELECT 
           date_trunc($1, o.observation_timestamp) as timestamp_interval,
-          PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY o.temperature) as temperature
+          PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY o.temperature) as temperature,
+          PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY o.humidity) as humidity,
+          PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY o.wind_speed) as wind_speed,
+          PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY o.pressure) as pressure
         FROM stations s
         JOIN geocodes g ON s.latitude = g.latitude AND s.longitude = g.longitude
         JOIN observations o ON s.station_id = o.station_id
         WHERE g.state = $2
           AND o.temperature BETWEEN -50 AND 50
+          AND o.humidity BETWEEN 0 AND 100
+          AND o.pressure BETWEEN 870 AND 1085
           AND o.data_quality_score >= 0.8
           AND o.observation_timestamp >= NOW() - INTERVAL '${timeRange}'
         GROUP BY timestamp_interval
         ORDER BY timestamp_interval DESC
       )
-      SELECT temperature, timestamp_interval as observation_timestamp
+      SELECT 
+        temperature,
+        humidity,
+        wind_speed,
+        pressure,
+        timestamp_interval as observation_timestamp
       FROM time_aggregated
       ORDER BY observation_timestamp ASC;
     `;
 
     const result = await client.query(query, [timeInterval, params.state]);
     client.release();
-    return json(result.rows);
+    
+    return json({
+      timeseries: result.rows,
+      stations: stationResult.rows
+    });
   } catch (err) {
     console.error("Database query failed:", err);
     return json({ error: "Failed to fetch data" }, { status: 500 });
