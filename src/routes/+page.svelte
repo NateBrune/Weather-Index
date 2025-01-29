@@ -335,8 +335,8 @@
         </div>
       </div>
 
-      <div class="flex flex-col gap-4 mb-4">
-        <div class="tabs tabs-boxed">
+      <div class="w-full mb-4">
+        <div class="tabs tabs-boxed justify-center">
           {#each tabs as tab}
             <button
               class="tab {data.activeTab === tab.id ? 'tab-active' : ''}"
@@ -346,16 +346,18 @@
             </button>
           {/each}
         </div>
+      </div>
 
-        <div class="flex gap-4 items-center">
+      <div class="w-full mb-4">
+        <div class="flex gap-4 items-center justify-between">
           <input
             type="text"
             placeholder="Search locations..."
-            class="input input-bordered flex-grow"
+            class="input input-bordered w-2/3"
             bind:value={searchQuery}
           />
           <select
-            class="select select-bordered w-full max-w-xs"
+            class="select select-bordered w-1/3"
             bind:value={itemsPerPage}
           >
             {#each itemsPerPageOptions as option}
@@ -366,7 +368,7 @@
       </div>
 
       <div
-        class="card bg-base-100/80 shadow-2xl backdrop-blur-sm border border-base-300/50"
+        class="w-full card bg-base-100/80 shadow-2xl backdrop-blur-sm border border-base-300/50"
       >
         <div class="card-body overflow-x-auto px-2 sm:px-6">
           <table class="table table-zebra bg-transparent">
