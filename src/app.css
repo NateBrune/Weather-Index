@@ -20,6 +20,14 @@ html {
   transform: scale(1.01);
 }
 
+.table-zebra tbody tr:nth-child(even) {
+  background-color: hsl(var(--b2) / 0.7);
+}
+
+.table-zebra tbody tr:hover {
+  background-color: hsl(var(--b3));
+}
+
 .station-count-link:hover {
   cursor: pointer;
   opacity: 0.9;

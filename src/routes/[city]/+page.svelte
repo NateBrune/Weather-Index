@@ -242,7 +242,7 @@
   <div class="bg-base-200 shadow-lg rounded-lg p-6 mt-8">
     <h2 class="text-2xl font-semibold mb-4">Active Weather Stations</h2>
     <div class="overflow-x-auto">
-      <table class="table table-zebra w-full">
+      <table class="table table-zebra w-full hover:table-zebra">
         <thead>
           <tr>
             <th>Station ID</th>
