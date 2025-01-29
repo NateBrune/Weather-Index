@@ -220,7 +220,14 @@
           <div class="flex flex-col gap-2">
             {#each filteredData.sort((a, b) => calculateTempChange(b.sparkline_data, 1).replace(/[^0-9.-]/g, '') - calculateTempChange(a.sparkline_data, 1).replace(/[^0-9.-]/g, '')).slice(0, 3) as item}
               <div class="flex justify-between items-center">
-                <span class="font-medium">{item.location_name}</span>
+                <a 
+                  href={data.activeTab === 'city' ? `/${item.location_name}` : 
+                       data.activeTab === 'state' ? `/state/${item.location_name}` :
+                       `/country/${item.location_name}`} 
+                  class="link link-primary hover:opacity-80"
+                >
+                  {item.location_name}
+                </a>
                 <span class="text-error font-bold">{calculateTempChange(item.sparkline_data, 1)}</span>
               </div>
             {/each}
@@ -234,7 +241,14 @@
           <div class="flex flex-col gap-2">
             {#each filteredData.sort((a, b) => calculateTempChange(a.sparkline_data, 1).replace(/[^0-9.-]/g, '') - calculateTempChange(b.sparkline_data, 1).replace(/[^0-9.-]/g, '')).slice(0, 3) as item}
               <div class="flex justify-between items-center">
-                <span class="font-medium">{item.location_name}</span>
+                <a 
+                  href={data.activeTab === 'city' ? `/${item.location_name}` : 
+                       data.activeTab === 'state' ? `/state/${item.location_name}` :
+                       `/country/${item.location_name}`} 
+                  class="link link-primary hover:opacity-80"
+                >
+                  {item.location_name}
+                </a>
                 <span class="text-info font-bold">{calculateTempChange(item.sparkline_data, 1)}</span>
               </div>
             {/each}
