@@ -1,5 +1,18 @@
 <script>
   import { onMount, onDestroy } from "svelte";
+  
+  const pageTitle = `${city} Weather Statistics | Real-time Temperature Data`;
+  const metaDescription = `Current weather conditions and temperature statistics for ${city}. View real-time weather data, temperature changes, and station information.`;
+</script>
+
+<svelte:head>
+  <title>{pageTitle}</title>
+  <meta name="description" content={metaDescription} />
+  <meta property="og:title" content={pageTitle} />
+  <meta property="og:description" content={metaDescription} />
+  <meta name="twitter:title" content={pageTitle} />
+  <meta name="twitter:description" content={metaDescription} />
+</svelte:head>
   import moment from "moment";
   import { temperatureUnit } from "$lib/stores";
 

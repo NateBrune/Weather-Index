@@ -1,5 +1,18 @@
 <script>
   export let data;
+
+  const metaDescription = "Global weather statistics dashboard showing real-time temperature changes and weather conditions across cities worldwide.";
+  const pageTitle = "Weather Statistics Dashboard | Real-time Global Weather Data";
+</script>
+
+<svelte:head>
+  <title>{pageTitle}</title>
+  <meta name="description" content={metaDescription} />
+  <meta property="og:title" content={pageTitle} />
+  <meta property="og:description" content={metaDescription} />
+  <meta name="twitter:title" content={pageTitle} />
+  <meta name="twitter:description" content={metaDescription} />
+</svelte:head>
   import { temperatureUnit } from "$lib/stores";
   import { goto } from "$app/navigation";
 
