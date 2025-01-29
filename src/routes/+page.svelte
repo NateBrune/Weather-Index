@@ -34,32 +34,40 @@
     )
     .sort((a, b) => {
       const modifier = sortOrder === "desc" ? -1 : 1;
-      
-      switch (sortBy) {
-        case "temperature":
-          const tempA = $temperatureUnit === "C" ? a.median_temperature : (a.median_temperature * 9) / 5 + 32;
-          const tempB = $temperatureUnit === "C" ? b.median_temperature : (b.median_temperature * 9) / 5 + 32;
-          return (tempA - tempB) * modifier;
-          
-        case "wind_speed":
-          return ((a.median_wind_speed || 0) - (b.median_wind_speed || 0)) * modifier;
-          
-        case "station_count":
-          return ((a.station_count || 0) - (b.station_count || 0)) * modifier;
-          
-        case "temp_change_1h":
-          const change1hA = a.sparkline_data ? parseFloat(calculateTempChange(a.sparkline_data, 1)) || 0 : 0;
-          const change1hB = b.sparkline_data ? parseFloat(calculateTempChange(b.sparkline_data, 1)) || 0 : 0;
-          return (change1hA - change1hB) * modifier;
-          
-        case "temp_change_24h":
-          const change24hA = a.sparkline_data ? parseFloat(calculateTempChange(a.sparkline_data, 24)) || 0 : 0;
-          const change24hB = b.sparkline_data ? parseFloat(calculateTempChange(b.sparkline_data, 24)) || 0 : 0;
-          return (change24hA - change24hB) * modifier;
-          
-        default:
-          return ((a[sortBy] || 0) - (b[sortBy] || 0)) * modifier;
+      if (sortBy === "temperature") {
+        const tempA =
+          $temperatureUnit === "C"
+            ? a.median_temperature
+            : (a.median_temperature * 9) / 5 + 32;
+        const tempB =
+          $temperatureUnit === "C"
+            ? b.median_temperature
+            : (b.median_temperature * 9) / 5 + 32;
+        return (tempA - tempB) * modifier;
+      } else if (sortBy === "wind_speed") {
+        return (a.median_wind_speed - b.median_wind_speed) * modifier;
+      } else if (sortBy === "temp_change_1h") {
+        const changeA = a.sparkline_data
+          ? parseFloat(
+              calculateTempChange(a.sparkline_data, 1).replace("°", ""),
+            ) || 0
+          : 0;
+        const changeB = b.sparkline_data
+          ? parseFloat(
+              calculateTempChange(b.sparkline_data, 1).replace("°", ""),
+            ) || 0
+          : 0;
+        return (changeA - changeB) * modifier;
+      } else if (sortBy === "temp_change_24h") {
+        const changeA = a.sparkline_data
+          ? parseFloat(calculateTempChange(a.sparkline_data, 24)) || 0
+          : 0;
+        const changeB = b.sparkline_data
+          ? parseFloat(calculateTempChange(b.sparkline_data, 24)) || 0
+          : 0;
+        return (changeA - changeB) * modifier;
       }
+      return (a[sortBy] - b[sortBy]) * modifier;
     });
 
   function toggleSort(field) {
@@ -203,48 +211,6 @@
             ></progress>
           </div>
           </a>
-        </div>
-      </div>
-
-      <div class="card bg-base-100 text-neutral-content shadow-xl">
-        <div class="card-body p-4 md:p-6">
-          <h2 class="card-title text-xl md:text-2xl">Top Temperature Gainers (1h)</h2>
-          <div class="flex flex-col gap-2">
-            {#each filteredData.sort((a, b) => calculateTempChange(b.sparkline_data, 1).replace(/[^0-9.-]/g, '') - calculateTempChange(a.sparkline_data, 1).replace(/[^0-9.-]/g, '')).slice(0, 3) as item}
-              <div class="flex justify-between items-center">
-                <a 
-                  href={data.activeTab === 'city' ? `/${item.location_name}` : 
-                       data.activeTab === 'state' ? `/state/${item.location_name}` :
-                       `/country/${item.location_name}`} 
-                  class="link link-primary hover:opacity-80"
-                >
-                  {item.location_name}
-                </a>
-                <span class="text-error font-bold">{calculateTempChange(item.sparkline_data, 1)}</span>
-              </div>
-            {/each}
-          </div>
-        </div>
-      </div>
-
-      <div class="card bg-base-100 text-neutral-content shadow-xl">
-        <div class="card-body p-4 md:p-6">
-          <h2 class="card-title text-xl md:text-2xl">Top Temperature Drops (1h)</h2>
-          <div class="flex flex-col gap-2">
-            {#each filteredData.sort((a, b) => calculateTempChange(a.sparkline_data, 1).replace(/[^0-9.-]/g, '') - calculateTempChange(b.sparkline_data, 1).replace(/[^0-9.-]/g, '')).slice(0, 3) as item}
-              <div class="flex justify-between items-center">
-                <a 
-                  href={data.activeTab === 'city' ? `/${item.location_name}` : 
-                       data.activeTab === 'state' ? `/state/${item.location_name}` :
-                       `/country/${item.location_name}`} 
-                  class="link link-primary hover:opacity-80"
-                >
-                  {item.location_name}
-                </a>
-                <span class="text-info font-bold">{calculateTempChange(item.sparkline_data, 1)}</span>
-              </div>
-            {/each}
-          </div>
         </div>
       </div>
       <div class="card bg-base-100 text-neutral-content shadow-xl">
