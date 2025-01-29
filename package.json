@@ -4,7 +4,7 @@
 	"scripts": {
 		"dev": "vite dev --host 0.0.0.0",
 		"build": "vite build",
-		"preview": "vite preview"
+		"preview": "vite preview --host 0.0.0.0"
 	},
 	"devDependencies": {
 		"@fontsource/fira-mono": "^4.5.10",
