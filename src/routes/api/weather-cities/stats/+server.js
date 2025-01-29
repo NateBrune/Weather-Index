@@ -48,7 +48,7 @@ export async function GET({ url }) {
       ),
       quality_stats AS (
         SELECT 
-          COUNT(DISTINCT s.station_id) as total_stations,
+          COUNT(DISTINCT CASE WHEN o.data_quality_score > 0 THEN s.station_id END) as total_stations,
           COUNT(DISTINCT CASE WHEN o.data_quality_score >= 0.8 THEN s.station_id END) as high_quality_stations,
           CAST(AVG(o.data_quality_score) * 100 AS DECIMAL(5,2)) as avg_quality_percentage
         FROM stations s
