@@ -135,15 +135,15 @@
       </div>
     </div>
 
-    <div class="grid grid-cols-2 gap-4 mb-8">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
       <div class="card bg-base-100 text-neutral-content shadow-xl">
-        <div class="card-body">
-          <h2 class="card-title text-2xl">Global Station Count</h2>
+        <div class="card-body p-4 md:p-6">
+          <h2 class="card-title text-xl md:text-2xl">Global Station Count</h2>
           <div class="flex flex-col gap-2">
-            <div class="flex items-center">
+            <div class="flex items-center justify-between">
               <a
                 href="/stations"
-                class="text-4xl font-bold flex-1 hover:text-primary transition-colors"
+                class="text-2xl md:text-4xl font-bold hover:text-primary transition-colors"
               >
                 {data.networkStats?.station_count?.toLocaleString() ?? 0}
               </a>
@@ -160,9 +160,9 @@
                       `${(i * 120) / (historicalData.length - 1)},${48 - ((d.count - min) * 48) / range}`,
                   )
                   .join(" ")}
-                <a href="/stations" class="hover:opacity-80 transition-opacity">
+                <a href="/stations" class="hover:opacity-80 transition-opacity shrink-0 ml-2">
                   <svg
-                    class="w-24 h-12"
+                    class="w-20 h-12 md:w-24 md:h-12"
                     viewBox="0 0 120 48"
                     preserveAspectRatio="none"
                   >
@@ -181,13 +181,13 @@
         </div>
       </div>
       <div class="card bg-base-100 text-neutral-content shadow-xl">
-        <div class="card-body">
-          <h2 class="card-title text-2xl">Network Data Quality</h2>
+        <div class="card-body p-4 md:p-6">
+          <h2 class="card-title text-xl md:text-2xl">Network Data Quality</h2>
           <div class="flex flex-col gap-2">
-            <div class="stat-value text-4xl font-bold">
+            <div class="text-2xl md:text-4xl font-bold">
               {data.networkStats.avg_quality_percentage}%
             </div>
-            <div class="text-sm opacity-70">
+            <div class="text-xs md:text-sm opacity-70">
               {data.networkStats.high_quality_stations} high quality stations
             </div>
             <progress
