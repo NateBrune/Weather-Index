@@ -3,12 +3,16 @@
 	import { temperatureUnit } from "$lib/stores";
 	import { goto } from "$app/navigation";
 	import { onMount } from "svelte";
-	import { writable } from 'svelte/store';
+	import { writable } from "svelte/store";
 
-	export const networkStats = writable({ station_count: 0, median_temperature: 0, sparkline_data: [] });
+	export const networkStats = writable({
+		station_count: 0,
+		median_temperature: 0,
+		sparkline_data: [],
+	});
 
 	async function fetchNetworkStats() {
-		const response = await fetch('/api/weather-cities/stats');
+		const response = await fetch("/api/weather-cities/stats");
 		const stats = await response.json();
 		networkStats.set(stats);
 	}
@@ -41,8 +45,6 @@
 		type="text/css"
 	/>
 	<script src="https://cdn.tailwindcss.com"></script>
-	<title>WeatherXM Index</title>
-	<meta name="description" content="Weather statistics powered by WeatherXM" />
 </svelte:head>
 
 <header

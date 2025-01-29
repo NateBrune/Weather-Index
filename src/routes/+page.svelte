@@ -1,18 +1,10 @@
 <script>
   export let data;
 
-  const metaDescription = "Global weather statistics dashboard showing real-time temperature changes and weather conditions across cities worldwide.";
-  const pageTitle = "Weather Statistics Dashboard | Real-time Global Weather Data";
-</script>
-
-<svelte:head>
-  <title>{pageTitle}</title>
-  <meta name="description" content={metaDescription} />
-  <meta property="og:title" content={pageTitle} />
-  <meta property="og:description" content={metaDescription} />
-  <meta name="twitter:title" content={pageTitle} />
-  <meta name="twitter:description" content={metaDescription} />
-</svelte:head>
+  const metaDescription =
+    "Global weather statistics dashboard showing real-time temperature changes and weather conditions across cities worldwide.";
+  const pageTitle =
+    "Weather Statistics Dashboard | Real-time Global Weather Data";
   import { temperatureUnit } from "$lib/stores";
   import { goto } from "$app/navigation";
 
@@ -42,14 +34,22 @@
     }, {});
 
   // Pre-calculate temperature changes
-  $: temperatureCache = new Map(data.data.map(item => [
-    item.location_name,
-    {
-      latestTemp: getLatestTemperature(item),
-      change1h: item.sparkline_data ? parseFloat(calculateTempChange(item.sparkline_data, 1).replace("°", "")) || 0 : 0,
-      change24h: item.sparkline_data ? parseFloat(calculateTempChange(item.sparkline_data, 24)) || 0 : 0
-    }
-  ]));
+  $: temperatureCache = new Map(
+    data.data.map((item) => [
+      item.location_name,
+      {
+        latestTemp: getLatestTemperature(item),
+        change1h: item.sparkline_data
+          ? parseFloat(
+              calculateTempChange(item.sparkline_data, 1).replace("°", ""),
+            ) || 0
+          : 0,
+        change24h: item.sparkline_data
+          ? parseFloat(calculateTempChange(item.sparkline_data, 24)) || 0
+          : 0,
+      },
+    ]),
+  );
 
   $: filteredData = data.data
     .filter((item) =>
@@ -59,7 +59,7 @@
       const modifier = sortOrder === "desc" ? -1 : 1;
       const cacheA = temperatureCache.get(a.location_name);
       const cacheB = temperatureCache.get(b.location_name);
-      
+
       if (sortBy === "temperature") {
         return (cacheA.latestTemp - cacheB.latestTemp) * modifier;
       } else if (sortBy === "wind_speed") {
@@ -98,7 +98,7 @@
 
   function calculateTempChange(sparklineData, hours = 24) {
     if (!sparklineData?.length || sparklineData.length < 2) return "N/A";
-    
+
     const lastPoint = sparklineData[sparklineData.length - 1];
     const lastTemp = lastPoint.temperature;
 
@@ -107,9 +107,11 @@
       const targetTime = new Date(lastPoint.timestamp).getTime() - 3600000;
       let closestIndex = 0;
       let closestDiff = Infinity;
-      
+
       for (let i = 0; i < sparklineData.length; i++) {
-        const diff = Math.abs(new Date(sparklineData[i].timestamp).getTime() - targetTime);
+        const diff = Math.abs(
+          new Date(sparklineData[i].timestamp).getTime() - targetTime,
+        );
         if (diff < closestDiff) {
           closestDiff = diff;
           closestIndex = i;
@@ -121,11 +123,35 @@
     }
 
     const change = lastTemp - compareTemp;
-    const convertedChange = $temperatureUnit === "C" ? change : (change * 9) / 5;
+    const convertedChange =
+      $temperatureUnit === "C" ? change : (change * 9) / 5;
     const sign = convertedChange > 0 ? "+" : "";
     return `${sign}${convertedChange.toFixed(1)}°${$temperatureUnit}`;
   }
 </script>
+
+<svelte:head>
+  <title>{pageTitle}</title>
+  <meta name="description" content={metaDescription} />
+  <meta property="og:title" content={pageTitle} />
+  <meta property="og:description" content={metaDescription} />
+  <meta name="twitter:title" content={pageTitle} />
+  <meta name="twitter:description" content={metaDescription} />
+  <!-- Google tag (gtag.js) -->
+  <script
+    async
+    src="https://www.googletagmanager.com/gtag/js?id=G-Q5W2P7PCEM"
+  ></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+    gtag("js", new Date());
+
+    gtag("config", "G-Q5W2P7PCEM");
+  </script>
+</svelte:head>
 
 <div class="min-h-screen bg-base-200 pt-20 px-4 pb-8">
   <div class="max-w-6xl mx-auto backdrop-blur-sm">
@@ -158,10 +184,10 @@
                     </a>
                     {#if data.networkStats?.station_count_history}
                       {@const firstCount =
-                        data.networkStats.station_count_history[1].count}
+                        data.networkStats.station_count_history[0].count}
                       {@const lastCount =
                         data.networkStats.station_count_history[
-                          data.networkStats.station_count_history.length - 1
+                          data.networkStats.station_count_history.length - 2
                         ].count}
                       {@const change = lastCount - firstCount}
                       <p

@@ -1,18 +1,5 @@
 <script>
   import { onMount, onDestroy } from "svelte";
-  
-  const pageTitle = `${city} Weather Statistics | Real-time Temperature Data`;
-  const metaDescription = `Current weather conditions and temperature statistics for ${city}. View real-time weather data, temperature changes, and station information.`;
-</script>
-
-<svelte:head>
-  <title>{pageTitle}</title>
-  <meta name="description" content={metaDescription} />
-  <meta property="og:title" content={pageTitle} />
-  <meta property="og:description" content={metaDescription} />
-  <meta name="twitter:title" content={pageTitle} />
-  <meta name="twitter:description" content={metaDescription} />
-</svelte:head>
   import moment from "moment";
   import { temperatureUnit } from "$lib/stores";
 
@@ -29,7 +16,7 @@
 
   $: paginatedStations = stations.slice(
     (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
+    currentPage * itemsPerPage,
   );
 
   function formatTimestamp(timestamp) {
@@ -92,6 +79,8 @@
 
   export let data;
   let city = $page.params.city;
+  const pageTitle = `${city} Weather Statistics | Real-time Temperature Data`;
+  const metaDescription = `Current weather conditions and temperature statistics for ${city}. View real-time weather data, temperature changes, and station information.`;
   let chartContainer;
 
   let timestamps = [];
@@ -217,14 +206,32 @@
 </script>
 
 <svelte:head>
-  <title>City Weather Statistics</title>
-  <meta name="description" content="Weather statistics by city" />
+  <title>{pageTitle}</title>
+  <meta name="description" content={metaDescription} />
+  <meta property="og:title" content={pageTitle} />
+  <meta property="og:description" content={metaDescription} />
+  <meta name="twitter:title" content={pageTitle} />
+  <meta name="twitter:description" content={metaDescription} />
   <link
     href="https://cdn.jsdelivr.net/npm/daisyui@4.4.19/dist/full.css"
     rel="stylesheet"
     type="text/css"
   />
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google tag (gtag.js) -->
+  <script
+    async
+    src="https://www.googletagmanager.com/gtag/js?id=G-Q5W2P7PCEM"
+  ></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+    gtag("js", new Date());
+
+    gtag("config", "G-Q5W2P7PCEM");
+  </script>
 </svelte:head>
 <main class="max-w-4xl mx-auto p-6 pt-20">
   <div class="bg-base-100/80 shadow-2xl rounded-lg p-6">
@@ -325,7 +332,11 @@
       </table>
       <div class="flex items-center justify-between p-4">
         <div class="text-sm text-base-content/70">
-          Showing {Math.min((currentPage - 1) * itemsPerPage + 1, stations.length)} to {Math.min(currentPage * itemsPerPage, stations.length)} of {stations.length} stations
+          Showing {Math.min(
+            (currentPage - 1) * itemsPerPage + 1,
+            stations.length,
+          )} to {Math.min(currentPage * itemsPerPage, stations.length)} of {stations.length}
+          stations
         </div>
         <div class="join">
           <button
@@ -347,7 +358,8 @@
           <button
             class="join-item btn"
             disabled={currentPage >= Math.ceil(stations.length / itemsPerPage)}
-            on:click={() => (currentPage = Math.ceil(stations.length / itemsPerPage))}
+            on:click={() =>
+              (currentPage = Math.ceil(stations.length / itemsPerPage))}
             >»</button
           >
         </div>

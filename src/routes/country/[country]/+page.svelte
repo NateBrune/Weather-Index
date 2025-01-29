@@ -1,4 +1,3 @@
-
 <script>
   import { onMount, onDestroy } from "svelte";
   import moment from "moment";
@@ -17,7 +16,7 @@
 
   $: paginatedStations = stations.slice(
     (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
+    currentPage * itemsPerPage,
   );
 
   function formatTimestamp(timestamp) {
@@ -200,6 +199,20 @@
     type="text/css"
   />
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google tag (gtag.js) -->
+  <script
+    async
+    src="https://www.googletagmanager.com/gtag/js?id=G-Q5W2P7PCEM"
+  ></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+    gtag("js", new Date());
+
+    gtag("config", "G-Q5W2P7PCEM");
+  </script>
 </svelte:head>
 
 <main class="max-w-4xl mx-auto p-6 pt-20">
@@ -256,23 +269,32 @@
               class="hover:bg-base-300 transition-colors duration-200 cursor-pointer"
             >
               <td class="font-semibold">
-                <a 
-                  href="https://pro.weatherxm.com/?station={station.station_name.toLowerCase().replace(/\s+/g, '-')}"
+                <a
+                  href="https://pro.weatherxm.com/?station={station.station_name
+                    .toLowerCase()
+                    .replace(/\s+/g, '-')}"
                   target="_blank"
-                  rel="noopener noreferrer" 
+                  rel="noopener noreferrer"
                   class="link link-primary hover:text-primary-focus"
                 >
                   {station.station_name || station.station_id}
                 </a>
               </td>
-              <td>{formatTemperature(station.temperature, $temperatureUnit)}°{$temperatureUnit}</td>
+              <td
+                >{formatTemperature(
+                  station.temperature,
+                  $temperatureUnit,
+                )}°{$temperatureUnit}</td
+              >
               <td>{station.humidity?.toFixed(1)}%</td>
               <td>{station.wind_speed?.toFixed(1)} m/s</td>
               <td>{station.pressure?.toFixed(1)} hPa</td>
               <td>
                 <div
                   class="radial-progress text-primary"
-                  style="--value:{(station.data_quality_score * 100).toFixed(0)};"
+                  style="--value:{(station.data_quality_score * 100).toFixed(
+                    0,
+                  )};"
                 >
                   {(station.data_quality_score * 100).toFixed(0)}%
                 </div>
@@ -284,7 +306,11 @@
       </table>
       <div class="flex items-center justify-between p-4">
         <div class="text-sm text-base-content/70">
-          Showing {Math.min((currentPage - 1) * itemsPerPage + 1, stations.length)} to {Math.min(currentPage * itemsPerPage, stations.length)} of {stations.length} stations
+          Showing {Math.min(
+            (currentPage - 1) * itemsPerPage + 1,
+            stations.length,
+          )} to {Math.min(currentPage * itemsPerPage, stations.length)} of {stations.length}
+          stations
         </div>
         <div class="join">
           <button
@@ -306,7 +332,8 @@
           <button
             class="join-item btn"
             disabled={currentPage >= Math.ceil(stations.length / itemsPerPage)}
-            on:click={() => (currentPage = Math.ceil(stations.length / itemsPerPage))}
+            on:click={() =>
+              (currentPage = Math.ceil(stations.length / itemsPerPage))}
             >»</button
           >
         </div>
