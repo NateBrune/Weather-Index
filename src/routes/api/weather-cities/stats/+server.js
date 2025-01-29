@@ -8,9 +8,10 @@ const pool = new Pool({
   ssl: process.env.NODE_ENV === "production" ? { rejectUnauthorized: false } : false,
 });
 
-export async function GET() {
+export async function GET({ url }) {
   try {
     const client = await pool.connect();
+    const groupBy = url.searchParams.get('groupBy') || 'city';
     const query = `
       WITH hourly_data AS (
         SELECT 
@@ -68,15 +69,23 @@ export async function GET() {
       FROM quality_stats qs
       LIMIT 1;
 
-      WITH hourly_temps AS (
+      WITH top_temp_changes AS (
         SELECT 
           CASE 
-            WHEN $1 = 'city' THEN g.city
-            WHEN $1 = 'state' THEN COALESCE(g.state, 'Unknown')
+            WHEN '${groupBy}' = 'city' THEN g.city
+            WHEN '${groupBy}' = 'state' THEN COALESCE(g.state, 'Unknown')
             ELSE COALESCE(g.country, 'Unknown')
           END as location_name,
-          date_trunc('hour', o.observation_timestamp) as hour,
-          PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY o.temperature) as temperature
+          ROUND(CAST(
+            AVG(CASE 
+              WHEN o.observation_timestamp >= NOW() - INTERVAL '1 hour' THEN o.temperature
+              ELSE NULL
+            END) - 
+            AVG(CASE 
+              WHEN o.observation_timestamp < NOW() - INTERVAL '1 hour' THEN o.temperature
+              ELSE NULL
+            END)
+          AS DECIMAL(10,2)), 2) as temp_change
         FROM stations s
         JOIN geocodes g ON s.latitude = g.latitude AND s.longitude = g.longitude
         JOIN observations o ON s.station_id = o.station_id
@@ -85,11 +94,13 @@ export async function GET() {
           AND o.temperature BETWEEN -50 AND 50
         GROUP BY 
           CASE 
-            WHEN $1 = 'city' THEN g.city
-            WHEN $1 = 'state' THEN COALESCE(g.state, 'Unknown')
+            WHEN '${groupBy}' = 'city' THEN g.city
+            WHEN '${groupBy}' = 'state' THEN COALESCE(g.state, 'Unknown')
             ELSE COALESCE(g.country, 'Unknown')
-          END,
-          date_trunc('hour', o.observation_timestamp)
+          END
+        HAVING COUNT(*) > 5
+        ORDER BY temp_change DESC
+        LIMIT 3
       ),
       temp_changes AS (
         SELECT 
