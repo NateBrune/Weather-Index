@@ -256,7 +256,16 @@
             <tr
               class="hover:bg-base-300 transition-colors duration-200 cursor-pointer"
             >
-              <td class="font-semibold">{station.station_name || station.station_id}</td>
+              <td class="font-semibold">
+                <a 
+                  href="https://pro.weatherxm.com/?station={station.station_id}"
+                  target="_blank"
+                  rel="noopener noreferrer" 
+                  class="link link-primary hover:text-primary-focus"
+                >
+                  {station.station_name || station.station_id}
+                </a>
+              </td>
               <td
                 >{formatTemperature(
                   station.temperature,
