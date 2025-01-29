@@ -141,12 +141,28 @@
           <h2 class="card-title text-2xl">Global Station Count</h2>
           <div class="grid grid-cols-2 gap-4">
             <div class="flex flex-col justify-center">
-              <a
-                href="/stations"
-                class="text-4xl font-bold hover:text-primary transition-colors"
-              >
-                {data.networkStats?.station_count?.toLocaleString() ?? 0}
-              </a>
+              <div class="flex flex-col">
+                <a
+                  href="/stations"
+                  class="text-4xl font-bold hover:text-primary transition-colors"
+                >
+                  {data.networkStats?.station_count?.toLocaleString() ?? 0}
+                </a>
+                {#if data.networkStats?.station_count_history}
+                  {@const firstCount = data.networkStats.station_count_history[0].count}
+                  {@const lastCount = data.networkStats.station_count_history[data.networkStats.station_count_history.length - 1].count}
+                  {@const change = lastCount - firstCount}
+                  <p
+                    class="text-lg mt-2 {change > 0
+                      ? 'text-error'
+                      : change < 0
+                        ? 'text-info'
+                        : 'text-base-content'}"
+                  >
+                    {change > 0 ? "+" : ""}{change} / 24h
+                  </p>
+                {/if}
+              </div>
             </div>
             {#if data.networkStats?.station_count_history}
               {@const historicalData = data.networkStats.station_count_history.slice(0, -1)}
