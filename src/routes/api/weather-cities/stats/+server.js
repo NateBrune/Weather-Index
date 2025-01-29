@@ -29,7 +29,7 @@ export async function GET({ url }) {
       WITH hourly_data AS (
         SELECT 
           DATE_TRUNC($1, observation_timestamp) as hour,
-          COUNT(DISTINCT station_id) as active_stations,
+          COUNT(DISTINCT CASE WHEN data_quality_score > 0 THEN station_id END) as active_stations,
           COUNT(DISTINCT CASE WHEN data_quality_score >= 0.8 THEN station_id END) as quality_stations,
           ROUND(AVG(temperature)::numeric, 2) as avg_temp,
           ROUND(AVG(humidity)::numeric, 2) as avg_humidity,
