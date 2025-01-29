@@ -11,10 +11,20 @@ const pool = new Pool({
       : false,
 });
 
+import { apiCache } from '$lib/cache';
+
 export async function GET({ url }) {
   try {
-    const client = await pool.connect();
     const groupBy = url.searchParams.get("groupBy") || "city";
+    const cacheKey = `weather-cities-${groupBy}`;
+    
+    // Check cache first
+    const cachedData = apiCache.get(cacheKey);
+    if (cachedData) {
+      return json(cachedData);
+    }
+
+    const client = await pool.connect();
 
     // Subquery 1: Hourly Stats
     const hourlyStatsQuery = `
@@ -146,6 +156,8 @@ export async function GET({ url }) {
     const result = await client.query(finalQuery, [groupBy]);
     client.release();
 
+    // Cache the result
+    apiCache.set(cacheKey, result.rows);
     return json(result.rows);
   } catch (err) {
     console.error("Database query failed:", err);
