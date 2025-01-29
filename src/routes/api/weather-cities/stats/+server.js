@@ -50,7 +50,7 @@ export async function GET({ url }) {
         SELECT 
           COUNT(DISTINCT CASE WHEN o.data_quality_score > 0 THEN s.station_id END) as total_stations,
           COUNT(DISTINCT CASE WHEN o.data_quality_score >= 0.8 THEN s.station_id END) as high_quality_stations,
-          CAST(AVG(o.data_quality_score) * 100 AS DECIMAL(5,2)) as avg_quality_percentage
+          CAST(AVG(CASE WHEN o.data_quality_score > 0 THEN o.data_quality_score END) * 100 AS DECIMAL(5,2)) as avg_quality_percentage
         FROM stations s
         LEFT JOIN observations o ON s.station_id = o.station_id
         WHERE o.data_quality_score IS NOT NULL
