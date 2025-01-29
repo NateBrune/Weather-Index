@@ -1,4 +1,3 @@
-
 import { json } from "@sveltejs/kit";
 import pg from "pg";
 
@@ -6,7 +5,10 @@ const { Pool } = pg;
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: process.env.NODE_ENV === "production" ? { rejectUnauthorized: false } : false,
+  ssl:
+    process.env.NODE_ENV === "production"
+      ? { rejectUnauthorized: false }
+      : false,
 });
 
 export async function GET({ params, url }) {
@@ -41,12 +43,29 @@ export async function GET({ params, url }) {
     let timeInterval;
     let timeRange;
     switch (timescale) {
-      case "hourly": timeInterval = "hour"; timeRange = "1 days"; break;
-      case "daily": timeInterval = "hour"; timeRange = "7 days"; break;
-      case "weekly": timeInterval = "day"; timeRange = "30 days"; break;
-      case "monthly": timeInterval = "week"; timeRange = "1 year"; break;
-      case "yearly": timeInterval = "month"; timeRange = "10 years"; break;
-      default: timeInterval = "day"; timeRange = "7 days";
+      case "hourly":
+        timeInterval = "hour";
+        timeRange = "1 days";
+        break;
+      case "daily":
+        timeInterval = "hour";
+        timeRange = "7 days";
+        break;
+      case "weekly":
+        timeInterval = "hour";
+        timeRange = "30 days";
+        break;
+      case "monthly":
+        timeInterval = "hour";
+        timeRange = "1 year";
+        break;
+      case "yearly":
+        timeInterval = "day";
+        timeRange = "10 years";
+        break;
+      default:
+        timeInterval = "day";
+        timeRange = "7 days";
     }
 
     const query = `
@@ -74,7 +93,7 @@ export async function GET({ params, url }) {
 
     return json({
       timeseries: result.rows,
-      stations: stationResult.rows
+      stations: stationResult.rows,
     });
   } catch (err) {
     console.error("Database query failed:", err);

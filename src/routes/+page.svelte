@@ -153,7 +153,7 @@
                     </a>
                     {#if data.networkStats?.station_count_history}
                       {@const firstCount =
-                        data.networkStats.station_count_history[0].count}
+                        data.networkStats.station_count_history[1].count}
                       {@const lastCount =
                         data.networkStats.station_count_history[
                           data.networkStats.station_count_history.length - 1
@@ -173,7 +173,7 @@
                 </div>
                 {#if data.networkStats?.station_count_history}
                   {@const historicalData =
-                    data.networkStats.station_count_history.slice(0, -1)}
+                    data.networkStats.station_count_history.slice(1, -1)}
                   {@const counts = historicalData.map((d) => d.count)}
                   {@const min = Math.min(...counts)}
                   {@const max = Math.max(...counts)}
@@ -181,7 +181,7 @@
                   {@const points = historicalData
                     .map(
                       (d, i) =>
-                        `${(i * 120) / (historicalData.length - 1)},${48 - ((d.count - min) * 48) / range}`,
+                        `${(i * 200) / (historicalData.length - 1)},${48 - ((d.count - min) * 48) / range}`,
                     )
                     .join(" ")}
                   <svg
@@ -243,7 +243,7 @@
                     {@const points = sparkline
                       .map(
                         (d, i) =>
-                          `${(i * 120) / (sparkline.length - 1)},${48 - ((d.temperature - min) * 48) / (range || 1)}`,
+                          `${(i * 200) / (sparkline.length - 1)},${48 - ((d.temperature - min) * 48) / (range || 1)}`,
                       )
                       .join(" ")}
                     <svg
