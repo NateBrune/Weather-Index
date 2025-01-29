@@ -135,8 +135,11 @@
       </div>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <div class="card bg-base-100 text-neutral-content shadow-xl">
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-8">
+      <!-- Left Column - Station Count and Temperature -->
+      <div class="lg:col-span-1">
+        <div class="grid grid-rows-2 gap-4">
+          <div class="card bg-base-100 text-neutral-content shadow-xl">
           <div class="card-body">
             <h2 class="card-title text-2xl">Global Station Count</h2>
             <div class="grid grid-cols-2 gap-4">
@@ -191,15 +194,38 @@
                 </svg>
               {/if}
             </div>
+              </div>
+            </div>
           </div>
         </div>
-        <div class="card bg-base-100 text-neutral-content shadow-xl">
-          <div class="card-body p-4 md:p-6">
-            <a href="https://docs.weatherxm.com/rewards/quality-of-data" target="_blank" rel="noopener noreferrer" class="hover:opacity-80">
-              <h2 class="card-title text-xl md:text-2xl">Network Data Quality</h2>
-              <div class="flex flex-col gap-2">
-                <div class="text-2xl md:text-4xl font-bold">
-                  {data.networkStats.avg_quality_percentage}%
+        
+        <!-- Center Column - Network Quality -->
+        <div class="lg:col-span-2">
+          <div class="card bg-base-100 text-neutral-content shadow-xl h-full">
+            <div class="card-body flex flex-col justify-center items-center">
+              <a href="https://docs.weatherxm.com/rewards/quality-of-data" target="_blank" rel="noopener noreferrer" class="hover:opacity-80 text-center">
+                <h2 class="card-title text-4xl mb-6">Network Data Quality</h2>
+                <div class="flex flex-col items-center gap-4">
+                  <div class="text-6xl font-bold mb-4">
+                    {data.networkStats.avg_quality_percentage}%
+                  </div>
+                  <div class="text-xl opacity-70">
+                    {data.networkStats.high_quality_stations} high quality stations
+                  </div>
+                  <progress
+                    class="progress progress-success w-64"
+                    value={data.networkStats.high_quality_stations}
+                    max={data.networkStats.station_count}
+                  ></progress>
+                </div>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column - Gainers and Losers -->
+        <div class="lg:col-span-1">
+          <div class="grid grid-rows-2 gap-4">
                 </div>
                 <div class="text-xs md:text-sm opacity-70">
                   {data.networkStats.high_quality_stations} high quality stations
