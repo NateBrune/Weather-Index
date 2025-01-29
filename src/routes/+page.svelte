@@ -135,10 +135,13 @@
       </div>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <div class="card bg-base-100 text-neutral-content shadow-xl">
-          <div class="card-body">
-            <h2 class="card-title text-2xl">Global Station Count</h2>
+    <div class="grid grid-cols-1 lg:grid-cols-5 gap-4 mb-8">
+        <!-- Left Column - Station Count and Temperature -->
+        <div class="lg:col-span-2">
+          <div class="grid grid-rows-2 gap-4 h-full">
+            <div class="card bg-base-100 text-neutral-content shadow-xl">
+              <div class="card-body">
+                <h2 class="card-title text-2xl">Global Station Count</h2>
             <div class="grid grid-cols-2 gap-4">
               <div class="flex flex-col justify-center">
                 <div class="flex flex-col">
@@ -193,10 +196,44 @@
             </div>
           </div>
         </div>
-        <div class="card bg-base-100 text-neutral-content shadow-xl">
-          <div class="card-body p-4 md:p-6">
-            <a href="https://docs.weatherxm.com/rewards/quality-of-data" target="_blank" rel="noopener noreferrer" class="hover:opacity-80">
-              <h2 class="card-title text-xl md:text-2xl">Network Data Quality</h2>
+        </div>
+          </div>
+          <div class="card bg-base-100 text-neutral-content shadow-xl">
+            <div class="card-body">
+              <h2 class="card-title text-2xl">Network Median Temperature</h2>
+              <div class="grid grid-cols-2 gap-4">
+                <div class="flex flex-col justify-center">
+                  <p class="text-4xl font-bold">
+                    {formatTemperature(
+                      data.networkStats?.median_temperature,
+                      $temperatureUnit,
+                    )}°{$temperatureUnit}
+                  </p>
+                </div>
+                {#if data.networkStats?.sparkline_data}
+                  {#each [data.networkStats.sparkline_data] as sparkline}
+                    <svg class="w-full h-24" viewBox="0 0 200 96" preserveAspectRatio="none">
+                      <polyline
+                        points={getSparklinePoints(sparkline)}
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        class={getTemperatureChangeClass(sparkline)}
+                      />
+                    </svg>
+                  {/each}
+                {/if}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Center Column - Network Quality -->
+        <div class="lg:col-span-1">
+          <div class="card bg-base-100 text-neutral-content shadow-xl h-full">
+            <div class="card-body flex flex-col justify-center items-center">
+              <a href="https://docs.weatherxm.com/rewards/quality-of-data" target="_blank" rel="noopener noreferrer" class="hover:opacity-80 text-center">
+                <h2 class="card-title text-2xl mb-4 justify-center">Network Data Quality</h2>
               <div class="flex flex-col gap-2">
                 <div class="text-2xl md:text-4xl font-bold">
                   {data.networkStats.avg_quality_percentage}%
@@ -278,10 +315,12 @@
           </div>
         </div>
 
-        <!-- Top Heat Gainers -->
-        <div class="card bg-base-100 text-neutral-content shadow-xl">
-          <div class="card-body">
-            <h2 class="card-title text-2xl">Top Heat Gain (1h)</h2>
+        <!-- Right Column - Gainers and Losers -->
+        <div class="lg:col-span-2">
+          <div class="grid grid-rows-2 gap-4 h-full">
+            <div class="card bg-base-100 text-neutral-content shadow-xl">
+              <div class="card-body">
+                <h2 class="card-title text-2xl">Top Heat Gain (1h)</h2>
             <div class="flex flex-col gap-2">
               {#each filteredData
                 .filter(item => calculateTempChange(item.sparkline_data, 1) !== 'N/A')
