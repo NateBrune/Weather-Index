@@ -49,6 +49,7 @@ export async function GET({ params, url }) {
     const stationQuery = `
       SELECT DISTINCT ON (s.station_id)
         s.station_id,
+        s.name as station_name,
         s.latitude,
         s.longitude,
         o.temperature,
@@ -62,6 +63,7 @@ export async function GET({ params, url }) {
       JOIN observations o ON s.station_id = o.station_id
       WHERE g.city = $1
         AND o.observation_timestamp >= NOW() - INTERVAL '1 hour'
+        AND o.data_quality_score >= 0.8
       ORDER BY s.station_id, o.observation_timestamp DESC;
     `;
 

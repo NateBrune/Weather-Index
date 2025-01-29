@@ -242,7 +242,7 @@
       <table class="table table-zebra w-full hover:table-zebra bg-transparent">
         <thead>
           <tr>
-            <th class="text-primary">Station ID</th>
+            <th class="text-primary">Station Name</th>
             <th class="text-primary">Temperature</th>
             <th class="text-primary">Humidity</th>
             <th class="text-primary">Wind Speed</th>
@@ -256,7 +256,7 @@
             <tr
               class="hover:bg-base-300 transition-colors duration-200 cursor-pointer"
             >
-              <td class="font-semibold">{station.station_id}</td>
+              <td class="font-semibold">{station.station_name || station.station_id}</td>
               <td
                 >{formatTemperature(
                   station.temperature,
