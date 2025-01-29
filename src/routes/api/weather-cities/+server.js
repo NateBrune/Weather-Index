@@ -2,7 +2,7 @@ import { json } from "@sveltejs/kit";
 import pg from "pg";
 
 const { Pool } = pg;
-import { apiCache } from '$lib/cache';
+import { apiCache } from "$lib/cache";
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
@@ -12,13 +12,11 @@ const pool = new Pool({
       : false,
 });
 
-
-
 export async function GET({ url }) {
   try {
     const groupBy = url.searchParams.get("groupBy") || "city";
     const cacheKey = `weather-cities-${groupBy}`;
-    
+
     // Check cache first
     const cachedData = apiCache.get(cacheKey);
     if (cachedData) {
@@ -65,11 +63,11 @@ export async function GET({ url }) {
       SELECT 
         h.location_name,
         COUNT(DISTINCT s.station_id) AS station_count,
-        MAX(h.temperature) AS median_temperature,
-        MAX(h.wind_speed) AS median_wind_speed,
-        MAX(h.temperature) - LAG(MAX(h.temperature), 1) OVER (PARTITION BY h.location_name ORDER BY MAX(h.hour)) AS temp_change_1h,
-        MAX(h.temperature) - LAG(MAX(h.temperature), 24) OVER (PARTITION BY h.location_name ORDER BY MAX(h.hour)) AS temp_change_24h,
-        MAX(h.temperature) - LAG(MAX(h.temperature), 168) OVER (PARTITION BY h.location_name ORDER BY MAX(h.hour)) AS temp_change_7d
+        PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY o.temperature) AS median_temperature,
+        PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY o.wind_speed) AS median_wind_speed,
+        PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY o.temperature) - LAG(PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY o.temperature), 1) OVER (PARTITION BY h.location_name ORDER BY h.hour) AS temp_change_1h,
+        PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY o.temperature) - LAG(PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY o.temperature), 24) OVER (PARTITION BY h.location_name ORDER BY h.hour) AS temp_change_24h,
+        PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY o.temperature) - LAG(PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY o.temperature), 168) OVER (PARTITION BY h.location_name ORDER BY h.hour) AS temp_change_7d
       FROM (${hourlyStatsQuery}) h
       LEFT JOIN stations s ON (
         CASE 
