@@ -129,9 +129,7 @@
         <h3 class="text-1xl font-bold text-secondary">
           Powered By WeatherXM 🌦️
         </h3>
-        <h3 class="text-1xl font-bold text-accent">
-          Made with Replit ❤️
-        </h3>
+        <h3 class="text-1xl font-bold text-accent">Made with Replit ❤️</h3>
       </div>
     </div>
 
@@ -139,148 +137,50 @@
       <!-- Left Column - Station Count and Temperature -->
       <div class="lg:col-span-1">
         <div class="grid grid-rows-2 gap-4">
+          <!-- Global Station Count -->
           <div class="card bg-base-100 text-neutral-content shadow-xl">
-          <div class="card-body">
-            <h2 class="card-title text-2xl">Global Station Count</h2>
-            <div class="grid grid-cols-2 gap-4">
-              <div class="flex flex-col justify-center">
-                <div class="flex flex-col">
-                  <a
-                    href="/stations"
-                    class="text-4xl font-bold hover:text-primary transition-colors"
-                  >
-                    {data.networkStats?.station_count?.toLocaleString() ?? 0}
-                  </a>
-                  {#if data.networkStats?.station_count_history}
-                    {@const firstCount = data.networkStats.station_count_history[0].count}
-                    {@const lastCount = data.networkStats.station_count_history[data.networkStats.station_count_history.length - 1].count}
-                    {@const change = lastCount - firstCount}
-                    <p
-                      class="text-lg mt-2 {change > 0
-                        ? 'text-success'
-                        : change < 0
-                          ? 'text-info'
-                          : 'text-base-content'}"
+            <div class="card-body">
+              <h2 class="card-title text-2xl">Global Station Count</h2>
+              <div class="grid grid-cols-2 gap-4">
+                <div class="flex flex-col justify-center">
+                  <div class="flex flex-col">
+                    <a
+                      href="/stations"
+                      class="text-4xl font-bold hover:text-primary transition-colors"
                     >
-                      {change > 0 ? "+" : ""}{change} / 24h
-                    </p>
-                  {/if}
-                </div>
-              </div>
-              {#if data.networkStats?.station_count_history}
-                {@const historicalData = data.networkStats.station_count_history.slice(0, -1)}
-                {@const counts = historicalData.map((d) => d.count)}
-                {@const min = Math.min(...counts)}
-                {@const max = Math.max(...counts)}
-                {@const range = max - min || 1}
-                {@const points = historicalData
-                  .map(
-                    (d, i) =>
-                      `${(i * 120) / (historicalData.length - 1)},${48 - ((d.count - min) * 48) / range}`,
-                  )
-                  .join(" ")}
-                <svg
-                  class="w-full h-24"
-                  viewBox="0 0 200 96"
-                  preserveAspectRatio="none"
-                >
-                  <polyline
-                    {points}
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    class="text-primary"
-                  />
-                </svg>
-              {/if}
-            </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Center Column - Network Quality -->
-        <div class="lg:col-span-2">
-          <div class="card bg-base-100 text-neutral-content shadow-xl h-full">
-            <div class="card-body flex flex-col justify-center items-center">
-              <a href="https://docs.weatherxm.com/rewards/quality-of-data" target="_blank" rel="noopener noreferrer" class="hover:opacity-80 text-center">
-                <h2 class="card-title text-4xl mb-6">Network Data Quality</h2>
-                <div class="flex flex-col items-center gap-4">
-                  <div class="text-6xl font-bold mb-4">
-                    {data.networkStats.avg_quality_percentage}%
+                      {data.networkStats?.station_count?.toLocaleString() ?? 0}
+                    </a>
+                    {#if data.networkStats?.station_count_history}
+                      {@const firstCount =
+                        data.networkStats.station_count_history[0].count}
+                      {@const lastCount =
+                        data.networkStats.station_count_history[
+                          data.networkStats.station_count_history.length - 1
+                        ].count}
+                      {@const change = lastCount - firstCount}
+                      <p
+                        class="text-lg mt-2 {change > 0
+                          ? 'text-success'
+                          : change < 0
+                            ? 'text-info'
+                            : 'text-base-content'}"
+                      >
+                        {change > 0 ? "+" : ""}{change} / 24h
+                      </p>
+                    {/if}
                   </div>
-                  <div class="text-xl opacity-70">
-                    {data.networkStats.high_quality_stations} high quality stations
-                  </div>
-                  <progress
-                    class="progress progress-success w-64"
-                    value={data.networkStats.high_quality_stations}
-                    max={data.networkStats.station_count}
-                  ></progress>
                 </div>
-              </a>
-            </div>
-          </div>
-        </div>
-
-        <!-- Right Column - Gainers and Losers -->
-        <div class="lg:col-span-1">
-          <div class="grid grid-rows-2 gap-4">
-                </div>
-                <div class="text-xs md:text-sm opacity-70">
-                  {data.networkStats.high_quality_stations} high quality stations
-                </div>
-                <progress
-                  class="progress progress-success"
-                  value={data.networkStats.high_quality_stations}
-                  max={data.networkStats.station_count}
-                ></progress>
-              </div>
-            </a>
-          </div>
-        </div>
-        <div class="card bg-base-100 text-neutral-content shadow-xl">
-          <div class="card-body">
-            <h2 class="card-title text-2xl">Network Median Temperature</h2>
-            <div class="grid grid-cols-2 gap-4">
-              <div class="flex flex-col justify-center">
-                <p class="text-4xl font-bold">
-                  {formatTemperature(
-                    data.networkStats?.median_temperature,
-                    $temperatureUnit,
-                  )}°{$temperatureUnit}
-                </p>
-                {#if data.networkStats?.sparkline_data}
-                  {@const firstTemp =
-                    data.networkStats.sparkline_data[0].temperature}
-                  {@const lastTemp =
-                    data.networkStats.sparkline_data[
-                      data.networkStats.sparkline_data.length - 1
-                    ].temperature}
-                  {@const change = lastTemp - firstTemp}
-                  <p
-                    class="text-lg mt-2 {change > 0
-                      ? 'text-error'
-                      : change < 0
-                        ? 'text-info'
-                        : 'text-base-content'}"
-                  >
-                    {change > 0 ? "+" : ""}{$temperatureUnit === "C"
-                      ? change.toFixed(1)
-                      : ((change * 9) / 5).toFixed(1)}°{$temperatureUnit} / 24h
-                  </p>
-                {/if}
-              </div>
-              {#if data.networkStats?.sparkline_data}
-                {#each [data.networkStats.sparkline_data] as sparkline}
-                  {@const temperatures = sparkline.map((d) => d.temperature)}
-                  {@const min = Math.min(...temperatures)}
-                  {@const max = Math.max(...temperatures)}
-                  {@const range = max - min}
-                  {@const points = sparkline
+                {#if data.networkStats?.station_count_history}
+                  {@const historicalData =
+                    data.networkStats.station_count_history.slice(0, -1)}
+                  {@const counts = historicalData.map((d) => d.count)}
+                  {@const min = Math.min(...counts)}
+                  {@const max = Math.max(...counts)}
+                  {@const range = max - min || 1}
+                  {@const points = historicalData
                     .map(
                       (d, i) =>
-                        `${(i * 120) / (sparkline.length - 1)},${48 - ((d.temperature - min) * 48) / (range || 1)}`,
+                        `${(i * 120) / (historicalData.length - 1)},${48 - ((d.count - min) * 48) / range}`,
                     )
                     .join(" ")}
                   <svg
@@ -293,72 +193,179 @@
                       fill="none"
                       stroke="currentColor"
                       stroke-width="2"
-                      class={data.data[0]?.temp_change_24h > 0
-                        ? "text-error"
-                        : "text-info"}
+                      class="text-primary"
                     />
                   </svg>
+                {/if}
+              </div>
+            </div>
+          </div>
+          <!-- Network Median Temperature -->
+          <div class="card bg-base-100 text-neutral-content shadow-xl">
+            <div class="card-body">
+              <h2 class="card-title text-2xl">Network Median Temperature</h2>
+              <div class="grid grid-cols-2 gap-4">
+                <div class="flex flex-col justify-center">
+                  <p class="text-4xl font-bold">
+                    {formatTemperature(
+                      data.networkStats?.median_temperature,
+                      $temperatureUnit,
+                    )}°{$temperatureUnit}
+                  </p>
+                  {#if data.networkStats?.sparkline_data}
+                    {@const firstTemp =
+                      data.networkStats.sparkline_data[0].temperature}
+                    {@const lastTemp =
+                      data.networkStats.sparkline_data[
+                        data.networkStats.sparkline_data.length - 1
+                      ].temperature}
+                    {@const change = lastTemp - firstTemp}
+                    <p
+                      class="text-lg mt-2 {change > 0
+                        ? 'text-error'
+                        : change < 0
+                          ? 'text-info'
+                          : 'text-base-content'}"
+                    >
+                      {change > 0 ? "+" : ""}{$temperatureUnit === "C"
+                        ? change.toFixed(1)
+                        : ((change * 9) / 5).toFixed(1)}°{$temperatureUnit} / 24h
+                    </p>
+                  {/if}
+                </div>
+                {#if data.networkStats?.sparkline_data}
+                  {#each [data.networkStats.sparkline_data] as sparkline}
+                    {@const temperatures = sparkline.map((d) => d.temperature)}
+                    {@const min = Math.min(...temperatures)}
+                    {@const max = Math.max(...temperatures)}
+                    {@const range = max - min}
+                    {@const points = sparkline
+                      .map(
+                        (d, i) =>
+                          `${(i * 120) / (sparkline.length - 1)},${48 - ((d.temperature - min) * 48) / (range || 1)}`,
+                      )
+                      .join(" ")}
+                    <svg
+                      class="w-full h-24"
+                      viewBox="0 0 200 96"
+                      preserveAspectRatio="none"
+                    >
+                      <polyline
+                        {points}
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        class={data.data[0]?.temp_change_24h > 0
+                          ? "text-error"
+                          : "text-info"}
+                      />
+                    </svg>
+                  {/each}
+                {/if}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Center Column - Network Quality -->
+      <div class="lg:col-span-2">
+        <!-- Network Quality -->
+        <div class="card bg-base-100 text-neutral-content shadow-xl h-full">
+          <div class="card-body flex flex-col justify-center items-center">
+            <a
+              href="https://docs.weatherxm.com/rewards/quality-of-data"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="hover:opacity-80 text-center"
+            >
+              <h2 class="card-title text-4xl mb-6">Network Data Quality</h2>
+              <div class="flex flex-col items-center gap-4">
+                <div class="text-6xl font-bold mb-4">
+                  {data.networkStats.avg_quality_percentage}%
+                </div>
+                <div class="text-xl opacity-70">
+                  {data.networkStats.high_quality_stations} high quality stations
+                </div>
+                <progress
+                  class="progress progress-success w-64"
+                  value={data.networkStats.high_quality_stations}
+                  max={data.networkStats.station_count}
+                ></progress>
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column - Gainers and Losers -->
+      <div class="lg:col-span-1">
+        <div class="grid grid-rows-2 gap-4">
+          <!-- Top Heat Gainers -->
+          <div class="card bg-base-100 text-neutral-content shadow-xl">
+            <div class="card-body">
+              <h2 class="card-title text-2xl">Top Heat Gain (1h)</h2>
+              <div class="flex flex-col gap-2">
+                {#each filteredData
+                  .filter((item) => calculateTempChange(item.sparkline_data, 1) !== "N/A")
+                  .sort((a, b) => parseFloat(calculateTempChange(b.sparkline_data, 1)) - parseFloat(calculateTempChange(a.sparkline_data, 1)))
+                  .slice(0, 3) as item}
+                  <div class="flex justify-between items-center">
+                    <a
+                      href={data.activeTab === "city"
+                        ? `/${item.location_name}`
+                        : data.activeTab === "state"
+                          ? `/state/${item.location_name}`
+                          : `/country/${item.location_name}`}
+                      class="link link-primary hover:opacity-80"
+                    >
+                      {item.location_name}
+                    </a>
+                    <div class="flex flex-col items-end">
+                      <span class="text-error font-bold"
+                        >{calculateTempChange(item.sparkline_data, 1)}</span
+                      >
+                      <span class="text-xs opacity-70">1hr change</span>
+                    </div>
+                  </div>
                 {/each}
-              {/if}
+              </div>
             </div>
           </div>
-        </div>
 
-        <!-- Top Heat Gainers -->
-        <div class="card bg-base-100 text-neutral-content shadow-xl">
-          <div class="card-body">
-            <h2 class="card-title text-2xl">Top Heat Gain (1h)</h2>
-            <div class="flex flex-col gap-2">
-              {#each filteredData
-                .filter(item => calculateTempChange(item.sparkline_data, 1) !== 'N/A')
-                .sort((a, b) => parseFloat(calculateTempChange(b.sparkline_data, 1)) - parseFloat(calculateTempChange(a.sparkline_data, 1)))
-                .slice(0, 3) as item}
-                <div class="flex justify-between items-center">
-                  <a 
-                    href={data.activeTab === 'city' ? `/${item.location_name}` : 
-                         data.activeTab === 'state' ? `/state/${item.location_name}` :
-                         `/country/${item.location_name}`} 
-                    class="link link-primary hover:opacity-80"
-                  >
-                    {item.location_name}
-                  </a>
-                  <div class="flex flex-col items-end">
-                    <span class="text-error font-bold">{calculateTempChange(item.sparkline_data, 1)}</span>
-                    <span class="text-xs opacity-70">1hr change</span>
+          <!-- Top Heat Losers -->
+          <div class="card bg-base-100 text-neutral-content shadow-xl">
+            <div class="card-body">
+              <h2 class="card-title text-2xl">Top Heat Loss (1h)</h2>
+              <div class="flex flex-col gap-2">
+                {#each filteredData
+                  .filter((item) => calculateTempChange(item.sparkline_data, 1) !== "N/A")
+                  .sort((a, b) => parseFloat(calculateTempChange(a.sparkline_data, 1)) - parseFloat(calculateTempChange(b.sparkline_data, 1)))
+                  .slice(0, 3) as item}
+                  <div class="flex justify-between items-center">
+                    <a
+                      href={data.activeTab === "city"
+                        ? `/${item.location_name}`
+                        : data.activeTab === "state"
+                          ? `/state/${item.location_name}`
+                          : `/country/${item.location_name}`}
+                      class="link link-primary hover:opacity-80"
+                    >
+                      {item.location_name}
+                    </a>
+                    <div class="flex flex-col items-end">
+                      <span class="text-info font-bold"
+                        >{calculateTempChange(item.sparkline_data, 1)}</span
+                      >
+                      <span class="text-xs opacity-70">1hr change</span>
+                    </div>
                   </div>
-                </div>
-              {/each}
+                {/each}
+              </div>
             </div>
           </div>
         </div>
-
-        <!-- Top Heat Losers -->
-        <div class="card bg-base-100 text-neutral-content shadow-xl">
-          <div class="card-body">
-            <h2 class="card-title text-2xl">Top Heat Loss (1h)</h2>
-            <div class="flex flex-col gap-2">
-              {#each filteredData
-                .filter(item => calculateTempChange(item.sparkline_data, 1) !== 'N/A')
-                .sort((a, b) => parseFloat(calculateTempChange(a.sparkline_data, 1)) - parseFloat(calculateTempChange(b.sparkline_data, 1)))
-                .slice(0, 3) as item}
-                <div class="flex justify-between items-center">
-                  <a 
-                    href={data.activeTab === 'city' ? `/${item.location_name}` : 
-                         data.activeTab === 'state' ? `/state/${item.location_name}` :
-                         `/country/${item.location_name}`} 
-                    class="link link-primary hover:opacity-80"
-                  >
-                    {item.location_name}
-                  </a>
-                  <div class="flex flex-col items-end">
-                    <span class="text-info font-bold">{calculateTempChange(item.sparkline_data, 1)}</span>
-                    <span class="text-xs opacity-70">1hr change</span>
-                  </div>
-                </div>
-              {/each}
-            </div>
-          </div>
-        </div>
+      </div>
     </div>
 
     <!-- Main Controls -->
@@ -383,10 +390,7 @@
           class="input input-bordered w-2/3"
           bind:value={searchQuery}
         />
-        <select
-          class="select select-bordered w-1/3"
-          bind:value={itemsPerPage}
-        >
+        <select class="select select-bordered w-1/3" bind:value={itemsPerPage}>
           {#each itemsPerPageOptions as option}
             <option value={option}>{option} per page</option>
           {/each}
@@ -395,7 +399,9 @@
     </div>
 
     <!-- Main Table -->
-    <div class="w-full card bg-base-100/80 shadow-2xl backdrop-blur-sm border border-base-300/50">
+    <div
+      class="w-full card bg-base-100/80 shadow-2xl backdrop-blur-sm border border-base-300/50"
+    >
       <div class="card-body overflow-x-auto px-2 sm:px-6">
         <table class="table table-zebra bg-transparent">
           <thead>
