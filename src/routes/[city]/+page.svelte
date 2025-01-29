@@ -4,12 +4,20 @@
   import { temperatureUnit } from "$lib/stores";
 
   let stations = [];
+  let currentPage = 1;
+  let itemsPerPage = 10;
+  const itemsPerPageOptions = [10, 25, 50, 100];
 
   $: {
     if (Array.isArray(data.data.stations)) {
       stations = data.data.stations;
     }
   }
+
+  $: paginatedStations = stations.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
   function formatTimestamp(timestamp) {
     return moment(timestamp).format("MMM D, YYYY HH:mm");
@@ -239,6 +247,16 @@
     </div>
 
     <div class="overflow-x-auto">
+      <div class="flex gap-4 items-center mb-4">
+        <select
+          class="select select-bordered w-full max-w-xs"
+          bind:value={itemsPerPage}
+        >
+          {#each itemsPerPageOptions as option}
+            <option value={option}>{option} per page</option>
+          {/each}
+        </select>
+      </div>
       <table class="table table-zebra w-full hover:table-zebra bg-transparent">
         <thead>
           <tr>
@@ -252,7 +270,7 @@
           </tr>
         </thead>
         <tbody>
-          {#each stations as station}
+          {#each paginatedStations as station}
             <tr
               class="hover:bg-base-300 transition-colors duration-200 cursor-pointer"
             >
@@ -292,6 +310,35 @@
           {/each}
         </tbody>
       </table>
+      <div class="flex items-center justify-between p-4">
+        <div class="text-sm text-base-content/70">
+          Showing {Math.min((currentPage - 1) * itemsPerPage + 1, stations.length)} to {Math.min(currentPage * itemsPerPage, stations.length)} of {stations.length} stations
+        </div>
+        <div class="join">
+          <button
+            class="join-item btn"
+            disabled={currentPage === 1}
+            on:click={() => (currentPage = 1)}>«</button
+          >
+          <button
+            class="join-item btn"
+            disabled={currentPage === 1}
+            on:click={() => currentPage--}>‹</button
+          >
+          <button class="join-item btn">Page {currentPage}</button>
+          <button
+            class="join-item btn"
+            disabled={currentPage >= Math.ceil(stations.length / itemsPerPage)}
+            on:click={() => currentPage++}>›</button
+          >
+          <button
+            class="join-item btn"
+            disabled={currentPage >= Math.ceil(stations.length / itemsPerPage)}
+            on:click={() => (currentPage = Math.ceil(stations.length / itemsPerPage))}
+            >»</button
+          >
+        </div>
+      </div>
     </div>
   </div>
 </main>
