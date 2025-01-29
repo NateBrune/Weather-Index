@@ -139,13 +139,15 @@
       <div class="card bg-base-100 text-neutral-content shadow-xl">
         <div class="card-body">
           <h2 class="card-title text-2xl">Global Station Count</h2>
-          <div class="flex flex-col items-center gap-2">
-            <a
-              href="/stations"
-              class="text-4xl font-bold hover:text-primary transition-colors"
-            >
-              {data.networkStats?.station_count?.toLocaleString() ?? 0}
-            </a>
+          <div class="grid grid-cols-2 gap-4">
+            <div class="flex flex-col justify-center">
+              <a
+                href="/stations"
+                class="text-4xl font-bold hover:text-primary transition-colors"
+              >
+                {data.networkStats?.station_count?.toLocaleString() ?? 0}
+              </a>
+            </div>
             {#if data.networkStats?.station_count_history}
               {@const historicalData = data.networkStats.station_count_history.slice(0, -1)}
               {@const counts = historicalData.map((d) => d.count)}
@@ -158,21 +160,19 @@
                     `${(i * 120) / (historicalData.length - 1)},${48 - ((d.count - min) * 48) / range}`,
                 )
                 .join(" ")}
-              <div class="w-full px-4">
-                <svg
-                  class="w-full h-24"
-                  viewBox="0 0 200 96"
-                  preserveAspectRatio="none"
-                >
-                  <polyline
-                    {points}
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    class="text-primary"
-                  />
-                </svg>
-              </div>
+              <svg
+                class="w-full h-24"
+                viewBox="0 0 200 96"
+                preserveAspectRatio="none"
+              >
+                <polyline
+                  {points}
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  class="text-primary"
+                />
+              </svg>
             {/if}
           </div>
         </div>
