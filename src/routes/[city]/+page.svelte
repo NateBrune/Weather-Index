@@ -79,6 +79,7 @@
 
   export let data;
   let city = $page.params.city;
+  let timescale = $page.url.searchParams.get("timescale") || "daily";
   const pageTitle = `${city} Weather Statistics | Real-time Temperature Data`;
   const metaDescription = `Current weather conditions and temperature statistics for ${city}. View real-time weather data, temperature changes, and station information.`;
   let chartContainer;

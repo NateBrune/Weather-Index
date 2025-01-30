@@ -81,6 +81,7 @@
 
   export let data;
   let state = $page.params.state;
+  let timescale = $page.url.searchParams.get("timescale") || "daily";
   let chartContainer;
 
   const changeTimescale = (timescale) => {
@@ -285,7 +286,7 @@
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement("a");
             a.href = url;
-            a.download = `${city}_stations.csv`;
+            a.download = `${state}_stations.csv`;
             document.body.appendChild(a);
             a.click();
             window.URL.revokeObjectURL(url);

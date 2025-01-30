@@ -90,3 +90,14 @@
 		<slot />
 	</main>
 </div>
+<footer>
+	<p>
+		Created by <a href="https://x.com/capitalisnn" class="text-info"
+			>@capitalisnn</a
+		>
+		and <a href="https://x.com/0x_atd" class="text-info">@0x_atd</a>
+	</p>
+	<a href="https://github.com/NateBrune/Weather-Index" class="text-info"
+		>Contribute to this project on Github</a
+	>
+</footer>
