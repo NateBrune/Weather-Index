@@ -79,3 +79,5 @@ Feel free to contribute to this project! Visit our [GitHub repository](https://g
 Created by [@capitalisnn](https://x.com/capitalisnn) and [@0x_atd](https://x.com/0x_atd)
 
 Powered by [WeatherXM](https://weatherxm.com)
+
+Visit [WeatherIndex.io](https://weatherindex.io) for the live demo
